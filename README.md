@@ -33,7 +33,7 @@ Product Spec
 •	Save and share playlists.
 User Roles
 
-●	User Roles:
+*	User Roles:
 ●	Listener: A user who is seeking a personalized music recommendations based on their mood and location.
 ●	User Personas:
 ●	Listener Persona 1:
