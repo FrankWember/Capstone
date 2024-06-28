@@ -1,8 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate(); // helps navigate programmatically
+
+  //For handling form submissions
+
+  const handleLogin = async (event) => {
+    event.preventDefault(); //prevent the default submission of my form
+
+    try {
+      //Sending a post request to the login endpoint using Axios
+      const response = await axios.post("http://localhost:3000/login", {
+        email: username,
+        password,
+      });
+
+      const { token } = response.data; // Extracting the token from my response
+
+      localStorage.setItem("token", token); //storing my token locally
+      navigate("/protected"); // It should redirect me to a protected route if the login was successful
+    } catch (error) {
+      console.error("Invalid Login credentials");
+    }
+  };
   return (
     <div className="square">
       <i style={{ "--clr": "#33dce9" }}></i>
@@ -12,10 +38,18 @@ const Login = () => {
         <h1 className="title">MoodTune</h1>
         <h2>Login</h2>
         <div className="inputBx">
-          <input type="text" placeholder="Username" />
+          <input
+            type="text"
+            placeholder="Username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </div>
         <div className="inputBx">
-          <input type="password" placeholder="Password" />
+          <input
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
         <div className="inputBx">
           <input type="submit" value="Sign in" />
