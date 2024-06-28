@@ -3,7 +3,7 @@
 //Renders the protected component if the page is found
 
 import React from "react";
-import { Navigate } from "react-route-dom";
+import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");

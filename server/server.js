@@ -1,13 +1,17 @@
 // server.js
 const express = require("express");
+const cors = require("cors");
 const { registerUser, loginUser, verifyToken } = require("./auth"); // importing the function from the auth.js
 const app = express();
+
+app.use(cors);
 app.use(express.json()); // middleware to parse the json payload
 
 // signup Endpoint
 
 app.post("/signup", async (req, res) => {
   const { email, password, name } = req.body; // The request body for signup consist of email password and name
+
   try {
     const user = await registerUser(email, password, name);
     // This functions hashs the password and create a new user in the database

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 import "./Signup.css";
@@ -17,11 +18,12 @@ const Signup = () => {
     console.log("Password:", password);
     console.log("Confirm Password:", confirmPassword);
 
-    Axios.post("http://localhost:3000/signup", {
-      username,
-      email,
-      password,
-    })
+    const response = axios
+      .post("http://localhost:3000/signup", {
+        username,
+        email,
+        password,
+      })
       .then((response) => {
         console.log(response);
       })

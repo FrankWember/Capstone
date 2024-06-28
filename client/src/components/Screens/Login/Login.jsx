@@ -17,7 +17,8 @@ const Login = () => {
     try {
       //Sending a post request to the login endpoint using Axios
       const response = await axios.post("http://localhost:3000/login", {
-        email: username,
+        email,
+        username,
         password,
       });
 
