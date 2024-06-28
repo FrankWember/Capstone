@@ -1,4 +1,4 @@
-* {
+import * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -10,13 +10,16 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(
+  background-image: url("/images/Designer.png");
+
+  /* background: linear-gradient(
     135deg,
     #2b5876,
     #4e4376
-  ); /* Background gradient */
+  ); Background gradient */
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 .square {
