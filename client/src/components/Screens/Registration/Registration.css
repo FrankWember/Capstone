@@ -1,181 +1,183 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Open Sans", sans-serif;
-}
-
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-image: url("Designer.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.square {
-  position: relative;
-  width: 500px;
-  height: 500px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.square i {
-  position: absolute;
-  inset: 0;
-  border: 2px solid #fff;
-  transition: 0.5s;
-}
-
-.square i:nth-child(1) {
-  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
-  animation: animate 6s linear infinite;
-}
-
-.square i:nth-child(2) {
-  border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
-  animation: animate 4s linear infinite;
-}
-
-.square i:nth-child(3) {
-  border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
-  animation: animate2 8s linear infinite;
-}
-
-.square:hover i {
-  border: 6px solid var(--clr);
-  filter: drop-shadow(0 0 20px var(--clr));
-}
-
-.square:hover .title {
-  text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
-    0 0 40px var(--clr);
-}
-
-@keyframes animate {
-  0% {
-    transform: rotate(0deg);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
   }
-  100% {
-    transform: rotate(360deg);
+  
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url("Designer.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
-}
-
-@keyframes animate2 {
-  0% {
-    transform: rotate(360deg);
+  
+  .square {
+    position: relative;
+    width: 600px; /* Increased width */
+    height: 600px; /* Increased height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  100% {
-    transform: rotate(0deg);
+  
+  .square i {
+    position: absolute;
+    inset: 0;
+    border: 2px solid #fff;
+    transition: 0.5s;
   }
-}
-
-.title {
-  font-family: Gabriola;
-  color: rgb(255, 255, 255);
-  font-size: 45px;
-  text-align: center;
-  transition: text-shadow 5s;
-  font-weight: bolder;
-}
-
-.form-container {
-  position: absolute;
-  width: 370px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-  border-radius: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 20px;
-  transition: box-shadow 0.5s; /* Transition for box-shadow */
-}
-
-.form-container h2 {
-  font-size: 2em;
-  color: #fff;
-  transition: text-shadow 0.5s;
-  font-family: cursive;
-  font-family: Gabriola;
-}
-
-.form-container .inputBx {
-  position: relative;
-  width: 100%;
-}
-
-.form-container .inputBx input {
-  position: relative;
-  width: 100%;
-  padding: 12px 20px;
-  background: transparent;
-  border: 2px solid #fff;
-  border-radius: 40px;
-  font-size: 1.2em;
-  color: #fff;
-  box-shadow: none;
-  outline: none;
-  transition: box-shadow 0.5s, border 0.5s; /* Transition for box-shadow and border */
-}
-
-.form-container .inputBx input[type="submit"] {
-  width: 100%;
-  background: #0078ff;
-  background: linear-gradient(45deg, #ff357a, #fff172);
-  border: none;
-  cursor: pointer;
-  transition: box-shadow 0.5s; /* Transition for box-shadow */
-}
-
-.form-container .inputBx input::placeholder {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.form-container .links {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  text-decoration: underline aqua;
-}
-
-.form-container .links a {
-  color: #fff;
-  text-decoration: none;
-  transition: text-shadow 0.5s; /* Transition for text-shadow */
-}
-
-.form-container .inputBx input:hover,
-.form-container .inputBx input[type="submit"]:hover {
-  box-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr);
-  border: 2px solid var(--clr);
-}
-
-.form-container h2:hover,
-.form-container .links a:hover {
-  text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
-    0 0 40px var(--clr);
-}
-
-.form-container .links .forgot-password:hover {
-  color: #ff9393;
-  font-weight: bolder;
-}
-
-.form-container .links .signup:hover {
-  color: #a9bfff;
-  font-weight: bolder;
-}
-
-:root {
-  --clr: #2affe6;
-}
+  
+  .square i:nth-child(1) {
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    animation: animate 6s linear infinite;
+  }
+  
+  .square i:nth-child(2) {
+    border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
+    animation: animate 4s linear infinite;
+  }
+  
+  .square i:nth-child(3) {
+    border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
+    animation: animate2 8s linear infinite;
+  }
+  
+  .square:hover i {
+    border: 6px solid var(--clr);
+    filter: drop-shadow(0 0 20px var(--clr));
+  }
+  
+  .square:hover .title {
+    text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
+      0 0 40px var(--clr);
+  }
+  
+  @keyframes animate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes animate2 {
+    0% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+  
+  .title {
+    font-family: Gabriola;
+    color: rgb(255, 255, 255);
+    font-size: 45px;
+    text-align: center;
+    transition: text-shadow 5s;
+    font-weight: bolder;
+  }
+  
+  .form-container {
+    position: absolute;
+    width: 450px; /* Increased width */
+    padding: 40px; /* Increased padding */
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    transition: box-shadow 0.5s; /* Transition for box-shadow */
+  }
+  
+  .form-container h2 {
+    font-size: 2em;
+    color: #fff;
+    transition: text-shadow 0.5s;
+    font-family: cursive;
+    font-family: Gabriola;
+  }
+  
+  .form-container .inputBx {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px; /* Increased margin for separation */
+  }
+  
+  .form-container .inputBx input {
+    position: relative;
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 40px;
+    font-size: 1.2em;
+    color: #fff;
+    box-shadow: none;
+    outline: none;
+    transition: box-shadow 0.5s, border 0.5s; /* Transition for box-shadow and border */
+  }
+  
+  .form-container .inputBx input[type="submit"] {
+    width: 100%;
+    background: #0078ff;
+    background: linear-gradient(45deg, #ff357a, #fff172);
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.5s; /* Transition for box-shadow */
+  }
+  
+  .form-container .inputBx input::placeholder {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  
+  .form-container .links {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    text-decoration: underline aqua;
+  }
+  
+  .form-container .links a {
+    color: #fff;
+    text-decoration: none;
+    transition: text-shadow 0.5s; /* Transition for text-shadow */
+  }
+  
+  .form-container .inputBx input:hover,
+  .form-container .inputBx input[type="submit"]:hover {
+    box-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr);
+    border: 2px solid var(--clr);
+  }
+  
+  .form-container h2:hover,
+  .form-container .links a:hover {
+    text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
+      0 0 40px var(--clr);
+  }
+  
+  .form-container .links .forgot-password:hover {
+    color: #ff9393;
+    font-weight: bolder;
+  }
+  
+  .form-container .links .signup:hover {
+    color: #a9bfff;
+    font-weight: bolder;
+  }
+  
+  :root {
+    --clr: #2affe6;
+  }
+  
