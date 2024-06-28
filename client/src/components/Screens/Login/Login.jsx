@@ -1,6 +1,5 @@
 import React from "react";
 import "./Login.css";
-import designerImage from "./images/Designer.png";
 
 const Login = () => {
   return (
