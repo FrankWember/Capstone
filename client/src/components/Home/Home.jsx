@@ -8,7 +8,7 @@ import SideBar from "../SideBar/SideBar";
 import Library from "../Screens/Library/Library";
 import Login from "../Screens/Login/Login";
 import Signup from "../Screens/Signup/Signup";
-import ProtectedRoute from "../ProtectedRoute"; // Import the ProtectedRoute component
+import ProtectedRoute from "./ProtectedRoute"; // Import the ProtectedRoute component
 import "./Home.css";
 
 function Home() {
