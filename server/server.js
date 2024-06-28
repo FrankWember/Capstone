@@ -7,3 +7,5 @@ const app = express();
 app.listen(process.env.PORT, () => {
   console.log(`Server is run on port ${process.env.PORT}`);
 });
+
+app.post("/register");
