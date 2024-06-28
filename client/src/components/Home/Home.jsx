@@ -49,6 +49,7 @@ function Home() {
                   </ProtectedRoute>
                 }
               />
+
               <Route
                 path="/player"
                 element={
