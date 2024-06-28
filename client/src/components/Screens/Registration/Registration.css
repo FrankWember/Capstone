@@ -1,4 +1,4 @@
-import * {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -11,12 +11,6 @@ body {
   align-items: center;
   min-height: 100vh;
   background-image: url("/images/Designer.png");
-
-  /* background: linear-gradient(
-      135deg,
-      #2b5876,
-      #4e4376
-    ); Background gradient */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -24,8 +18,8 @@ body {
 
 .square {
   position: relative;
-  width: 540px;
-  height: 540px;
+  width: 500px;
+  height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -82,19 +76,20 @@ body {
 }
 
 .title {
-  font-family: cursive;
+  font-family: Gabriola;
   color: rgb(255, 255, 255);
   font-size: 45px;
   text-align: center;
-  transition: text-shadow 0.5s;
+  transition: text-shadow 5s;
+  font-weight: bolder;
 }
 
-.login {
+.form-container {
   position: absolute;
-  width: 300px;
+  width: 370px;
   padding: 20px;
-  background: rgba(27, 160, 187, 0.6); /* Semi-transparent background */
-  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  border-radius: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -103,17 +98,20 @@ body {
   transition: box-shadow 0.5s; /* Transition for box-shadow */
 }
 
-.login h2 {
+.form-container h2 {
   font-size: 2em;
   color: #fff;
+  transition: text-shadow 0.5s;
+  font-family: cursive;
+  font-family: Gabriola;
 }
 
-.login .inputBx {
+.form-container .inputBx {
   position: relative;
   width: 100%;
 }
 
-.login .inputBx input {
+.form-container .inputBx input {
   position: relative;
   width: 100%;
   padding: 12px 20px;
@@ -127,7 +125,7 @@ body {
   transition: box-shadow 0.5s, border 0.5s; /* Transition for box-shadow and border */
 }
 
-.login .inputBx input[type="submit"] {
+.form-container .inputBx input[type="submit"] {
   width: 100%;
   background: #0078ff;
   background: linear-gradient(45deg, #ff357a, #fff172);
@@ -136,45 +134,48 @@ body {
   transition: box-shadow 0.5s; /* Transition for box-shadow */
 }
 
-.login .inputBx input::placeholder {
+.form-container .inputBx input::placeholder {
   color: rgba(255, 255, 255, 0.75);
 }
 
-.login .links {
+.form-container .links {
   position: relative;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  text-decoration: underline aqua;
 }
 
-.login .links a {
+.form-container .links a {
   color: #fff;
   text-decoration: none;
   transition: text-shadow 0.5s; /* Transition for text-shadow */
 }
 
-.login:hover {
-  box-shadow: 0 0 20px var(--clr); /* Glow effect on hover */
-}
-
-.login:hover h2,
-.login:hover .links a {
-  text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
-    0 0 40px var(--clr);
-}
-
-.login:hover .inputBx input {
+.form-container .inputBx input:hover,
+.form-container .inputBx input[type="submit"]:hover {
   box-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr);
   border: 2px solid var(--clr);
 }
 
-.login:hover .inputBx input[type="submit"] {
-  box-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr);
+.form-container h2:hover,
+.form-container .links a:hover {
+  text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
+    0 0 40px var(--clr);
 }
 
-/* Custom variable for glow color */
+.form-container .links .forgot-password:hover {
+  color: #ff9393;
+  font-weight: bolder;
+}
+
+.form-container .links .signup:hover {
+  color: #a9bfff;
+  font-weight: bolder;
+}
+
 :root {
   --clr: #2affe6;
 }
