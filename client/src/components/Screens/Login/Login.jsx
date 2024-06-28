@@ -1,5 +1,6 @@
 import React from "react";
 import "./Login.css";
+import designerImage from "./images/Designer.png";
 
 const Login = () => {
   return (
@@ -7,7 +8,7 @@ const Login = () => {
       <i style={{ "--clr": "#33dce9" }}></i>
       <i style={{ "--clr": "#0443e1" }}></i>
       <i style={{ "--clr": "#d000ff" }}></i>
-      <div className="login">
+      <div className="form-container">
         <h1 className="title">MoodTune</h1>
         <h2>Login</h2>
         <div className="inputBx">
