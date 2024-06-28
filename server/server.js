@@ -1,21 +1,24 @@
 // server.js
-const express = require('express');
-const { registerUser, loginUser, verifyToken } = require('./auth');
+const express = require("express");
+const { registerUser, loginUser, verifyToken } = require("./auth"); // importing the function from the auth.js
 const app = express();
-app.use(express.json());
+app.use(express.json()); // middleware to parse the json payload
 
-app.post('/signup', async (req, res) => {
-  const { email, password, name } = req.body;
+// signup Endpoint
+
+app.post("/signup", async (req, res) => {
+  const { email, password, name } = req.body; // The request body for signup consist of email password and name
   try {
     const user = await registerUser(email, password, name);
-    res.status(201).json(user);
+    // This functions hashs the password and create a new user in the database
+    res.status(201).json(user); // for success
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message }); // if exist or error
   }
 });
 
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body; // gets the email and password
   try {
     const { token, user } = await loginUser(email, password);
     res.json({ token, user });
@@ -24,8 +27,8 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/protected', async (req, res) => {
-  const token = req.headers.authorization.split(' ')[1];
+app.get("/protected", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
   try {
     const userId = await verifyToken(token);
     res.json({ userId });
