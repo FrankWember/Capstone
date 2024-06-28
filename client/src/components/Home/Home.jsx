@@ -24,7 +24,7 @@ function Home() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
 
-              {/* Protected Routes */}
+              {/* Protected Routes: Can only be accessed after authentification was succesful */}
               <Route
                 path="/library"
                 element={
