@@ -11,6 +11,7 @@ body {
   align-items: center;
   min-height: 100vh;
   background-image: url("Designer.png");
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -18,8 +19,8 @@ body {
 
 .square {
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -84,9 +85,9 @@ body {
   font-weight: bolder;
 }
 
-.form-container {
+.login {
   position: absolute;
-  width: 370px;
+  width: 570px;
   padding: 20px;
   background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
   border-radius: 40px;
@@ -98,20 +99,20 @@ body {
   transition: box-shadow 0.5s; /* Transition for box-shadow */
 }
 
-.form-container h2 {
+.login h2 {
   font-size: 2em;
-  color: #fff;
+  color: #d44646;
   transition: text-shadow 0.5s;
   font-family: cursive;
   font-family: Gabriola;
 }
 
-.form-container .inputBx {
+.login .inputBx {
   position: relative;
   width: 100%;
 }
 
-.form-container .inputBx input {
+.login .inputBx input {
   position: relative;
   width: 100%;
   padding: 12px 20px;
@@ -125,7 +126,7 @@ body {
   transition: box-shadow 0.5s, border 0.5s; /* Transition for box-shadow and border */
 }
 
-.form-container .inputBx input[type="submit"] {
+.login .inputBx input[type="submit"] {
   width: 100%;
   background: #0078ff;
   background: linear-gradient(45deg, #ff357a, #fff172);
@@ -134,11 +135,11 @@ body {
   transition: box-shadow 0.5s; /* Transition for box-shadow */
 }
 
-.form-container .inputBx input::placeholder {
+.login .inputBx input::placeholder {
   color: rgba(255, 255, 255, 0.75);
 }
 
-.form-container .links {
+.login .links {
   position: relative;
   width: 100%;
   display: flex;
@@ -148,30 +149,30 @@ body {
   text-decoration: underline aqua;
 }
 
-.form-container .links a {
+.login .links a {
   color: #fff;
   text-decoration: none;
   transition: text-shadow 0.5s; /* Transition for text-shadow */
 }
 
-.form-container .inputBx input:hover,
-.form-container .inputBx input[type="submit"]:hover {
+.login .inputBx input:hover,
+.login .inputBx input[type="submit"]:hover {
   box-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr);
   border: 2px solid var(--clr);
 }
 
-.form-container h2:hover,
-.form-container .links a:hover {
+.login h2:hover,
+.login .links a:hover {
   text-shadow: 0 0 10px var(--clr), 0 0 20px var(--clr), 0 0 30px var(--clr),
     0 0 40px var(--clr);
 }
 
-.form-container .links .forgot-password:hover {
+.login .links .forgot-password:hover {
   color: #ff9393;
   font-weight: bolder;
 }
 
-.form-container .links .signup:hover {
+.login .links .signup:hover {
   color: #a9bfff;
   font-weight: bolder;
 }
