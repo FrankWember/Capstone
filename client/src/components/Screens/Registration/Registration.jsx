@@ -14,6 +14,18 @@ const Register = () => {
     console.log("Email:", email);
     console.log("Password:", password);
     console.log("Confirm Password:", confirmPassword);
+
+    Axios.post("http://localhost:3000/Registration", {
+      username,
+      email,
+      password,
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        console.error();
+      });
   };
 
   return (
