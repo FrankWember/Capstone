@@ -25,7 +25,7 @@ const Login = () => {
       const { token } = response.data; // Extracting the token from my response
 
       localStorage.setItem("token", token); //storing my token locally
-      navigate("/protected"); // It should redirect me to a protected route if the login was successful
+      navigate("/Home"); // It should redirect me to a protected route if the login was successful
     } catch (error) {
       console.error("Invalid Login credentials");
     }

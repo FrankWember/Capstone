@@ -8,21 +8,27 @@ const SECRET_KEY = "Hello World";
 
 async function registerUser(email, password, name) {
   console.log("Registering user:", { email, name });
-  const hashedPassword = await bcrypt.hash(password, 10); // Encrypts the password with a salt factor of 10
-  console.log(hashedPassword);
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-      name,
-    },
-  });
-  console: log(user);
+
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+
+  if (existingUser) {
+    const hashedPassword = await bcrypt.hash(password, 10); // Encrypts the password with a salt factor of 10
+    console.log(hashedPassword);
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+      },
+    });
+  } else {
+    throw new Error("Existing user");
+  }
   return user;
 }
 
 async function loginUser(email, password) {
-  // Search for a user in the database by their email
+  // Search for a user in the data  se by their email
   const user = await prisma.user.findUnique({ where: { email } });
   console.log(email, password);
   if (!user) throw new Error("User not found");

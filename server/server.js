@@ -13,14 +13,19 @@ app.use(express.json()); // middleware to parse the json payload
 
 app.post("/signup", async (req, res) => {
   const { email, password, name } = req.body; // The request body for signup consist of email password and name
-  console.log(email);
+  console.log(req.body);
   try {
     console.log(req.body);
     const user = await registerUser(email, password, name);
     // This functions hashs the password and create a new user in the database
     res.status(201).json(user); // for success
   } catch (error) {
-    res.status(400).json({ error: error.message }); // if exist or error
+    // if exist or error
+    if (error.message === "Existing user") {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(400).json({ error: error.message });
+    }
   }
 });
 

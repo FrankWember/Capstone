@@ -28,7 +28,7 @@ const Signup = () => {
         console.log("In SignUp", response);
       })
       .catch((err) => {
-        console.error();
+        console.error("In Signup");
       });
   };
 
