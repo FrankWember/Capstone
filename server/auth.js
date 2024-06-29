@@ -7,10 +7,6 @@ const prisma = new PrismaClient();
 const SECRET_KEY = "Hello World";
 
 async function registerUser(email, password, name) {
-  console.log("Username:", username);
-  console.log("Email:", email);
-  console.log("Password:", password);
-
   const hashedPassword = await bcrypt.hash(password, 10); // Encrypts the password with a salt factor of 10
   const user = await prisma.user.create({
     data: {
