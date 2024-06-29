@@ -25,7 +25,7 @@ const Signup = () => {
         password,
       })
       .then((response) => {
-        console.log(response);
+        console.log("In SignUp", response);
       })
       .catch((err) => {
         console.error();

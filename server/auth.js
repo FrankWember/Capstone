@@ -2,9 +2,7 @@
 const bcrypt = require("bcryptjs"); // libray for hashing
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient({
-  log: ["query", "info", "warn", "error"],
-});
+const prisma = new PrismaClient();
 
 const SECRET_KEY = "Hello World";
 
@@ -26,15 +24,17 @@ async function registerUser(email, password, name) {
 async function loginUser(email, password) {
   // Search for a user in the database by their email
   const user = await prisma.user.findUnique({ where: { email } });
-
+  console.log(email, password);
   if (!user) throw new Error("User not found");
-
+  console.log(user);
   const valid = await bcrypt.compare(password, user.password); // Check if the password is valid
+  console.log(valid);
   if (!valid) throw new Error("Invalid password");
 
   // Creates a JWT with a user's ID as the payload, signed with the secret key and set for an hour
   const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-
+  console.log(user.id);
+  console.log(token);
   // Storing hte session in the session table
   await prisma.session.create({
     data: {

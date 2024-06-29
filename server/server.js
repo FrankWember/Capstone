@@ -1,9 +1,7 @@
 // server.js
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-
-
 
 const { registerUser, loginUser, verifyToken } = require("./auth"); // importing the function from the auth.js
 const app = express();
@@ -28,8 +26,10 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body; // gets the email and password
+
   try {
     const { token, user } = await loginUser(email, password);
+    console.log(user);
     res.json({ token, user });
   } catch (error) {
     res.status(400).json({ error: error.message });

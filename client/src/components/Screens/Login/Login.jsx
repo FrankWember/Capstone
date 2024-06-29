@@ -4,7 +4,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate(); // helps navigate programmatically
@@ -18,10 +18,10 @@ const Login = () => {
       //Sending a post request to the login endpoint using Axios
       const response = await axios.post("http://localhost:3000/login", {
         email,
-        username,
         password,
       });
 
+      console.log(response.data);
       const { token } = response.data; // Extracting the token from my response
 
       localStorage.setItem("token", token); //storing my token locally
@@ -41,8 +41,8 @@ const Login = () => {
         <div className="inputBx">
           <input
             type="text"
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder="email"
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className="inputBx">
@@ -53,7 +53,7 @@ const Login = () => {
           />
         </div>
         <div className="inputBx">
-          <input type="submit" value="Sign in" />
+          <input type="submit" value="Sign in" onClick={handleLogin} />
         </div>
         <div className="links">
           <a href="#" className="forgot-password">
