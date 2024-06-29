@@ -22,7 +22,7 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     // if exist or error
     if (error.message === "Existing user") {
-      res.status(500).json({ error: error.message });
+      res.status(409).json({ error: error.message });
     } else {
       res.status(400).json({ error: error.message });
     }

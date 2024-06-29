@@ -24,11 +24,12 @@ const Signup = () => {
         email,
         password,
       })
-      .then((response) => {
-        console.log("In SignUp", response);
-      })
       .catch((err) => {
-        console.error("In Signup");
+        if (err.message === "Existing user") {
+          alert("This is an existing User");
+        } else {
+          console.error(Error);
+        }
       });
   };
 
