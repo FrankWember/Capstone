@@ -1,6 +1,10 @@
 // server.js
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
+
+
+
 const { registerUser, loginUser, verifyToken } = require("./auth"); // importing the function from the auth.js
 const app = express();
 

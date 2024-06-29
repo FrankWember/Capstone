@@ -2,13 +2,17 @@
   const bcrypt = require("bcryptjs"); // libray for hashing
   const jwt = require("jsonwebtoken");
   const { PrismaClient } = require("@prisma/client");
-  const prisma = new PrismaClient();
+  const prisma = new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'],
+  });
+  
 
   const SECRET_KEY = "Hello World";
 
   async function registerUser(email, password, name) {
     console.log("Registering user:", { email, name });
     const hashedPassword = await bcrypt.hash(password, 10); // Encrypts the password with a salt factor of 10
+    console.log(hashedPassword)
     const user = await prisma.user.create({
       data: {
         email,
@@ -16,6 +20,7 @@
         name,
       },
     });
+    console:log(user);
     return user;
   }
 
