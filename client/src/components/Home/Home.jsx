@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute"; // Import the ProtectedRoute comp
 import "./Home.css";
 
 function Home() {
+  //Ask help tommorow
   return (
     <>
       <div>
