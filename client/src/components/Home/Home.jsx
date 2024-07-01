@@ -7,15 +7,10 @@ import RecommendationBar from "../RecommendationBar/RecommendationBar";
 const Home = () => {
   return (
     <div className="d-flex">
-      {/* d-flex makes the container a flexbox container */}
-      {/* I want the SideBar the MediaContainer and the RecommendationFactors to appear in a flex manner */}
-
       <SideBar />
-
-      <MediaContainer />
-
-      {/* <RecommendationFactor /> */}
-      {/* <RecommendationBar /> */}
+      <div className="main-content">
+        <MediaContainer />
+      </div>
     </div>
   );
 };
