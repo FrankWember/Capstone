@@ -31,7 +31,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   box-sizing: border-box;
-  background-color: #000120;
+  justify-content: center;
+  background-color: #04011c;
 }
 
 h1 {

@@ -5,21 +5,19 @@
   font-family: "Open Sans", sans-serif;
 }
 
-body {
-  display: flex;
+/* body {
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  display: flex;
   background-image: url("Designer (1).png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-}
+} */
 
 .square {
   position: relative;
-  width: 600px; /* Increased width */
-  height: 600px; /* Increased height */
+  width: 700px; /* Increased width */
+  height: 700px; /* Increased height */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -30,6 +28,8 @@ body {
   inset: 0;
   border: 2px solid #fff;
   transition: 0.5s;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* Soft white glow */
+  filter: drop-shadow(0 0 10px #33dce9); /* More pronounced colored glow */
 }
 
 .square i:nth-child(1) {
@@ -49,7 +49,8 @@ body {
 
 .square:hover i {
   border: 6px solid var(--clr);
-  filter: drop-shadow(0 0 20px var(--clr));
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.75); /* Increase glow intensity */
+  filter: drop-shadow(0 0 20px var(--clr)); /* Stronger colored glow */
 }
 
 .square:hover .title {
@@ -75,18 +76,27 @@ body {
   }
 }
 
-.title {
-  font-family: Gabriola;
+.form-container .title {
+  font-family: "Gabriola", sans-serif;
   color: rgb(255, 255, 255);
-  font-size: 45px;
+  font-size: 75px;
   text-align: center;
-  transition: text-shadow 5s;
-  font-weight: bolder;
+  transition: text-shadow 2s;
+  font-weight: bold;
 }
 
+.error {
+  font-size: 30px;
+  color: #ff0000;
+  transition: text-shadow 2s;
+  font-family: cursive;
+  font-family: Gabriola;
+}
 .form-container {
+  justify-content: center;
   position: absolute;
-  width: 450px; /* Increased width */
+  width: 500px; /* Increased width */
+  height: 700px;
   padding: 40px; /* Increased padding */
   background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
   border-radius: 40px;
@@ -99,11 +109,12 @@ body {
 }
 
 .form-container h2 {
-  font-size: 2em;
-  color: #fff;
-  transition: text-shadow 0.5s;
+  font-size: 50px;
+  color: #1fe1ff;
+  transition: text-shadow 2s;
   font-family: cursive;
   font-family: Gabriola;
+  font-weight: bolder;
 }
 
 .form-container .inputBx {
@@ -128,7 +139,7 @@ body {
 
 .form-container .inputBx input[type="submit"] {
   width: 100%;
-  background: #0078ff;
+
   background: linear-gradient(45deg, #ff357a, #fff172);
   border: none;
   cursor: pointer;

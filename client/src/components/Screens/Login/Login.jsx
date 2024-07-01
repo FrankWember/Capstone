@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import "./Login.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import SideBar from "../../SideBar/SideBar";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // State to handle displaying error messages
+  const [loading, setLoading] = useState(false); // State to handle button loading status
 
   const navigate = useNavigate(); // helps navigate programmatically
 
@@ -13,7 +16,8 @@ const Login = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault(); //prevent the default submission of my form
-
+    setLoading(true);
+    setError(""); // Reset error messages on new submission
     try {
       //Sending a post request to the login endpoint using Axios
       const response = await axios.post("http://localhost:3000/login", {
@@ -26,47 +30,62 @@ const Login = () => {
 
       localStorage.setItem("token", token); //storing my token locally
       navigate("/Home"); // It should redirect me to a protected route if the login was successful
+      setLoading(false);
     } catch (error) {
-      console.error("Invalid Login credentials");
+      setLoading(false);
+      console.log(error);
+      if (error.response.status === 401) {
+        setError("Invalid login credentials"); // Handle login errors
+      } else if (error.response.status === 404) {
+        setError("User not found create a new account");
+      } else {
+        setError("Server is under maintenance");
+      }
+      console.error(error.response.status);
     }
   };
   return (
-    <div className="square">
-      <i style={{ "--clr": "#33dce9" }}></i>
-      <i style={{ "--clr": "#0443e1" }}></i>
-      <i style={{ "--clr": "#d000ff" }}></i>
-      <div className="form-container">
-        <h1 className="title">MoodTune</h1>
-        <h2>Login</h2>
-        <div className="inputBx">
-          <input
-            type="text"
-            placeholder="email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="inputBx">
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="inputBx">
-          <input type="submit" value="Sign in" onClick={handleLogin} />
-        </div>
-        <div className="links">
-          <a href="#" className="forgot-password">
-            Forget Password
-          </a>
-          <a href="#" className="signup">
-            <Link to="/signup" className="signup">
-              Register
-            </Link>
-          </a>
-        </div>
+    <>
+      <div className="square">
+        <i style={{ "--clr": "#ff7878" }}></i>
+        <i style={{ "--clr": "#a9bfff" }}></i>
+        <i style={{ "--clr": "#ffa041" }}></i>
+
+        <form className="form-container" onSubmit={handleLogin}>
+          <h1 className="title">MoodTune</h1>
+          <h2>Login</h2>
+          {error && <p className="error">{error}</p>}{" "}
+          {/* Display error messages */}
+          <div className="inputBx">
+            <input
+              type="email"
+              placeholder="email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="inputBx">
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="inputBx">
+            <input type="submit" value="Sign in" />
+          </div>
+          <div className="links">
+            <a href="#" className="forgot-password">
+              Forget Password
+            </a>
+            <a href="#" className="signup">
+              <Link to="/signup" className="signup">
+                Register
+              </Link>
+            </a>
+          </div>
+        </form>
       </div>
-    </div>
+    </>
   );
 };
 

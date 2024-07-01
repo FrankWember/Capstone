@@ -1,69 +1,23 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "boxicons";
-import Trending from "../Screens/Trending/Trending";
-import Favorite from "../Screens/Favorites/Favorites";
-import Player from "../Screens/Player/Player";
-import SideBar from "../SideBar/SideBar";
-import Library from "../Screens/Library/Library";
-import Login from "../Screens/Login/Login";
-import Signup from "../Screens/Signup/Signup";
-import ProtectedRoute from "./ProtectedRoute"; // Import the ProtectedRoute component
 import "./Home.css";
+import SideBar from "../SideBar/SideBar";
+import MediaContainer from "./MediaContainer";
+import RecommendationBar from "../RecommendationBar/RecommendationBar";
 
-function Home() {
+const Home = () => {
   return (
-    <>
-      <div>
-        <Router>
-          <div className="main-body">
-            <SideBar />
+    <div className="d-flex">
+      {/* d-flex makes the container a flexbox container */}
+      {/* I want the SideBar the MediaContainer and the RecommendationFactors to appear in a flex manner */}
 
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+      <SideBar />
 
-              {/* Protected Routes: Can only be accessed after authentification was succesful */}
-              <Route
-                path="/library"
-                element={
-                  <ProtectedRoute>
-                    <Library />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/trending"
-                element={
-                  <ProtectedRoute>
-                    <Trending />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/favorite"
-                element={
-                  <ProtectedRoute>
-                    <Favorite />
-                  </ProtectedRoute>
-                }
-              />
+      {/* <MediaContainer /> */}
 
-              <Route
-                path="/player"
-                element={
-                  <ProtectedRoute>
-                    <Player />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
-        </Router>
-      </div>
-    </>
+      {/* <RecommendationFactor /> */}
+      <RecommendationBar />
+    </div>
   );
-}
+};
 
 export default Home;

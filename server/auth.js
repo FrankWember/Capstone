@@ -1,64 +1,69 @@
-// auth.js
-const bcrypt = require("bcryptjs"); // libray for hashing
+const bcrypt = require("bcryptjs"); // Library for hashing
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const SECRET_KEY = "Hello World";
+const SECRET_KEY = "Hello World"; // This should be stored securely and ideally loaded from environment variables
 
 async function registerUser(email, password, name) {
-  console.log("Registering user:", { email, name });
+    console.log("Registering user:", { email, name });
 
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+    // Check if the user already exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
 
-  if (existingUser) {
-    const hashedPassword = await bcrypt.hash(password, 10); // Encrypts the password with a salt factor of 10
-    console.log(hashedPassword);
+    if (existingUser) {
+        throw new Error("User already exists");
+    }
+
+    // Encrypts the password with a salt factor of 10
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
+        data: {
+            email,
+            password: hashedPassword,
+            name,
+        },
     });
-  } else {
-    throw new Error("Existing user");
-  }
-  return user;
+
+    return user;
 }
 
 async function loginUser(email, password) {
-  // Search for a user in the data  se by their email
-  const user = await prisma.user.findUnique({ where: { email } });
-  console.log(email, password);
-  if (!user) throw new Error("User not found");
-  console.log(user);
-  const valid = await bcrypt.compare(password, user.password); // Check if the password is valid
-  console.log(valid);
-  if (!valid) throw new Error("Invalid password");
+    console.log("Attempting login for:", email);
+    // Search for a user in the database by their email
+    const user = await prisma.user.findUnique({ where: { email } });
 
-  // Creates a JWT with a user's ID as the payload, signed with the secret key and set for an hour
-  const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-  console.log(user.id);
-  console.log(token);
-  // Storing hte session in the session table
-  await prisma.session.create({
-    data: {
-      userId: user.id,
-      token,
-    },
-  });
+    if (!user) {
+        throw new Error("User not found");
+    }
 
-  return { token, user }; // returns the token and the user
+    // Check if the provided password matches the stored hash
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+        throw new Error("Invalid password");
+    }
+
+    // Creates a JWT with the user's ID as the payload, signed with the secret key, valid for an hour
+    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
+
+    // Optionally store the session in the session table (if you have session persistence logic)
+    await prisma.session.create({
+        data: {
+            userId: user.id,
+            token,
+        },
+    });
+
+    return { token, user }; // Returns the token and the user
 }
 
 async function verifyToken(token) {
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    return decoded.userId;
-  } catch (error) {
-    throw new Error("Invalid token");
-  }
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        return decoded.userId;
+    } catch (error) {
+        throw new Error("Invalid token");
+    }
 }
 
 module.exports = { registerUser, loginUser, verifyToken };

@@ -1,10 +1,11 @@
 import react from "react";
+import SideBar from "../../SideBar/SideBar";
 
-function Favorite() {
+function Favorites() {
   return (
     <>
-      <div>Fovorite</div>
+      <SideBar />
     </>
   );
 }
-export default Favorite;
+export default Favorites;

@@ -1,20 +1,26 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+// src/App.js
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { RouterConfig } from "../src/components/Router/RouteConfig";
 import "./App.css";
-import SideBar from "./components/SideBar/SideBar";
-import Home from "./components/Home/Home";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
     <>
-      <div>
-        <Home />
-      </div>
+      <Router>
+        {/* The flex-grow-1 class makes the element grow to fill 
+      any available space in its flex container.
+      The p-3 class applies padding to all sides of the element.
+      make the element both flexible and padded: */}
+
+        <div className="flex-grow-1 p-3">
+          {/* Stored all the elements in the Router config for modularity
+     and ease to change it to will without modifying Home */}
+          <RouterConfig />
+        </div>
+      </Router>
     </>
   );
-}
+};
 
 export default App;

@@ -1,0 +1,9 @@
+/* Assuming styles are added in Home.css */
+.media-container {
+  width: 100%; /* Take remaining space */
+  color: white; /* For better contrast with purple background */
+}
+
+.media-container h2 {
+  color: #fff; /* Ensure headers are clearly visible */
+}
