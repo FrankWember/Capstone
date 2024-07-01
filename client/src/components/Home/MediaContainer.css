@@ -4,7 +4,9 @@
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  background-color: #95ff7b;
+  background-color: #090648;
   overflow-y: auto;
-  padding: 20px;
+  padding: 50px;
+  border-radius: 5px;
+  border: #518998 solid 4px;
 }

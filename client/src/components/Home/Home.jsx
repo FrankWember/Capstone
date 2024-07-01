@@ -11,6 +11,9 @@ const Home = () => {
       <div className="main-content">
         <MediaContainer />
       </div>
+      <div>
+        <RecommendationBar />
+      </div>
     </div>
   );
 };

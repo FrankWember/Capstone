@@ -77,7 +77,8 @@
 }
 
 .form-container .title {
-  font-family: "Gabriola", sans-serif;
+  /* font-family: "Gabriola", sans-serif; */
+  font-family: cursive;
   color: rgb(255, 255, 255);
   font-size: 75px;
   text-align: center;
