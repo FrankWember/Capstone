@@ -24,7 +24,7 @@ const Signup = () => {
         password,
       });
       console.log(response.data);
-      navigate("/login"); // Redirect user to login after successful signup
+      navigate("/"); // Redirect user to login after successful signup
     } catch (err) {
       if (err.response && err.response.status === 409) {
         setError("Try another email, This user already exists");

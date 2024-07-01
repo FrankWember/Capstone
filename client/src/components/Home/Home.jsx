@@ -12,10 +12,10 @@ const Home = () => {
 
       <SideBar />
 
-      {/* <MediaContainer /> */}
+      <MediaContainer />
 
       {/* <RecommendationFactor /> */}
-      <RecommendationBar />
+      {/* <RecommendationBar /> */}
     </div>
   );
 };

@@ -13,7 +13,7 @@ const App = () => {
       The p-3 class applies padding to all sides of the element.
       make the element both flexible and padded: */}
 
-        <div className="flex-grow-1 p-3">
+        <div className="Home">
           {/* Stored all the elements in the Router config for modularity
      and ease to change it to will without modifying Home */}
           <RouterConfig />
