@@ -1,9 +1,39 @@
-/* Assuming styles are added in Home.css */
 .media-container {
-  width: 100%; /* Take remaining space */
-  color: white; /* For better contrast with purple background */
+  display: flex;
+  flex-direction: column;
+  background-color: #6a0dad;
+  height: 100vh;
+  overflow-y: auto;
 }
 
-.media-container h2 {
-  color: #fff; /* Ensure headers are clearly visible */
+.header {
+  padding: 20px;
+  color: white;
+}
+
+.movies-section,
+.recommended-section {
+  padding: 20px;
+}
+
+.movies-section ul,
+.recommended-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.movies-section li,
+.recommended-section li {
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.container-fluid {
+  display: flex;
+  justify-content: space-between;
+}
+
+.col-md-8,
+.col-md-4 {
+  flex: 1;
 }
