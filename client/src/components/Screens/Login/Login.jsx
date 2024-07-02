@@ -34,7 +34,7 @@ const Login = () => {
       setLoading(false);
       console.log(error);
       if (error.response.status === 401) {
-        setError("Invalid login credentials"); // Handle login errors
+        setError("Invalid login credentials"); // Handles login errors
       } else if (error.response.status === 404) {
         setError("User not found create a new account");
       } else {

@@ -1,7 +1,8 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const { getSpotifyAccessToken, getSpotifyUserData, registerUser, loginUser, verifyToken } = require('./auth');
+const jwt = require("jsonwebtoken"); // Ensure jwt is imported
+const { getSpotifyAccessToken, getSpotifyUserData, verifyToken, registerUser, loginUser } = require('./auth'); // Ensure these functions are imported
 
 const app = express();
 
@@ -20,15 +21,13 @@ app.get("/login/spotify", (req, res) => {
 app.get("/callback", async (req, res) => {
     const code = req.query.code || null;
     try {
-        const tokenData = await getSpotifyAccessToken(code);
-        const userData = await getSpotifyUserData(tokenData.access_token);
+        const tokenData = await getSpotifyAccessToken(code); // Get access token from Spotify
+        const userData = await getSpotifyUserData(tokenData.access_token); // Get user data from Spotify
 
-        const { email, display_name: name } = userData;
-        const user = await registerUser(email, null, name, true);
+        const token = jwt.sign({ spotifyAccessToken: tokenData.access_token }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
-        const token = jwt.sign({ userId: user.id, spotifyAccessToken: tokenData.access_token }, process.env.SECRET_KEY, { expiresIn: "1h" });
-
-        res.json({ token, user });
+        // Sending my token and user data to the client side
+        res.json({ token, userData });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -60,8 +59,6 @@ app.post("/login", async (req, res) => {
             res.status(401).json({ error: error.message });
         } else if (error.message === "User not found") {
             res.status(404).json({ error: error.message });
-        } else if (error.message === "Please login with Spotify") {
-            res.status(403).json({ error: error.message });
         } else {
             res.status(400).json({ error: error.message });
         }

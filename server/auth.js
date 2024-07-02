@@ -45,10 +45,6 @@ async function loginUser(email, password) {
         throw new Error("User not found");
     }
 
-    if (user.isSpotify) {
-        throw new Error("Please login with Spotify");
-    }
-
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
         throw new Error("Invalid password");
@@ -74,21 +70,8 @@ async function verifyToken(token) {
         throw new Error("Invalid token");
     }
 }
-
-async function getSpotifyUserData(accessToken) {
-    const response = await fetch('https://api.spotify.com/v1/me', {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    const data = await response.json();
-    if (data.error) {
-        throw new Error(data.error.message);
-    }
-    return data;
-}
-
 async function getSpotifyAccessToken(code) {
+    
     const response = await fetch(SPOTIFY_TOKEN_URL, {
         method: 'POST',
         headers: {
@@ -107,5 +90,19 @@ async function getSpotifyAccessToken(code) {
     }
     return data;
 }
+
+async function getSpotifyUserData(accessToken) {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+    const data = await response.json();
+    if (data.error) {
+        throw new Error(data.error.message);
+    }
+    return data;
+}
+
 
 module.exports = { getSpotifyAccessToken, getSpotifyUserData, registerUser, loginUser, verifyToken };
