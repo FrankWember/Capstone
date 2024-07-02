@@ -1,10 +1,17 @@
-// src/App.js
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { RouterConfig } from "../src/components/Router/RouteConfig";
 import "./App.css";
 
 const App = () => {
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    if (token) {
+      localStorage.setItem("spotifyToken", token);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
   return (
     <>
       <Router>

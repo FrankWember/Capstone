@@ -17,6 +17,11 @@ function SideBar() {
     console.log("Searching for:", search);
   };
 
+  // Handler for Spotify login
+  const handleSpotifyLogin = () => {
+    window.location.href = "http://localhost:3000/login/spotify"; // Redirect to Spotify login
+  };
+
   return (
     <div
       className="d-flex flex-column flex-shrink-0 p-3 text-white"
@@ -102,9 +107,18 @@ function SideBar() {
             News
           </Link>
         </li>
+        <hr />
+        <Button
+          onClick={handleSpotifyLogin}
+          variant="success"
+          className="spotify-login-button"
+        >
+          Connect with Spotify
+        </Button>
       </ul>
-      <hr />
-      <Dropdown>
+
+      <Dropdown className="mt-auto">
+        <hr />
         <Dropdown.Toggle
           variant="dark"
           className="d-flex align-items-center text-white text-decoration-none"

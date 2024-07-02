@@ -21,29 +21,22 @@ async function registerUser(email, password, name, isSpotifyUser = false) {
         throw new Error("User already exists");
     }
 
-    // Encrypt the password if provided, otherwise set it to null
-    const hashedPassword = isSpotifyUser ? null : await bcrypt.hash(password, 10);
-
-    // Create the user, conditionally including the password field
-    const userData = {
+  // Encrypts the password with a salt factor of 10
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
         email,
+      password: hashedPassword,
         name,
-    };
-
-    if (!isSpotifyUser) {
-        userData.password = hashedPassword;
-    }
-
-    const user = await prisma.user.create({
-        data: userData,
+    },
     });
 
     return user;
 }
 
-// Function to log in an existing user
 async function loginUser(email, password) {
     console.log("Attempting login for:", email);
+  // Search for a user in the database by their email
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
@@ -67,10 +60,9 @@ async function loginUser(email, password) {
         },
     });
 
-    return { token, user };
+  return { token, user }; // Returns the token and the user
 }
 
-// Function to verify a JWT token
 async function verifyToken(token) {
     try {
         const decoded = jwt.verify(token, SECRET_KEY);
@@ -95,9 +87,8 @@ async function getSpotifyUserData(accessToken) {
     return data;
 }
 
-// Function to get Spotify access token using authorization code
-async function getSpotifyAccessToken(code) {
-    console.log(code)
+// Function to get Spotify access token using client credentials
+async function getSpotifyAccessToken() {
     const fetch = (await import('node-fetch')).default;
     const response = await fetch(SPOTIFY_TOKEN_URL, {
         method: 'POST',
@@ -106,9 +97,7 @@ async function getSpotifyAccessToken(code) {
             'Authorization': `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
         },
         body: querystring.stringify({
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: REDIRECT_URI
+            grant_type: 'client_credentials'
         })
     });
     const data = await response.json();
@@ -116,7 +105,6 @@ async function getSpotifyAccessToken(code) {
         throw new Error(data.error_description);
     }
     console.log(data);
-    return data;
+    return data.access_token;
 }
-
 module.exports = { getSpotifyAccessToken, getSpotifyUserData, registerUser, loginUser, verifyToken };

@@ -8,12 +8,12 @@ const Home = () => {
   return (
     <div className="d-flex">
       <SideBar />
-      <div className="main-content">
+      {/* <div className="main-content">
         <MediaContainer />
       </div>
       <div>
         <RecommendationBar />
-      </div>
+      </div> */}
     </div>
   );
 };
