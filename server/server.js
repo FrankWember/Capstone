@@ -15,7 +15,7 @@ const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 
-
+//test
 
 // signup Endpoint
 app.get("/spotify/playlists", async (req, res) => {
