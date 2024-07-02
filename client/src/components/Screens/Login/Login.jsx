@@ -12,14 +12,13 @@ const Login = () => {
 
   const navigate = useNavigate(); // helps navigate programmatically
 
-  //For handling form submissions
-
+  // For handling form submissions
   const handleLogin = async (event) => {
-    event.preventDefault(); //prevent the default submission of my form
+    event.preventDefault(); // Prevent the default submission of my form
     setLoading(true);
     setError(""); // Reset error messages on new submission
     try {
-      //Sending a post request to the login endpoint using Axios
+      // Sending a post request to the login endpoint using Axios
       const response = await axios.post("http://localhost:3000/login", {
         email,
         password,
@@ -28,7 +27,7 @@ const Login = () => {
       console.log(response.data);
       const { token } = response.data; // Extracting the token from my response
 
-      localStorage.setItem("token", token); //storing my token locally
+      localStorage.setItem("token", token); // Storing my token locally
       navigate("/Home"); // It should redirect me to a protected route if the login was successful
       setLoading(false);
     } catch (error) {
@@ -71,7 +70,7 @@ const Login = () => {
             />
           </div>
           <div className="inputBx">
-            <input type="submit" value="Sign in" />
+            <input type="submit" value="Sign in" disabled={loading} />
           </div>
           <div className="links">
             <a href="#" className="forgot-password">
