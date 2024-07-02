@@ -1,73 +1,90 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MediaContainer.css";
 import SpotifyCard from "./Media/SportifyCard";
 
 const MediaContainer = () => {
-  const [playlists, setPlaylists] = useState([]);
-  const [tracks, setTracks] = useState({});
-
-  // Function to fetch data from the backend
-  async function fetchBackend(endpoint) {
-    const res = await fetch(`http://localhost:3000${endpoint}`, {
-      method: "GET",
+  const movies = [
+    { title: "The Shawshank Redemption", year: "1994" },
+    { title: "Pulp Fiction", year: "1994" },
+    { title: "Fight Club", year: "1999" },
+    { title: "The Dark Knight", year: "2008" },
+    { title: "Goodfellas", year: "1990" },
+    { title: "The Godfather", year: "1972" },
+    {
+      title: "The Lord of the Rings: The Fellowship of the Ring",
+      year: "2001",
+    },
+    { title: "The Silence of the Lambs", year: "1991" },
+    { title: "Forrest Gump", year: "1994" },
+    { title: "The Shawshank Redemption", year: "1994" },
+    { title: "Inglourious Basterds", year: "2009" },
+    { title: "The Departed", year: "2006" },
+    { title: "The Prestige", year: "2006" },
+    { title: "Whiplash", year: "2014" },
+    { title: "The Grand Budapest Hotel", year: "2014" },
+    { title: "The Revenant", year: "2015" },
+    { title: "La La Land", year: "2016" },
+    { title: "Mad Max: Fury Road", year: "2015" },
+    { title: "The Social Network", year: "2010" },
+    { title: "Arrival", year: "2016" },
+    { title: "The Shawshank Redemption", year: "1994" },
+    { title: "Pulp Fiction", year: "1994" },
+    { title: "Fight Club", year: "1999" },
+    { title: "The Dark Knight", year: "2008" },
+    { title: "Goodfellas", year: "1990" },
+    { title: "The Godfather", year: "1972" },
+    {
+      title: "The Lord of the Rings: The Fellowship of the Ring",
+      year: "2001",
+    },
+    { title: "The Silence of the Lambs", year: "1991" },
+    { title: "Forrest Gump", year: "1994" },
+    { title: "The Shawshank Redemption", year: "1994" },
+    { title: "Inglourious Basterds", year: "2009" },
+    { title: "The Departed", year: "2006" },
+    { title: "The Prestige", year: "2006" },
+    { title: "Whiplash", year: "2014" },
+    { title: "The Grand Budapest Hotel", year: "2014" },
+    { title: "The Revenant", year: "2015" },
+    { title: "La La Land", year: "2016" },
+    { title: "Mad Max: Fury Road", year: "2015" },
+    { title: "The Social Network", year: "2010" },
+    { title: "Arrival", year: "2016" },
+  ];
+  // Authorization token that must have been created previously. See : https://developer.spotify.com/documentation/web-api/concepts/authorization
+  const token =
+    "BQAW-UnDjSrOzQPdzXlxZ_Ns9Xqydqp-xsadJd-NcxZg5XGj47p-_PHdoepvugK1ZMWksoCahM96ki3VxjZ-e9BXtnI0II4SW5xrypwSAO6HgsRy1S-k0h9m1X1KDdX9ez7yTSomZm-ACN-nxkJq_RYGH7KFwW-uFYhTVqcQN3IjRZgmEypgBTq1bUxxWLO5fD3J0o9M5YngTgyQI6weeliAs8HqJ7w3MtirOak_V_NM-3F2eYNdCJhBGIeZnvIfRfsN4yCypuesxt5GFxUGq4gw";
+  async function fetchWebApi(endpoint, method, body) {
+    const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      method,
+      body: JSON.stringify(body),
     });
     return await res.json();
   }
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        // Fetch user playlists
-        const userPlaylists = await fetchBackend("/spotify/playlists");
-        setPlaylists(userPlaylists.items);
+  async function getTopTracks() {
+    // Endpoint reference : https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
+    return (
+      await fetchWebApi("v1/me/top/tracks?time_range=long_term&limit=5", "GET")
+    ).items;
+  }
 
-        // Fetch tracks for each playlist
-        const allTracks = await Promise.all(
-          userPlaylists.items.map(async (playlist) => {
-            const playlistTracks = await fetchBackend(
-              `/spotify/playlist/${playlist.id}/tracks`
-            );
-            return {
-              playlistId: playlist.id,
-              tracks: playlistTracks.items.map((item) => item.track),
-            };
-          })
-        );
+  const topTracks = getTopTracks();
 
-        const tracksObject = allTracks.reduce((acc, playlist) => {
-          acc[playlist.playlistId] = playlist.tracks;
-          return acc;
-        }, {});
-
-        setTracks(tracksObject);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchData();
-  }, []);
+  console.log(
+    topTracks?.map(
+      ({ name, artists }) =>
+        `${name} by ${artists.map((artist) => artist.name).join(", ")}`
+    )
+  );
 
   return (
     <div className="media-container p-3 flex-grow-1">
-      <h3>Your Playlists</h3>
-      <div className="spotify-playlists">
-        {playlists.map((playlist) => (
-          <SpotifyCard key={playlist.id} item={playlist} />
-        ))}
-      </div>
-      <h3>Your Tracks</h3>
-      {playlists.map((playlist) => (
-        <div key={playlist.id}>
-          <h4>{playlist.name}</h4>
-          <div className="track-list">
-            {tracks[playlist.id]?.map((track) => (
-              <SpotifyCard key={track.id} item={track} />
-            ))}
-          </div>
-        </div>
-      ))}
+      <SpotifyCard movies={movies} />
     </div>
   );
 };

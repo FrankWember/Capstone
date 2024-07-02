@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs"); // Library for hashing
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const querystring = require('querystring');
 const { PrismaClient } = require("@prisma/client");
@@ -10,25 +10,27 @@ const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// Function to register a new user
-async function registerUser(email, password, name, isSpotifyUser = false) {
-    console.log("Registering user:", { email, name, isSpotifyUser });
+async function registerUser(email, password, name, isSpotify = false) {
+    console.log("Registering user:", { email, name });
 
-    // Check if the user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
         throw new Error("User already exists");
     }
 
-  // Encrypts the password with a salt factor of 10
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: {
-        email,
-      password: hashedPassword,
-        name,
-    },
+    let hashedPassword = null;
+    if (!isSpotify) {
+        hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    const user = await prisma.user.create({
+        data: {
+            email,
+            password: hashedPassword,
+            name,
+            isSpotify
+        },
     });
 
     return user;
@@ -36,23 +38,24 @@ async function registerUser(email, password, name, isSpotifyUser = false) {
 
 async function loginUser(email, password) {
     console.log("Attempting login for:", email);
-  // Search for a user in the database by their email
+
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
         throw new Error("User not found");
     }
 
-    // Check if the provided password matches the stored hash
-    const valid = password ? await bcrypt.compare(password, user.password) : false;
+    if (user.isSpotify) {
+        throw new Error("Please login with Spotify");
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
         throw new Error("Invalid password");
     }
 
-    // Create a JWT with the user's ID as the payload, signed with the secret key, valid for an hour
     const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
-    // Store the session in the session table
     await prisma.session.create({
         data: {
             userId: user.id,
@@ -60,7 +63,7 @@ async function loginUser(email, password) {
         },
     });
 
-  return { token, user }; // Returns the token and the user
+    return { token, user };
 }
 
 async function verifyToken(token) {
@@ -72,9 +75,7 @@ async function verifyToken(token) {
     }
 }
 
-// Function to fetch Spotify user data using an access token
 async function getSpotifyUserData(accessToken) {
-    const fetch = (await import('node-fetch')).default;
     const response = await fetch('https://api.spotify.com/v1/me', {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -87,9 +88,7 @@ async function getSpotifyUserData(accessToken) {
     return data;
 }
 
-// Function to get Spotify access token using client credentials
-async function getSpotifyAccessToken() {
-    const fetch = (await import('node-fetch')).default;
+async function getSpotifyAccessToken(code) {
     const response = await fetch(SPOTIFY_TOKEN_URL, {
         method: 'POST',
         headers: {
@@ -97,14 +96,16 @@ async function getSpotifyAccessToken() {
             'Authorization': `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`
         },
         body: querystring.stringify({
-            grant_type: 'client_credentials'
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri: REDIRECT_URI
         })
     });
     const data = await response.json();
     if (data.error) {
         throw new Error(data.error_description);
     }
-    console.log(data);
-    return data.access_token;
+    return data;
 }
+
 module.exports = { getSpotifyAccessToken, getSpotifyUserData, registerUser, loginUser, verifyToken };
