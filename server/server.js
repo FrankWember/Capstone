@@ -5,14 +5,50 @@ const cors = require("cors");
 // it is used to control how web applications from
 // different origins can access resources from a server.
 
-const { registerUser, loginUser, verifyToken } = require("./auth"); // importing the function from the auth.js
+const { getSpotifyAccessToken, getSpotifyUserData, registerUser, loginUser, verifyToken } = require('./auth'); // Ensure all required functions are imported
+ // importing the function from the auth.js
 const app = express(); // create an express instance
 
 app.use(cors()); // make our instance be able to use CORS
 app.use(express.json()); // middleware to parse the json payload
+const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
+
+
 
 // signup Endpoint
+app.get("/spotify/playlists", async (req, res) => {
+  try {
+    const token = await getSpotifyAccessToken();
+    const response = await fetch('https://api.spotify.com/v1/me/playlists', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
+app.get("/spotify/playlist/:id/tracks", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const token = await getSpotifyAccessToken();
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${id}/tracks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+  
 app.post("/signup", async (req, res) => {
   const { email, password, name } = req.body; // The request body for signup consist of email password and name
 
@@ -45,7 +81,7 @@ app.post("/login", async (req, res) => { // This is to read
     } else if (error.message === "User not found") {
       res.status(404).json({ error: error.message }); 
     } else{
-    res.status(400).json({ error:"Here"});
+    res.status(400).json({ error: error.message });
     }
   }
 });
