@@ -4,12 +4,11 @@ import "./MediaContainer.css";
 import SpotifyCard from "./Media/SpotifyCard";
 
 const MediaContainer = ({ token }) => {
-  const [userData, setUserData] = useState(null);
   const [topTracks, setTopTracks] = useState([]);
   const [recommendedTracks, setRecommendedTracks] = useState([]);
+  const [savedAlbums, setSavedAlbums] = useState([]);
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   const [error, setError] = useState(null);
-
-  console.log("Token:", token);
 
   async function fetchWebApi(endpoint, method = "GET", body) {
     try {
@@ -34,7 +33,7 @@ const MediaContainer = ({ token }) => {
   }
 
   async function getTopTracks() {
-    const data = await fetchWebApi("v1/me/top/tracks?limit=10");
+    const data = await fetchWebApi("v1/me/top/tracks?limit=5");
     if (data) {
       setTopTracks(data.items);
       console.log("Top Tracks Data:", data.items);
@@ -53,6 +52,22 @@ const MediaContainer = ({ token }) => {
     }
   }
 
+  async function getSavedAlbums() {
+    const data = await fetchWebApi("v1/me/albums");
+    if (data) {
+      setSavedAlbums(data.items);
+      console.log("Saved Albums Data:", data.items);
+    }
+  }
+
+  async function getFeaturedPlaylists() {
+    const data = await fetchWebApi("v1/browse/featured-playlists");
+    if (data) {
+      setFeaturedPlaylists(data.playlists.items);
+      console.log("Featured Playlists Data:", data.playlists.items);
+    }
+  }
+
   useEffect(() => {
     if (token) {
       getTopTracks().then((topTracks) => {
@@ -60,6 +75,8 @@ const MediaContainer = ({ token }) => {
           getRecommendations(topTracks);
         }
       });
+      getSavedAlbums();
+      getFeaturedPlaylists();
     }
   }, [token]);
 
@@ -73,21 +90,8 @@ const MediaContainer = ({ token }) => {
 
   return (
     <div className="media-container p-3 flex-grow-1">
-      {userData && (
-        <div className="card mb-4">
-          <div className="card-body text-center">
-            <h2 className="card-title">{userData.display_name}</h2>
-            <img
-              src={userData.images[0]?.url}
-              alt="Profile"
-              className="img-fluid rounded-circle mb-3"
-            />
-            <p className="card-text">Email: {userData.email}</p>
-          </div>
-        </div>
-      )}
       <div>
-        <h3>Your Top 5 Tracks</h3>
+        <h3>Your Top 10 Tracks</h3>
         <div className="d-flex flex-wrap justify-content-between">
           {topTracks.map((track) => (
             <SpotifyCard key={track.id} item={track} />
@@ -99,6 +103,22 @@ const MediaContainer = ({ token }) => {
         <div className="d-flex flex-wrap justify-content-between">
           {recommendedTracks.map((track) => (
             <SpotifyCard key={track.id} item={track} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3>Your Saved Albums</h3>
+        <div className="d-flex flex-wrap justify-content-between">
+          {savedAlbums.map((album) => (
+            <SpotifyCard key={album.album.id} item={album.album} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3>Featured Playlists</h3>
+        <div className="d-flex flex-wrap justify-content-between">
+          {featuredPlaylists.map((playlist) => (
+            <SpotifyCard key={playlist.id} item={playlist} />
           ))}
         </div>
       </div>
