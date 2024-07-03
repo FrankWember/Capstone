@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Dropdown, Form, FormControl, Button } from "react-bootstrap";
-import "@fontsource/roboto"; // Ensure you import the font
+import "@fontsource/roboto";
 
 function SideBar() {
   const [search, setSearch] = useState("");
@@ -13,13 +13,11 @@ function SideBar() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // Here, you would handle the redirection or fetching of search results
     console.log("Searching for:", search);
   };
 
-  // Handler for Spotify login
   const handleSpotifyLogin = () => {
-    window.location.href = "http://localhost:3000/login/spotify"; // Redirect to Spotify login
+    window.location.href = "http://localhost:3000/auth/login"; // Adjust the URL based on your server's address and port
   };
 
   return (
@@ -31,8 +29,8 @@ function SideBar() {
         top: 0,
         left: 0,
         fontFamily: "Roboto, sans-serif",
-        backgroundColor: "#000112", // Custom background color
-        height: "100vh", // Ensuring it takes full viewport height
+        backgroundColor: "#000112",
+        height: "100vh",
       }}
     >
       <Link
@@ -42,7 +40,7 @@ function SideBar() {
         <svg className="bi me-2" width="40" height="32">
           <use xlinkHref="#bootstrap"></use>
         </svg>
-        <span className="fs-4">MoodTune</span>{" "}
+        <span className="fs-4">MoodTune</span>
       </Link>
       <Form className="d-flex mb-3" onSubmit={handleSearchSubmit}>
         <FormControl
@@ -116,7 +114,6 @@ function SideBar() {
           Connect with Spotify
         </Button>
       </ul>
-
       <Dropdown className="mt-auto">
         <hr />
         <Dropdown.Toggle

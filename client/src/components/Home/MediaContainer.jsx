@@ -1,49 +1,48 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MediaContainer.css";
-import SpotifyCard from "./Media/SpotifyCard";
 
-const MediaContainer = () => {
-  const [topTracks, setTopTracks] = useState([]);
+const MediaContainer = ({ token }) => {
+  const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
 
-  // Authorization token that must have been created previously. See: https://developer.spotify.com/documentation/web-api/concepts/authorization
-  const token = "YOUR_SPOTIFY_ACCESS_TOKEN"; // Replace this with your actual token
+  console.log("Token:", token);
 
-  async function fetchWebApi(endpoint, method, body) {
+  async function fetchWebApi(endpoint, method = "GET", body) {
     try {
       const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        method,
         body: JSON.stringify(body),
       });
+
       if (!res.ok) {
         throw new Error(`Error: ${res.status}`);
       }
+
       return await res.json();
     } catch (error) {
       setError(error.message);
+      return null;
     }
   }
 
-  async function getTopTracks() {
-    // Endpoint reference: https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
-    const data = await fetchWebApi(
-      "v1/me/top/tracks?time_range=long_term&limit=5",
-      "GET"
-    );
-    return data ? data.items : [];
+  async function getUserProfile() {
+    const data = await fetchWebApi("v1/me");
+    if (data) {
+      setUserData(data);
+      console.log("User Profile Data:", data);
+    }
   }
 
   useEffect(() => {
-    async function fetchData() {
-      const tracks = await getTopTracks();
-      setTopTracks(tracks);
+    if (token) {
+      getUserProfile();
     }
-    fetchData();
-  }, []);
+  }, [token]);
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -51,7 +50,15 @@ const MediaContainer = () => {
 
   return (
     <div className="media-container p-3 flex-grow-1">
-      <SpotifyCard tracks={topTracks} />
+      {userData ? (
+        <div>
+          <h2>{userData.display_name}</h2>
+          <img src={userData.images[0]?.url} alt="Profile" />
+          <p>Email: {userData.email}</p>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 };

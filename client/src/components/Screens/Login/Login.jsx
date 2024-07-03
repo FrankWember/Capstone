@@ -24,7 +24,6 @@ const Login = () => {
         password,
       });
 
-      console.log(response.data);
       const { token } = response.data; // Extracting the token from my response
 
       localStorage.setItem("token", token); // Storing my token locally
