@@ -56,7 +56,7 @@ app.post("/login", async (req, res) => {
     }
 
     const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-    console.log(userToken);
+
     await prisma.session.create({ data: { userId: user.id, token: userToken } });
     
     res.json({ userToken, user });
