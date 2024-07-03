@@ -16,12 +16,11 @@ import "./App.css";
 
 // ProtectedRoute Component
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("spotifyToken"); // We grab the JWT token from the local storage
-
+  const token = localStorage.getItem("spotifyToken");
   if (!token) {
-    return <Navigate to="/" />; // redirects to login page if the credential are wrong
+    return <Navigate to="/" />;
   }
-  return children; // Returns the child component if it finds the right credential
+  return children;
 };
 
 const App = () => {
@@ -36,11 +35,10 @@ const App = () => {
     const refresh_token = urlParams.get("refresh_token");
     if (token) {
       localStorage.setItem("spotifyToken", token);
-      setToken(token); // Set the token in state
+      setToken(token);
       if (refresh_token) {
         localStorage.setItem("spotifyRefreshToken", refresh_token);
       }
-      console.log(token);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -48,39 +46,34 @@ const App = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       if (refreshToken) {
-        const response = await fetch(
-          `/auth/refresh_token?refresh_token=${refreshToken}`
-        );
-        const data = await response.json();
-        if (data.access_token) {
-          localStorage.setItem("spotifyToken", data.access_token);
-          setToken(data.access_token);
+        try {
+          const response = await fetch(
+            `/auth/refresh_token?refresh_token=${refreshToken}`
+          );
+          const data = await response.json();
+          if (data.access_token) {
+            localStorage.setItem("spotifyToken", data.access_token);
+            setToken(data.access_token);
+          }
+        } catch (error) {
+          console.error("Failed to refresh token:", error);
         }
       }
-    }, 55 * 60 * 1000); // Refresh token every 55 minutes
-
+    }, 55 * 60 * 1000);
     return () => clearInterval(interval);
   }, [refreshToken]);
 
   return (
     <Router>
-      {/* The flex-grow-1 class makes the element grow to fill 
-      any available space in its flex container.
-      The p-3 class applies padding to all sides of the element.
-      make the element both flexible and padded: */}
       <div className="Home">
-        {/* Defines a collection of routes */}
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-
-          {/* Protected Routes */}
           <Route
-            path="/Home"
+            path="/home"
             element={
               <ProtectedRoute>
-                <Home token={token} /> {/* Pass the token as a prop */}
+                <Home token={token} />
               </ProtectedRoute>
             }
           />

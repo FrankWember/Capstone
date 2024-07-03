@@ -1,0 +1,31 @@
+.spotify-card {
+  max-width: 300px;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.spotify-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.spotify-card img {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  object-fit: cover;
+}
+
+.spotify-card .card-body {
+  background-color: #1db954;
+  color: white;
+}
+
+.spotify-card .card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.spotify-card .card-text {
+  font-size: 1rem;
+}

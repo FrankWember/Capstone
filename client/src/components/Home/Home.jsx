@@ -8,10 +8,8 @@ const Home = ({ token }) => {
   return (
     <div className="d-flex">
       <SideBar />
-      <div className="main-content">
-        <MediaContainer token={token} /> {/* Pass the token as a prop */}
-      </div>
-      <div>
+      <div className="main-content flex-grow-1 d-flex flex-column">
+        <MediaContainer token={token} />
         <RecommendationBar />
       </div>
     </div>

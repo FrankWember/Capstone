@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./MediaContainer.css";
+import SpotifyCard from "./Media/SpotifyCard";
 
 const MediaContainer = ({ token }) => {
   const [userData, setUserData] = useState(null);
+  const [topTracks, setTopTracks] = useState([]);
+  const [recommendedTracks, setRecommendedTracks] = useState([]);
   const [error, setError] = useState(null);
 
   console.log("Token:", token);
@@ -38,27 +41,76 @@ const MediaContainer = ({ token }) => {
     }
   }
 
+  async function getTopTracks() {
+    const data = await fetchWebApi("v1/me/top/tracks?limit=5");
+    if (data) {
+      setTopTracks(data.items);
+      console.log("Top Tracks Data:", data.items);
+      return data.items;
+    }
+  }
+
+  async function getRecommendations(seedTracks) {
+    const seedTrackIds = seedTracks.map((track) => track.id).join(",");
+    const data = await fetchWebApi(
+      `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
+    );
+    if (data) {
+      setRecommendedTracks(data.tracks);
+      console.log("Recommended Tracks Data:", data.tracks);
+    }
+  }
+
   useEffect(() => {
     if (token) {
       getUserProfile();
+      getTopTracks().then((topTracks) => {
+        if (topTracks) {
+          getRecommendations(topTracks);
+        }
+      });
     }
   }, [token]);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="alert alert-danger" role="alert">
+        Error: {error}
+      </div>
+    );
   }
 
   return (
     <div className="media-container p-3 flex-grow-1">
-      {userData ? (
-        <div>
-          <h2>{userData.display_name}</h2>
-          <img src={userData.images[0]?.url} alt="Profile" />
-          <p>Email: {userData.email}</p>
+      {userData && (
+        <div className="card mb-4">
+          <div className="card-body text-center">
+            <h2 className="card-title">{userData.display_name}</h2>
+            <img
+              src={userData.images[0]?.url}
+              alt="Profile"
+              className="img-fluid rounded-circle mb-3"
+            />
+            <p className="card-text">Email: {userData.email}</p>
+          </div>
         </div>
-      ) : (
-        <p>Loading...</p>
       )}
+      <div>
+        <h3>Your Top 5 Tracks</h3>
+        <div className="d-flex flex-wrap justify-content-between">
+          {topTracks.map((track) => (
+            <SpotifyCard key={track.id} item={track} />
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3>Recommended Tracks</h3>
+        <div className="d-flex flex-wrap justify-content-between">
+          {recommendedTracks.map((track) => (
+            <SpotifyCard key={track.id} item={track} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

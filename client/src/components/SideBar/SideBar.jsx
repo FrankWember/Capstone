@@ -59,49 +59,31 @@ function SideBar() {
       <ul className="nav nav-pills flex-column mb-auto">
         <li className="nav-item">
           <Link to="/Home" className="nav-link active" aria-current="page">
-            <svg className="bi me-2" width="16" height="16">
-              <use xlinkHref="Home"></use>
-            </svg>
             Home
           </Link>
         </li>
         <li className="nav-item">
           <Link to="/trending" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16" color="white">
-              <use xlinkHref="#trending"></use>
-            </svg>
             Trending
           </Link>
         </li>
-        <li>
-          <Link to="/Favorites" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16">
-              <use xlinkHref="Favorites"></use>
-            </svg>
+        <li className="nav-item">
+          <Link to="/favorites" className="nav-link text-white">
             Favorites
           </Link>
         </li>
-        <li>
+        <li className="nav-item">
           <Link to="/playlists" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16">
-              <use xlinkHref="#playlist"></use>
-            </svg>
             Playlists
           </Link>
         </li>
-        <li>
+        <li className="nav-item">
           <Link to="/books" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16">
-              <use xlinkHref="#book"></use>
-            </svg>
             Books
           </Link>
         </li>
-        <li>
+        <li className="nav-item">
           <Link to="/news" className="nav-link text-white">
-            <svg className="bi me-2" width="16" height="16">
-              <use xlinkHref="#news"></use>
-            </svg>
             News
           </Link>
         </li>
