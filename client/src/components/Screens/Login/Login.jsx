@@ -16,6 +16,7 @@ const Login = () => {
   const handleLogin = async (event) => {
     event.preventDefault(); // Prevent the default submission of my form
     setLoading(true);
+
     setError(""); // Reset error messages on new submission
     try {
       // Sending a post request to the login endpoint using Axios
@@ -41,6 +42,7 @@ const Login = () => {
       }
       console.error(error.response?.status);
     }
+    window.location.href = "http://localhost:3000/auth/login";
   };
 
   return (
@@ -78,11 +80,11 @@ const Login = () => {
             <a href="#" className="forgot-password">
               Forget Password
             </a>
-            <a href="#" className="signup">
-              <Link to="/signup" className="signup">
+            <Link to="/signup" className="signup">
+              <a href="#" className="signup">
                 Register
-              </Link>
-            </a>
+              </a>
+            </Link>
           </div>
         </form>
       </div>

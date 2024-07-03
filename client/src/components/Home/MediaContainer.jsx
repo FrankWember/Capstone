@@ -33,16 +33,8 @@ const MediaContainer = ({ token }) => {
     }
   }
 
-  async function getUserProfile() {
-    const data = await fetchWebApi("v1/me");
-    if (data) {
-      setUserData(data);
-      console.log("User Profile Data:", data);
-    }
-  }
-
   async function getTopTracks() {
-    const data = await fetchWebApi("v1/me/top/tracks?limit=5");
+    const data = await fetchWebApi("v1/me/top/tracks?limit=10");
     if (data) {
       setTopTracks(data.items);
       console.log("Top Tracks Data:", data.items);
@@ -63,7 +55,6 @@ const MediaContainer = ({ token }) => {
 
   useEffect(() => {
     if (token) {
-      getUserProfile();
       getTopTracks().then((topTracks) => {
         if (topTracks) {
           getRecommendations(topTracks);

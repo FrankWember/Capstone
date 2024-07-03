@@ -16,10 +16,6 @@ function SideBar() {
     console.log("Searching for:", search);
   };
 
-  const handleSpotifyLogin = () => {
-    window.location.href = "http://localhost:3000/auth/login"; // Adjust the URL based on your server's address and port
-  };
-
   return (
     <div
       className="d-flex flex-column flex-shrink-0 p-3 text-white"
@@ -89,13 +85,7 @@ function SideBar() {
         </li>
       </ul>
       <hr />
-      <Button
-        onClick={handleSpotifyLogin}
-        variant="success"
-        className="spotify-login-button"
-      >
-        Connect with Spotify
-      </Button>
+
       <Dropdown className="mt-auto">
         <hr />
         <Dropdown.Toggle
