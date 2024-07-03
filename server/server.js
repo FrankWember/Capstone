@@ -52,7 +52,7 @@ app.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(401).json({ error: "Invalid password" });
-    }
+    } //
 
     const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
     await prisma.session.create({ data: { userId: user.id, token } });
