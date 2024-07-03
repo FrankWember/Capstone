@@ -107,7 +107,11 @@ function SideBar() {
         </li>
       </ul>
       <hr />
-      <Button variant="success" className="spotify-login-button">
+      <Button
+        onClick={handleSpotifyLogin}
+        variant="success"
+        className="spotify-login-button"
+      >
         Connect with Spotify
       </Button>
       <Dropdown className="mt-auto">
