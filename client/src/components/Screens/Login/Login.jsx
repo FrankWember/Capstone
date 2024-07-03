@@ -24,24 +24,25 @@ const Login = () => {
         password,
       });
 
-      const { token } = response.data; // Extracting the token from my response
+      const { userToken } = response.data; // Extracting the token from my response
 
-      localStorage.setItem("token", token); // Storing my token locally
+      localStorage.setItem("token", userToken); // Storing my token locally
       navigate("/Home"); // It should redirect me to a protected route if the login was successful
       setLoading(false);
     } catch (error) {
       setLoading(false);
       console.log(error);
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         setError("Invalid login credentials"); // Handles login errors
-      } else if (error.response.status === 404) {
-        setError("User not found create a new account");
+      } else if (error.response?.status === 404) {
+        setError("User not found. Create a new account");
       } else {
         setError("Server is under maintenance");
       }
-      console.error(error.response.status);
+      console.error(error.response?.status);
     }
   };
+
   return (
     <>
       <div className="square">
@@ -57,7 +58,8 @@ const Login = () => {
           <div className="inputBx">
             <input
               type="email"
-              placeholder="email"
+              placeholder="Email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -65,6 +67,7 @@ const Login = () => {
             <input
               type="password"
               placeholder="Password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>

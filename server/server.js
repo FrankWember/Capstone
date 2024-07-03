@@ -6,7 +6,8 @@ const jwt = require("jsonwebtoken");
 const request = require('request');
 const querystring = require('querystring');
 const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const { error } = require("console");
+const prisma = new PrismaClient(error);
 
 const app = express();
 
@@ -52,11 +53,12 @@ app.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
       return res.status(401).json({ error: "Invalid password" });
-    } //
+    }
 
     const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
-    await prisma.session.create({ data: { userId: user.id, token } });
-
+    console.log(userToken);
+    await prisma.session.create({ data: { userId: user.id, token: userToken } });
+    
     res.json({ userToken, user });
   } catch (error) {
     res.status(400).json({ error: error.message });

@@ -105,15 +105,11 @@ function SideBar() {
             News
           </Link>
         </li>
-        <hr />
-        <Button
-          onClick={handleSpotifyLogin}
-          variant="success"
-          className="spotify-login-button"
-        >
-          Connect with Spotify
-        </Button>
       </ul>
+      <hr />
+      <Button variant="success" className="spotify-login-button">
+        Connect with Spotify
+      </Button>
       <Dropdown className="mt-auto">
         <hr />
         <Dropdown.Toggle
