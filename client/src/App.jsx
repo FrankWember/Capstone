@@ -13,10 +13,12 @@ import Player from "./components/Screens/Player/Player";
 import Library from "./components/Screens/Library/Library";
 import Home from "./components/Home/Home";
 import "./App.css";
+import SpotifyCard from "./components/Home/Media/SpotifyCard";
+import axios from "axios";
 
 // ProtectedRoute Component
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("spotifyToken");
+  const token = localStorage.getItem("token");
   if (!token) {
     return <Navigate to="/" />;
   }
@@ -24,44 +26,28 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  const [token, setToken] = useState(
-    localStorage.getItem("spotifyToken") || ""
-  );
-  const refreshToken = localStorage.getItem("spotifyRefreshToken");
+  const [token, setToken] = useState("");
+  coonst[(refreshToken, setRefreshToken)] = useState("");
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-    const refresh_token = urlParams.get("refresh_token");
-    if (token) {
-      localStorage.setItem("spotifyToken", token);
-      setToken(token);
-      if (refresh_token) {
-        localStorage.setItem("spotifyRefreshToken", refresh_token);
-      }
-      window.history.replaceState({}, document.title, window.location.pathname);
+  const fetchAccessTokens = async () => {
+    try {
+      const response = await axios.get("localhost:3000/auth/token");
+      return response.data.access_token;
+    } catch (error) {
+      console.error("Error fetching the access token", error);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (refreshToken) {
-        try {
-          const response = await fetch(
-            `/auth/refresh_token?refresh_token=${refreshToken}`
-          );
-          const data = await response.json();
-          if (data.access_token) {
-            localStorage.setItem("spotifyToken", data.access_token);
-            setToken(data.access_token);
-          }
-        } catch (error) {
-          console.error("Failed to refresh token:", error);
-        }
+    const initializeToken = async () => {
+      const token = await fetchAccessToken();
+      if (token) {
+        setToken(token);
+        setRefreshToken(token.refreshToken);
       }
-    }, 55 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [refreshToken]);
+    };
+    initializeToken();
+  }, []);
 
   return (
     <Router>

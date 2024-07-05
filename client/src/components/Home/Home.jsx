@@ -7,9 +7,9 @@ import RecommendationBar from "../RecommendationBar/RecommendationBar";
 const Home = ({ token }) => {
   return (
     <div className="d-flex">
-      <SideBar />
+      {/* <SideBar /> */}
       <div className="main-content flex-grow-1 d-flex flex-column">
-        <MediaContainer token={token} />
+        {/* <MediaContainer token={token} /> */}
         <RecommendationBar />
       </div>
     </div>

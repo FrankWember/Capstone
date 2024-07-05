@@ -24,10 +24,11 @@ const Login = () => {
         email,
         password,
       });
-
+      console.log(response);
       const { userToken } = response.data; // Extracting the token from my response
 
       localStorage.setItem("token", userToken); // Storing my token locally
+
       navigate("/Home"); // It should redirect me to a protected route if the login was successful
       setLoading(false);
     } catch (error) {
