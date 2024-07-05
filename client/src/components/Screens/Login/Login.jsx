@@ -1,95 +1,93 @@
 import React, { useState } from "react";
-import "./Login.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import SideBar from "../../SideBar/SideBar";
+import "./Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to handle displaying error messages
-  const [loading, setLoading] = useState(false); // State to handle button loading status
+  const [email, setEmail] = useState(""); // State to store email input
+  const [password, setPassword] = useState(""); // State to store password input
+  const [error, setError] = useState(""); // State to handle error messages
+  const [loading, setLoading] = useState(false); // State to handle loading status
 
-  const navigate = useNavigate(); // helps navigate programmatically
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
-  // For handling form submissions
   const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent the default submission of my form
-    setLoading(true);
+    event.preventDefault(); // Prevent form submission
 
-    setError(""); // Reset error messages on new submission
+    setLoading(true); // Set loading state to true
+    setError(""); // Reset error state
+
     try {
-      // Sending a post request to the login endpoint using Axios
+      // Send login request to backend
       const response = await axios.post("http://localhost:3000/login", {
         email,
         password,
       });
-      console.log(response);
-      const { userToken } = response.data; // Extracting the token from my response
 
-      localStorage.setItem("token", userToken); // Storing my token locally
+      const { userToken } = response.data; // Extract user token from response
+      console.log("Token received:", userToken); // Log the received token
 
-      navigate("/Home"); // It should redirect me to a protected route if the login was successful
-      setLoading(false);
+      localStorage.setItem("userToken", userToken); // Store token in local storage
+      console.log(
+        "Token stored in localStorage:",
+        localStorage.getItem("userToken")
+      ); // Log the stored token
+      navigate("/home"); // Navigate to home page after successful login
     } catch (error) {
-      setLoading(false);
-      console.log(error);
+      setLoading(false); // Set loading state to false
+      console.log("Login error:", error); // Log any errors
+
       if (error.response?.status === 401) {
-        setError("Invalid login credentials"); // Handles login errors
+        setError("Invalid login credentials"); // Set error message for invalid credentials
       } else if (error.response?.status === 404) {
-        setError("User not found. Create a new account");
+        setError("User not found. Create a new account"); // Set error message for user not found
       } else {
-        setError("Server is under maintenance");
+        setError("Server is under maintenance"); // Set error message for server issues
       }
-      console.error(error.response?.status);
     }
-    window.location.href = "http://localhost:3000/auth/login";
+    window.location.href = "http://localhost:3000/auth/login"; // Redirect to Spotify login
   };
 
   return (
-    <>
-      <div className="square">
-        <i style={{ "--clr": "#ff7878" }}></i>
-        <i style={{ "--clr": "#a9bfff" }}></i>
-        <i style={{ "--clr": "#ffa041" }}></i>
+    <div className="square">
+      <i style={{ "--clr": "#ff7878" }}></i>
+      <i style={{ "--clr": "#a9bfff" }}></i>
+      <i style={{ "--clr": "#ffa041" }}></i>
 
-        <form className="form-container" onSubmit={handleLogin}>
-          <h1 className="title">MoodTune</h1>
-          <h2>Login</h2>
-          {error && <p className="error">{error}</p>}{" "}
-          {/* Display error messages */}
-          <div className="inputBx">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="inputBx">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="inputBx">
-            <input type="submit" value="Sign in" disabled={loading} />
-          </div>
-          <div className="links">
-            <a href="#" className="forgot-password">
-              Forget Password
-            </a>
-            <Link to="/signup" className="signup">
-              <a href="#" className="signup">
-                Register
-              </a>
-            </Link>
-          </div>
-        </form>
-      </div>
-    </>
+      <form className="form-container" onSubmit={handleLogin}>
+        <h1 className="title">MoodTune</h1>
+        <h2>Login</h2>
+        {error && <p className="error">{error}</p>}{" "}
+        {/* Display error messages */}
+        <div className="inputBx">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="inputBx">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="inputBx">
+          <input type="submit" value="Sign in" disabled={loading} />
+        </div>
+        <div className="links">
+          <a href="#" className="forgot-password">
+            Forget Password
+          </a>
+          <Link to="/signup" className="signup">
+            Register
+          </Link>
+        </div>
+      </form>
+    </div>
   );
 };
 

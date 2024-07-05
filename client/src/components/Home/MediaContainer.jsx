@@ -6,7 +6,7 @@ import SpotifyCard from "./Media/SpotifyCard";
 const MediaContainer = ({ token }) => {
   const [topTracks, setTopTracks] = useState([]);
   const [recommendedTracks, setRecommendedTracks] = useState([]);
-  const [savedAlbums, setSavedAlbums] = useState([]);
+  const [savedPlaylist, setSavedPlaylist] = useState([]);
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   const [error, setError] = useState(null);
 
@@ -52,11 +52,11 @@ const MediaContainer = ({ token }) => {
     }
   }
 
-  async function getSavedAlbums() {
-    const data = await fetchWebApi("v1/me/albums");
+  async function getSavedPlaylist() {
+    const data = await fetchWebApi("v1/me/playlists");
     if (data) {
-      setSavedAlbums(data.items);
-      console.log("Saved Albums Data:", data.items);
+      setSavedPlaylist(data.items);
+      console.log("Saved Playlist Data:", data.items);
     }
   }
 
@@ -75,7 +75,7 @@ const MediaContainer = ({ token }) => {
           getRecommendations(topTracks);
         }
       });
-      getSavedAlbums();
+      getSavedPlaylist();
       getFeaturedPlaylists();
     }
   }, [token]);
@@ -107,10 +107,10 @@ const MediaContainer = ({ token }) => {
         </div>
       </div>
       <div>
-        <h3>Your Saved Albums</h3>
+        <h3>Your Saved Playlist</h3>
         <div className="d-flex flex-wrap justify-content-between">
-          {savedAlbums.map((album) => (
-            <SpotifyCard key={album.album.id} item={album.album} />
+          {savedPlaylist.map((playlist) => (
+            <SpotifyCard key={playlist.playlist.id} item={playlist.playlist} />
           ))}
         </div>
       </div>
