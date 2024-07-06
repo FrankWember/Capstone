@@ -1,0 +1,139 @@
+/* PlaylistPage.css */
+.playlist-page-container {
+  background-color: #181818;
+  color: #ffffff;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.icon {
+  height: 32px;
+  width: 32px;
+}
+
+.playlist-details {
+  display: flex;
+  align-items: center;
+}
+
+.playlist-cover {
+  width: 200px;
+  height: 200px;
+  margin-right: 20px;
+  object-fit: cover;
+}
+
+.playlist-title {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.playlist-description {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #b3b3b3;
+}
+
+.playlist-owner {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.playlist-actions {
+  margin-bottom: 20px;
+}
+
+.play-button {
+  background-color: #1db954;
+  border: none;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.play-button .icon {
+  margin-right: 10px;
+}
+
+.play-button:hover {
+  background-color: #1ed760;
+}
+
+.playlist-tracks {
+  margin-top: 20px;
+}
+
+.tracks-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #282828;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.track-row {
+  border-bottom: 1px solid #282828;
+  transition: background-color 0.2s;
+}
+
+.track-row:hover {
+  background-color: #282828;
+}
+
+.table-cell {
+  padding: 10px;
+  vertical-align: middle;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+}
+
+.track-cover {
+  width: 50px;
+  height: 50px;
+  margin-right: 15px;
+  object-fit: cover;
+}
+
+.track-title {
+  display: flex;
+  align-items: center;
+}
+
+.track-name {
+  font-weight: 500;
+  display: block;
+}
+
+.track-artists {
+  color: #b3b3b3;
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+}

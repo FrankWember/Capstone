@@ -1,3 +1,7 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 @import url(./components/Home/Home.css);
 
 :root {
@@ -32,7 +36,7 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
   justify-content: center;
-  background-color: #11037a;
+  background-color: #2d2b32;
 }
 
 h1 {

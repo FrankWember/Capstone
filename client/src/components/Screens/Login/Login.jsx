@@ -14,8 +14,8 @@ const Login = () => {
   const handleLogin = async (event) => {
     event.preventDefault(); // Prevent form submission
 
-    setLoading(true); // Set loading state to true
-    setError(""); // Reset error state
+    setLoading(true); // Setting loading state to true
+    setError(""); // Resetting the error state
 
     try {
       // Send login request to backend
@@ -25,24 +25,25 @@ const Login = () => {
       });
 
       const { userToken } = response.data; // Extract user token from response
-      console.log("Token received:", userToken); // Log the received token
+      console.log("Token received:", userToken);
 
       localStorage.setItem("userToken", userToken); // Store token in local storage
       console.log(
         "Token stored in localStorage:",
         localStorage.getItem("userToken")
-      ); // Log the stored token
+      );
       navigate("/home"); // Navigate to home page after successful login
     } catch (error) {
       setLoading(false); // Set loading state to false
-      console.log("Login error:", error); // Log any errors
-
+      console.log("Login error:", error);
+      localStorage.setItem("Login error", error);
+      console.log(localStorage.getItem("Login error"));
       if (error.response?.status === 401) {
-        setError("Invalid login credentials"); // Set error message for invalid credentials
+        setError("Invalid login credentials"); // Setting error message for invalid credentials
       } else if (error.response?.status === 404) {
-        setError("User not found. Create a new account"); // Set error message for user not found
+        setError("User not found. Create a new account"); // Setting error message for user not found
       } else {
-        setError("Server is under maintenance"); // Set error message for server issues
+        setError("Server is under maintenance"); // Setting error message for server issues
       }
     }
     window.location.href = "http://localhost:3000/auth/login"; // Redirect to Spotify login

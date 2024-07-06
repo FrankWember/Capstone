@@ -5,14 +5,14 @@
   font-family: "Open Sans", sans-serif;
 }
 
-/* body {
+body {
   justify-content: center;
   display: flex;
   background-image: url("Designer (1).png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-} */
+}
 
 .spotify-login {
   background-color: #1db954;

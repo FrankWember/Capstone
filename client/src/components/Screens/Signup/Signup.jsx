@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "../Login/Login.css";
 
 const Signup = () => {
-  // State to store form inputs and error messages
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +31,7 @@ const Signup = () => {
         password,
       });
 
-      console.log(response.data); // Log response for debugging
+      console.log(response.data);
       navigate("/"); // Redirect to login page after successful signup
     } catch (err) {
       // Handle errors
@@ -41,7 +40,7 @@ const Signup = () => {
       } else {
         setError("An error occurred during signup");
       }
-      console.error(err); // Log error for debugging
+      console.error(err);
     }
   };
 
@@ -62,7 +61,7 @@ const Signup = () => {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required // Make the input required
+              required
             />
           </div>
           <div className="inputBx">
@@ -71,7 +70,7 @@ const Signup = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required // Make the input required
+              required
             />
           </div>
           <div className="inputBx">
@@ -80,7 +79,7 @@ const Signup = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required // Make the input required
+              required
             />
           </div>
           <div className="inputBx">
@@ -89,7 +88,7 @@ const Signup = () => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required // Make the input required
+              required
             />
           </div>
           <div className="inputBx">

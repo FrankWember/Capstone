@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -12,6 +13,7 @@ import Favorites from "./components/Screens/Favorites/Favorites";
 import Player from "./components/Screens/Player/Player";
 import Library from "./components/Screens/Library/Library";
 import Home from "./components/Home/Home";
+import MediaContainer from "./components/Home/MediaContainer";
 import "./App.css";
 
 // ProtectedRoute Component to restrict access to certain routes
@@ -85,7 +87,7 @@ const App = () => {
     const refreshAccessToken = async () => {
       const userToken = localStorage.getItem("userToken");
       const refreshToken = localStorage.getItem("spotifyRefreshToken");
-
+      console.log(accessToken);
       if (userToken) {
         try {
           const response = await fetch(
@@ -124,6 +126,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Home token={token} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/playlist/:playlistId"
+            element={
+              <ProtectedRoute>
+                <MediaContainer token={token} />
               </ProtectedRoute>
             }
           />

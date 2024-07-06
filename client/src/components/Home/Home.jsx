@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Home.css";
 import SideBar from "../SideBar/SideBar";
 import MediaContainer from "./MediaContainer";
-import RecommendationBar from "../RecommendationBar/RecommendationBar";
-
 const Home = ({ token }) => {
+  const [currentTrack, setCurrentTrack] = useState(null);
+
   return (
-    <div className="d-flex">
-      {/* <SideBar /> */}
-      <div className="main-content flex-grow-1 d-flex flex-column">
-        {/* <MediaContainer token={token} /> */}
-        <RecommendationBar />
-      </div>
+    <div className="d-flex flex-column min-h-screen">
+      <SideBar token={token} />
+      <MediaContainer token={token} playTrack={setCurrentTrack} />
     </div>
   );
 };

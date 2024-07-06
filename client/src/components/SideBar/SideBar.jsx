@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Dropdown, Form, FormControl, Button } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
+import {
+  MenuIcon,
+  SearchIcon,
+  BellIcon,
+  UserCircleIcon,
+  UserIcon,
+  CogIcon,
+  LogoutIcon,
+} from "@heroicons/react/outline";
 import "@fontsource/roboto";
-
-function SideBar() {
+const SideBar = ({ token }) => {
   const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -16,101 +23,139 @@ function SideBar() {
     console.log("Searching for:", search);
   };
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div
-      className="d-flex flex-column flex-shrink-0 p-3 text-white"
-      style={{
-        width: "350px",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        fontFamily: "Roboto, sans-serif",
-        backgroundColor: "#000112",
-        height: "100vh",
-      }}
-    >
-      <Link
+    <div className="fixed top-0 left-0 h-full w-1/5 bg-gray-900 text-white flex flex-col p-5 font-roboto">
+      <NavLink
         to="/"
-        className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+        className="flex items-center mb-6 text-decoration-none text-white"
       >
-        <svg className="bi me-2" width="40" height="32">
-          <use xlinkHref="#bootstrap"></use>
-        </svg>
-        <span className="fs-4">MoodTune</span>
-      </Link>
-      <Form className="d-flex mb-3" onSubmit={handleSearchSubmit}>
-        <FormControl
+        <MenuIcon className="h-8 w-8 mr-3" />
+        <span className="text-2xl font-bold">MoodTune</span>
+      </NavLink>
+      <form className="flex items-center mb-6" onSubmit={handleSearchSubmit}>
+        <input
           type="search"
           placeholder="Search"
-          className="me-2"
-          aria-label="Search"
+          className="flex-grow bg-gray-800 text-white rounded-full py-2 px-4 focus:outline-none"
           value={search}
           onChange={handleSearchChange}
         />
-        <Button variant="outline-success" type="submit">
-          Search
-        </Button>
-      </Form>
-      <hr />
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item">
-          <Link to="/Home" className="nav-link active" aria-current="page">
-            Home
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/trending" className="nav-link text-white">
-            Trending
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/favorites" className="nav-link text-white">
-            Favorites
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/playlists" className="nav-link text-white">
-            Playlists
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/books" className="nav-link text-white">
-            Books
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/news" className="nav-link text-white">
-            News
-          </Link>
-        </li>
-      </ul>
-      <hr />
-
-      <Dropdown className="mt-auto">
-        <hr />
-        <Dropdown.Toggle
-          variant="dark"
-          className="d-flex align-items-center text-white text-decoration-none"
-          id="dropdownUser1"
+        <button
+          type="submit"
+          className="ml-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-2 focus:outline-none"
         >
-          <img
-            src="https://th.bing.com/th/id/R.5d769f89081ab24fb2d14ff3b3dcac6a?rik=XQyGumoJKbCTJQ&pid=ImgRaw&r=0"
-            alt=""
-            width="40"
-            height="40"
-            className="rounded-circle me-3"
-          />
-          <strong>Username</strong>
-        </Dropdown.Toggle>
-        <Dropdown.Menu variant="dark" className="shadow">
-          <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-          <Dropdown.Item href="/settings">Settings</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item href="/">Sign out</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+          <SearchIcon className="h-5 w-5" />
+        </button>
+      </form>
+      <hr className="border-gray-700 mb-6" />
+      <nav className="flex-grow">
+        <ul>
+          <li className="mb-4">
+            <NavLink
+              to="/home"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              Home
+            </NavLink>
+          </li>
+          <li className="mb-4">
+            <NavLink
+              to="/trending"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              Trending
+            </NavLink>
+          </li>
+          <li className="mb-4">
+            <NavLink
+              to="/favorites"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              Favorites
+            </NavLink>
+          </li>
+          <li className="mb-4">
+            <NavLink
+              to="/playlists"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              Playlists
+            </NavLink>
+          </li>
+          <li className="mb-4">
+            <NavLink
+              to="/books"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              Books
+            </NavLink>
+          </li>
+          <li className="mb-4">
+            <NavLink
+              to="/news"
+              activeClassName="text-green-500"
+              className="flex items-center text-lg hover:text-green-500"
+            >
+              <MenuIcon className="h-5 w-5 mr-3" />
+              News
+            </NavLink>
+          </li>
+        </ul>
+      </nav>
+      <div className="mt-auto">
+        <hr className="border-gray-700 mb-4" />
+        <div className="relative">
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center w-full text-left focus:outline-none"
+          >
+            <UserCircleIcon className="h-10 w-10 mr-3" />
+            <span className="font-medium">Username</span>
+          </button>
+          {isOpen && (
+            <div className="absolute left-0 bottom-16 w-full bg-gray-800 rounded-lg shadow-lg z-10">
+              <NavLink
+                to="/profile"
+                className="block px-4 py-2 text-sm text-white hover:bg-gray-700 flex items-center"
+              >
+                <UserIcon className="h-5 w-5 mr-2" />
+                Profile
+              </NavLink>
+              <NavLink
+                to="/settings"
+                className="block px-4 py-2 text-sm text-white hover:bg-gray-700 flex items-center"
+              >
+                <CogIcon className="h-5 w-5 mr-2" />
+                Settings
+              </NavLink>
+              <hr className="border-gray-700" />
+              <NavLink
+                to="/"
+                className="block px-4 py-2 text-sm text-white hover:bg-gray-700 flex items-center"
+              >
+                <LogoutIcon className="h-5 w-5 mr-2" />
+                Sign out
+              </NavLink>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default SideBar;

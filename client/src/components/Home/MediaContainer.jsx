@@ -1,126 +1,233 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./MediaContainer.css";
-import SpotifyCard from "./Media/SpotifyCard";
+import { useParams, useNavigate } from "react-router-dom";
+import "./MediaContainer.css"; // Import custom CSS for styling
+import SpotifyCard from "./Media/SpotifyCard"; // Import a component to display individual items
+import { PlayIcon } from "@heroicons/react/outline"; // Import an icon from the Heroicons library
 
+// MediaContainer component definition
 const MediaContainer = ({ token }) => {
-  const [topTracks, setTopTracks] = useState([]);
-  const [recommendedTracks, setRecommendedTracks] = useState([]);
-  const [savedPlaylist, setSavedPlaylist] = useState([]);
-  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
-  const [error, setError] = useState(null);
+  // State variables to hold different types of data
+  const [topTracks, setTopTracks] = useState([]); // State for top tracks
+  const [recommendedTracks, setRecommendedTracks] = useState([]); // State for recommended tracks
+  const [savedPlaylist, setSavedPlaylist] = useState([]); // State for user's saved playlists
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]); // State for featured playlists
+  const [playlistTracks, setPlaylistTracks] = useState([]); // State for tracks of a specific playlist
+  const [playlistDetails, setPlaylistDetails] = useState({}); // State for details of a specific playlist
+  const [error, setError] = useState(null); // State for error messages
 
-  async function fetchWebApi(endpoint, method = "GET", body) {
+  // useParams hook to access URL parameters (e.g., playlistId)
+  const { playlistId } = useParams();
+  // useNavigate hook to programmatically navigate to different routes
+  const navigate = useNavigate();
+
+  // Function to fetch data from the Spotify Web API
+  const fetchWebApi = async (endpoint, method = "GET", body) => {
     try {
+      // Make a request to the Spotify API
       const res = await fetch(`https://api.spotify.com/${endpoint}`, {
         method,
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Use the token for authentication
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: body ? JSON.stringify(body) : null,
       });
 
-      if (!res.ok) {
-        throw new Error(`Error: ${res.status}`);
-      }
+      // If the response is not OK, throw an error
+      if (!res.ok) throw new Error(`Error: ${res.status}`);
 
+      // Return the parsed JSON data
       return await res.json();
     } catch (error) {
+      // Set the error message in state
       setError(error.message);
       return null;
     }
-  }
+  };
 
-  async function getTopTracks() {
-    const data = await fetchWebApi("v1/me/top/tracks?limit=5");
-    if (data) {
-      setTopTracks(data.items);
-      console.log("Top Tracks Data:", data.items);
-      return data.items;
-    }
-  }
+  // Function to fetch the user's top tracks
+  const getTopTracks = async () => {
+    const data = await fetchWebApi("v1/me/top/tracks?limit=5"); // Fetch top 5 tracks
+    if (data) setTopTracks(data.items); // Set the fetched data to the state
+  };
 
-  async function getRecommendations(seedTracks) {
-    const seedTrackIds = seedTracks.map((track) => track.id).join(",");
+  // Function to fetch recommended tracks based on seed tracks
+  const getRecommendations = async (seedTracks) => {
+    const seedTrackIds = seedTracks.map((track) => track.id).join(","); // Get comma-separated seed track IDs
     const data = await fetchWebApi(
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
-    if (data) {
-      setRecommendedTracks(data.tracks);
-      console.log("Recommended Tracks Data:", data.tracks);
-    }
-  }
+    if (data) setRecommendedTracks(data.tracks); // Set the fetched data to the state
+  };
 
-  async function getSavedPlaylist() {
-    const data = await fetchWebApi("v1/me/playlists");
-    if (data) {
-      setSavedPlaylist(data.items);
-      console.log("Saved Playlist Data:", data.items);
-    }
-  }
+  // Function to fetch the user's saved playlists
+  const getSavedPlaylist = async () => {
+    const data = await fetchWebApi("v1/me/playlists"); // Fetch user's playlists
+    if (data) setSavedPlaylist(data.items); // Set the fetched data to the state
+  };
 
-  async function getFeaturedPlaylists() {
-    const data = await fetchWebApi("v1/browse/featured-playlists");
-    if (data) {
-      setFeaturedPlaylists(data.playlists.items);
-      console.log("Featured Playlists Data:", data.playlists.items);
-    }
-  }
+  // Function to fetch featured playlists
+  const getFeaturedPlaylists = async () => {
+    const data = await fetchWebApi("v1/browse/featured-playlists"); // Fetch featured playlists
+    if (data) setFeaturedPlaylists(data.playlists.items); // Set the fetched data to the state
+  };
 
+  // Function to fetch tracks from a specific playlist
+  const getPlaylistTracks = async (playlistId) => {
+    const data = await fetchWebApi(`v1/playlists/${playlistId}/tracks`);
+    if (data) setPlaylistTracks(data.items); // Set the fetched data to the state
+  };
+
+  // Function to fetch details of a specific playlist
+  const getPlaylistDetails = async (playlistId) => {
+    const data = await fetchWebApi(`v1/playlists/${playlistId}`);
+    if (data) setPlaylistDetails(data); // Set the fetched data to the state
+  };
+
+  // useEffect hook to fetch initial data when the component mounts
   useEffect(() => {
     if (token) {
       getTopTracks().then((topTracks) => {
-        if (topTracks) {
-          getRecommendations(topTracks);
-        }
+        if (topTracks) getRecommendations(topTracks); // Fetch recommendations after getting top tracks
       });
-      getSavedPlaylist();
-      getFeaturedPlaylists();
-    }
-  }, [token]);
+      getSavedPlaylist(); // Fetch saved playlists
+      getFeaturedPlaylists(); // Fetch featured playlists
 
+      if (playlistId) {
+        getPlaylistTracks(playlistId); // Fetch tracks if playlistId is present
+        getPlaylistDetails(playlistId); // Fetch playlist details if playlistId is present
+      }
+    }
+  }, [token, playlistId]); // Dependencies for the useEffect hook
+
+  // Display an error message if any error occurs
   if (error) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        Error: {error}
-      </div>
-    );
+    return <div className="error-message">Error: {error}</div>;
   }
 
+  // Render the main content of the MediaContainer
   return (
-    <div className="media-container p-3 flex-grow-1">
-      <div>
-        <h3>Your Top 10 Tracks</h3>
-        <div className="d-flex flex-wrap justify-content-between">
-          {topTracks.map((track) => (
-            <SpotifyCard key={track.id} item={track} />
-          ))}
-        </div>
-      </div>
-      <div>
-        <h3>Recommended Tracks</h3>
-        <div className="d-flex flex-wrap justify-content-between">
-          {recommendedTracks.map((track) => (
-            <SpotifyCard key={track.id} item={track} />
-          ))}
-        </div>
-      </div>
-      <div>
-        <h3>Your Saved Playlist</h3>
-        <div className="d-flex flex-wrap justify-content-between">
-          {savedPlaylist.map((playlist) => (
-            <SpotifyCard key={playlist.playlist.id} item={playlist.playlist} />
-          ))}
-        </div>
-      </div>
-      <div>
-        <h3>Featured Playlists</h3>
-        <div className="d-flex flex-wrap justify-content-between">
-          {featuredPlaylists.map((playlist) => (
-            <SpotifyCard key={playlist.id} item={playlist} />
-          ))}
-        </div>
+    <div className="media-container">
+      <div className="content-wrapper">
+        {/* Conditionally render content based on the presence of playlistId */}
+        {!playlistId ? (
+          <>
+            {/* Top Tracks Section */}
+            <div className="section">
+              <h3 className="section-title">
+                <span className="icon">🎵</span>
+                Your Top 5 Tracks
+              </h3>
+              <div className="grid">
+                {topTracks.map((track) => (
+                  <SpotifyCard key={track.id} item={track} /> // Render each track as a SpotifyCard
+                ))}
+              </div>
+            </div>
+            {/* Recommended Tracks Section */}
+            <div className="section">
+              <h3 className="section-title">
+                <span className="icon">🎵</span>
+                Recommended Tracks
+              </h3>
+              <div className="grid">
+                {recommendedTracks.map((track) => (
+                  <SpotifyCard key={track.id} item={track} /> // Render each recommended track as a SpotifyCard
+                ))}
+              </div>
+            </div>
+            {/* Saved Playlists Section */}
+            <div className="section">
+              <h3 className="section-title">
+                <span className="icon">🎵</span>
+                Your Saved Playlists
+              </h3>
+              <div className="grid">
+                {savedPlaylist.map((playlist) => (
+                  <SpotifyCard
+                    key={playlist.id}
+                    item={playlist}
+                    isPlaylist
+                    onClick={() => navigate(`/playlist/${playlist.id}`)} // Navigate to PlaylistPage on click
+                  />
+                ))}
+              </div>
+            </div>
+            {/* Featured Playlists Section */}
+            <div className="section">
+              <h3 className="section-title">
+                <span className="icon">🎵</span>
+                Featured Playlists
+              </h3>
+              <div className="grid">
+                {featuredPlaylists.map((playlist) => (
+                  <SpotifyCard
+                    key={playlist.id}
+                    item={playlist}
+                    isPlaylist
+                    onClick={() => navigate(`/playlist/${playlist.id}`)} // Navigate to PlaylistPage on click
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Playlist Details */}
+            <div className="playlist-header">
+              <button className="back-button" onClick={() => navigate(-1)}>
+                &larr; Back
+              </button>
+              <div className="playlist-details">
+                {playlistDetails.images && playlistDetails.images[0] && (
+                  <img
+                    src={playlistDetails.images[0].url}
+                    alt={playlistDetails.name}
+                    className="playlist-cover"
+                  />
+                )}
+                <div>
+                  <h3 className="playlist-title">{playlistDetails.name}</h3>
+                  <p className="playlist-description">
+                    {playlistDetails.description}
+                  </p>
+                  <p className="playlist-owner">
+                    {playlistDetails.owner &&
+                      `By ${playlistDetails.owner.display_name}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Playlist Tracks */}
+            <div className="grid">
+              {playlistTracks.map((track) => (
+                <div key={track.track.id} className="track-card">
+                  <div className="track-info">
+                    {track.track.album.images[0] && (
+                      <img
+                        src={track.track.album.images[0].url}
+                        alt={track.track.name}
+                        className="track-cover"
+                      />
+                    )}
+                    <div>
+                      <h4 className="track-name">{track.track.name}</h4>
+                      <p className="track-artists">
+                        {track.track.artists
+                          .map((artist) => artist.name)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="mt-2 bg-green-500 text-white px-3 py-1 rounded-full flex items-center w-24">
+                    <PlayIcon className="h-5 w-5 mr-2" />
+                    Play
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

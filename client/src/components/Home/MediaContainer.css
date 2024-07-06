@@ -1,12 +1,149 @@
+/* MediaContainer.css */
 .media-container {
-  position: relative;
+  background-color: #181818;
+  color: #ffffff;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+}
+
+.section-title .icon {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  margin-right: 20px;
+}
+
+.playlist-details {
+  display: flex;
+  align-items: center;
+}
+
+.playlist-cover {
+  width: 500px;
+  height: 500px;
+  margin-right: 20px;
+  object-fit: cover;
+}
+
+.playlist-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.playlist-description,
+.playlist-owner {
+  color: #b3b3b3;
+}
+
+.track-card {
+  background-color: #282828;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  flex-wrap: wrap;
-  background-color: #090648;
-  overflow-y: auto;
-  padding: 50px;
-  border-radius: 5px;
-  border: #518998 solid 4px;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.track-cover {
+  width: 100px;
+  height: 100px;
+  margin-right: 15px;
+  object-fit: cover;
+  display: flex;
+}
+
+.track-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.track-artists {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.play-button {
+  background-color: #1db954;
+  border: none;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 20px;
+
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.play-button .icon {
+  margin-right: 8px;
+}
+
+.play-button:hover {
+  background-color: #1ed760;
+}
+
+.error-message {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
 }

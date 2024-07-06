@@ -7,21 +7,19 @@ const request = require("request"); // Library to make HTTP requests
 const { PrismaClient } = require("@prisma/client"); // Prisma Client for interacting with the database
 
 const app = express(); // Initialize the Express app
-const prisma = new PrismaClient(); // Initialize Prisma Client
+const prisma = new PrismaClient(); // Initialize Prisma Client to interact with the database
 
-app.use(cors()); // Enable CORS for all routes
+app.use(cors()); // Enable CORS for all routes, allowing cross-origin requests
 app.use(express.json()); // Middleware to parse JSON request bodies
 
 // Spotify API and authentication configuration
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
-const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
-const SECRET_KEY = process.env.SECRET_KEY; // Secret key for JWT signing
+const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID; // Spotify Client ID from environment variables
+const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET; // Spotify Client Secret from environment variables
+const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI; // Spotify Redirect URI from environment variables
+const SECRET_KEY = process.env.SECRET_KEY; // Secret key for JWT signing from environment variables
 
-
-
-
+// Endpoint for user signup
 app.post("/signup", async (req, res) => {
   const { email, password, name } = req.body; // Extract user details from request body
 
@@ -29,13 +27,13 @@ app.post("/signup", async (req, res) => {
     // Check if user already exists in the database
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ error: "User already exists" });
+      return res.status(409).json({ error: "User already exists" }); // Return error if user exists
     }
 
-    // Hash the user's password before storing it
+    // Hash the user's password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user in the database
+    // Create new user in the database with hashed password
     const user = await prisma.user.create({
       data: { email, password: hashedPassword, name },
     });
@@ -46,9 +44,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-
-
-
+// Endpoint for user login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body; // Extract user credentials from request body
 
@@ -56,31 +52,33 @@ app.post("/login", async (req, res) => {
     // Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found" }); // Return error if user not found
     }
 
     // Verify the password
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({ error: "Invalid password" });
+      return res.status(401).json({ error: "Invalid password" }); // Return error if password is invalid
     }
 
     // Generate a JWT token
     const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "1h", // Token expires in 1 hour
     });
-  
+
     // Check for existing session and update or create one
-    const existingSession = await prisma.session.findUnique({
+    const existingSession = await prisma.session.findFirst({
       where: { userId: user.id },
     });
 
     if (existingSession) {
+      // Update the existing session with the new token
       await prisma.session.update({
         where: { userId: user.id },
         data: { token: userToken },
       });
     } else {
+      // Create a new session with the new token
       await prisma.session.create({
         data: { userId: user.id, token: userToken },
       });
@@ -88,12 +86,12 @@ app.post("/login", async (req, res) => {
 
     res.json({ userToken, user }); // Respond with the user token and user data
   } catch (error) {
+    console.log(error)
     res.status(400).json({ error: error.message }); // Handle errors
   }
 });
 
-
-
+// Protected route example
 app.get("/protected", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1]; // Extract token from Authorization header
 
@@ -106,10 +104,9 @@ app.get("/protected", async (req, res) => {
   }
 });
 
-
-
 // Request user authorization from Spotify
 app.get("/auth/login", (req, res) => {
+  // Define the required scopes for Spotify access
   const scope = [
     "user-read-private",
     "user-read-email",
@@ -126,6 +123,7 @@ app.get("/auth/login", (req, res) => {
     "user-library-modify",
   ].join(" ");
 
+  // Create query parameters for the authorization URL
   const authQueryParameters = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
@@ -133,6 +131,7 @@ app.get("/auth/login", (req, res) => {
     redirect_uri: REDIRECT_URI,
   });
 
+  // Redirect the user to Spotify's authorization URL
   res.redirect(
     "https://accounts.spotify.com/authorize/?" + authQueryParameters.toString()
   );
@@ -142,6 +141,7 @@ app.get("/auth/login", (req, res) => {
 app.get("/auth/callback", (req, res) => {
   const code = req.query.code; // Extract authorization code from query
 
+  // Options for the token request
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
     form: {
@@ -158,10 +158,11 @@ app.get("/auth/callback", (req, res) => {
     json: true,
   };
 
+  // Request the access and refresh tokens
   request.post(authOptions, async (error, response, body) => {
     if (!error && response.statusCode === 200) {
-      const { access_token, refresh_token } = body;
-
+      const { access_token, refresh_token } = body; // Extract tokens from response
+      
       // Optionally save tokens in the database if needed
 
       // Redirect to the frontend with tokens
@@ -169,36 +170,30 @@ app.get("/auth/callback", (req, res) => {
         `http://localhost:5173/home?access_token=${access_token}&refresh_token=${refresh_token}`
       );
     } else {
-      res.status(400).json({ error: "Invalid token" });
+      res.status(400).json({ error: "Invalid token" }); // Handle errors
     }
   });
 });
 
-// Return access token endpoint
-// Return access token endpoint
+// Endpoint to return access and refresh tokens
 app.get("/auth/token", (req, res) => {
-  // Log the request object for debugging
-
   // Extract access_token and refresh_token from query parameters
   const access_token = req.query.access_token || null;
   const refresh_token = req.query.refresh_token || null;
 
-  // Log the tokens for debugging
-
   // Check if both tokens are present
   if (access_token && refresh_token) {
-    res.json({ access_token, refresh_token });
+    res.json({ access_token, refresh_token }); // Respond with the tokens
   } else {
-    res.status(400).json({ error: "Token not found" });
+    res.status(400).json({ error: "Token not found" }); // Handle errors
   }
 });
 
-
-// Refresh access token endpoint
+// Endpoint to refresh access token
 app.get("/refresh_token", (req, res) => {
+  const refresh_token = req.query.refresh_token; // Extract refresh_token from query parameters
 
-  const refresh_token = req.query.refresh_token;
-
+  // Options for the token refresh request
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
     headers: {
@@ -214,21 +209,49 @@ app.get("/refresh_token", (req, res) => {
     json: true,
   };
 
+  // Request a new access token using the refresh token
   request.post(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
-      const access_token = body.access_token;
-      res.json({
-        access_token: access_token,
-      });
+      const access_token = body.access_token; // Extract the new access token from response
+      res.json({ access_token: access_token }); // Respond with the new access token
     } else {
-      res.status(400).json({ error: "Unable to refresh token" });
+      res.status(400).json({ error: "Unable to refresh token" }); // Handle errors
     }
   });
 });
 
-
-
-const PORT = process.env.PORT || 3000; // Set the server port from environment variable or default to 3000
+// Set the server port from environment variable or default to 3000
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`); // Log that the server is running
 });
+
+
+// Load environment variables from .env file.
+// Import necessary libraries (express, cors, bcryptjs, jsonwebtoken, request, and @prisma/client).
+// Express App Initialization:
+
+// Initialize the Express application and Prisma Client.
+// Enable CORS for all routes to allow cross-origin requests.
+// Use middleware to parse JSON request bodies.
+// Spotify API Configuration:
+
+// Set up constants for Spotify API URLs and credentials.
+// User Signup Endpoint (/signup):
+
+// Handles user registration by checking for existing users, hashing the password, and creating a new user in the database.
+// User Login Endpoint (/login):
+
+// Handles user login by verifying email and password, generating a JWT token, and managing user sessions in the database.
+// Protected Route Example (/protected):
+
+// A sample protected route that requires a valid JWT token to access and responds with the user ID.
+// Spotify Authentication Endpoints:
+
+// /auth/login: Redirects users to Spotify for authorization.
+// /auth/callback: Handles the callback from Spotify, exchanges the authorization code for access and refresh tokens, and redirects to the frontend.
+// /auth/token: Returns the access and refresh tokens if present.
+// /refresh_token: Refreshes the access token using the refresh token.
+// Server Initialization:
+
+// Sets the server to listen on a specified port or default to port 3000 and logs that the server is running.
