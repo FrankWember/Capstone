@@ -36,7 +36,7 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
   justify-content: center;
-  background-color: #2d2b32;
+  background-color: rgb(0, 5, 15);
 }
 
 h1 {

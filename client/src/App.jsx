@@ -120,7 +120,8 @@ const App = () => {
       <div className="Home">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} /> I don't understand why
+          the Signup CSS inherits the login CSS
           <Route
             path="/home"
             element={

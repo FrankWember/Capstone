@@ -6,10 +6,14 @@ const Home = ({ token }) => {
   const [currentTrack, setCurrentTrack] = useState(null);
 
   return (
-    <div className="d-flex flex-column min-h-screen">
-      <SideBar token={token} />
-      <MediaContainer token={token} playTrack={setCurrentTrack} />
-    </div>
+    <>
+      <div>
+        <div className="d-flex flex-column min-h-screen">
+          <SideBar token={token} />
+          <MediaContainer token={token} playTrack={setCurrentTrack} />
+        </div>
+      </div>
+    </>
   );
 };
 

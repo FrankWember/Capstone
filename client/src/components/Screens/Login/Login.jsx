@@ -50,45 +50,49 @@ const Login = () => {
   };
 
   return (
-    <div className="square">
-      <i style={{ "--clr": "#ff7878" }}></i>
-      <i style={{ "--clr": "#a9bfff" }}></i>
-      <i style={{ "--clr": "#ffa041" }}></i>
+    <>
+      <div className="bodyContainer">
+        <div className="square">
+          <i style={{ "--clr": "#ff7878" }}></i>
+          <i style={{ "--clr": "#a9bfff" }}></i>
+          <i style={{ "--clr": "#ffa041" }}></i>
 
-      <form className="form-container" onSubmit={handleLogin}>
-        <h1 className="title">MoodTune</h1>
-        <h2>Login</h2>
-        {error && <p className="error">{error}</p>}{" "}
-        {/* Display error messages */}
-        <div className="inputBx">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <form className="form-container" onSubmit={handleLogin}>
+            <h1 className="title">MoodTune</h1>
+            <h2>Login</h2>
+            {error && <p className="error">{error}</p>}{" "}
+            {/* Display error messages */}
+            <div className="inputBx">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="inputBx">
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="inputBx">
+              <input type="submit" value="Sign in" disabled={loading} />
+            </div>
+            <div className="links">
+              <a href="#" className="forgot-password">
+                Forget Password
+              </a>
+              <Link to="/signup" className="signup">
+                Register
+              </Link>
+            </div>
+          </form>
         </div>
-        <div className="inputBx">
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="inputBx">
-          <input type="submit" value="Sign in" disabled={loading} />
-        </div>
-        <div className="links">
-          <a href="#" className="forgot-password">
-            Forget Password
-          </a>
-          <Link to="/signup" className="signup">
-            Register
-          </Link>
-        </div>
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 

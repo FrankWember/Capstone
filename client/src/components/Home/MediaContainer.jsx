@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./MediaContainer.css"; // Import custom CSS for styling
 import SpotifyCard from "./Media/SpotifyCard"; // Import a component to display individual items
 import { PlayIcon } from "@heroicons/react/outline"; // Import an icon from the Heroicons library
+import PlaylistPage from "../Screens/PlaylistTracks/PlaylistPage";
 
 // MediaContainer component definition
 const MediaContainer = ({ token }) => {
@@ -173,59 +174,7 @@ const MediaContainer = ({ token }) => {
           </>
         ) : (
           <>
-            {/* Playlist Details */}
-            <div className="playlist-header">
-              <button className="back-button" onClick={() => navigate(-1)}>
-                &larr; Back
-              </button>
-              <div className="playlist-details">
-                {playlistDetails.images && playlistDetails.images[0] && (
-                  <img
-                    src={playlistDetails.images[0].url}
-                    alt={playlistDetails.name}
-                    className="playlist-cover"
-                  />
-                )}
-                <div>
-                  <h3 className="playlist-title">{playlistDetails.name}</h3>
-                  <p className="playlist-description">
-                    {playlistDetails.description}
-                  </p>
-                  <p className="playlist-owner">
-                    {playlistDetails.owner &&
-                      `By ${playlistDetails.owner.display_name}`}
-                  </p>
-                </div>
-              </div>
-            </div>
-            {/* Playlist Tracks */}
-            <div className="grid">
-              {playlistTracks.map((track) => (
-                <div key={track.track.id} className="track-card">
-                  <div className="track-info">
-                    {track.track.album.images[0] && (
-                      <img
-                        src={track.track.album.images[0].url}
-                        alt={track.track.name}
-                        className="track-cover"
-                      />
-                    )}
-                    <div>
-                      <h4 className="track-name">{track.track.name}</h4>
-                      <p className="track-artists">
-                        {track.track.artists
-                          .map((artist) => artist.name)
-                          .join(", ")}
-                      </p>
-                    </div>
-                  </div>
-                  <button className="mt-2 bg-green-500 text-white px-3 py-1 rounded-full flex items-center w-24">
-                    <PlayIcon className="h-5 w-5 mr-2" />
-                    Play
-                  </button>
-                </div>
-              ))}
-            </div>
+            <PlaylistPage token={token} />
           </>
         )}
       </div>

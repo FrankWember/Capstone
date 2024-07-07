@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import "../Login/Login.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -45,66 +44,70 @@ const Signup = () => {
   };
 
   return (
-    <div className="square">
-      <i style={{ "--clr": "#ff7878" }}></i>
-      <i style={{ "--clr": "#a9bfff" }}></i>
-      <i style={{ "--clr": "#ffa041" }}></i>
-      <div className="form-container">
-        <h1 className="title">MoodTune</h1>
-        <h2>Signup</h2>
-        {error && <p className="error">{error}</p>}{" "}
-        {/* Display error message */}
-        <form onSubmit={handleSignup}>
-          <div className="inputBx">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+    <>
+      <div className="bodyContainer ">
+        <div className="square">
+          <i style={{ "--clr": "#ff7878" }}></i>
+          <i style={{ "--clr": "#a9bfff" }}></i>
+          <i style={{ "--clr": "#ffa041" }}></i>
+          <div className="form-container">
+            <h1 className="title">MoodTune</h1>
+            <h2>Signup</h2>
+            {error && <p className="error">{error}</p>}{" "}
+            {/* Display error message */}
+            <form onSubmit={handleSignup}>
+              <div className="inputBx">
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="inputBx">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="inputBx">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="inputBx">
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="inputBx">
+                <input type="submit" value="Sign up" />
+              </div>
+            </form>
+            <div className="links">
+              <Link to="/forgot-password" className="forgot-password">
+                Forgot Password
+              </Link>
+              <Link to="/" className="login">
+                Login
+              </Link>
+            </div>
           </div>
-          <div className="inputBx">
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="inputBx">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="inputBx">
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="inputBx">
-            <input type="submit" value="Sign up" />
-          </div>
-        </form>
-        <div className="links">
-          <Link to="/forgot-password" className="forgot-password">
-            Forgot Password
-          </Link>
-          <Link to="/" className="login">
-            Login
-          </Link>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

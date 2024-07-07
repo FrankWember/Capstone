@@ -5,9 +5,13 @@
   font-family: "Open Sans", sans-serif;
 }
 
-body {
-  justify-content: center;
+.bodyContainer {
   display: flex;
+  place-items: center;
+  min-width: 100vw;
+  min-height: 100vh;
+  box-sizing: border-box;
+  justify-content: center;
   background-image: url("Designer (1).png");
   background-size: cover;
   background-position: center;

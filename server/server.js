@@ -24,7 +24,7 @@ app.post("/signup", async (req, res) => {
   const { email, password, name } = req.body; // Extract user details from request body
 
   try {
-    // Check if user already exists in the database
+    // Sanity Check to verify if user already exists in the database
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" }); // Return error if user exists
@@ -86,7 +86,7 @@ app.post("/login", async (req, res) => {
 
     res.json({ userToken, user }); // Respond with the user token and user data
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(400).json({ error: error.message }); // Handle errors
   }
 });
@@ -162,7 +162,7 @@ app.get("/auth/callback", (req, res) => {
   request.post(authOptions, async (error, response, body) => {
     if (!error && response.statusCode === 200) {
       const { access_token, refresh_token } = body; // Extract tokens from response
-      
+
       // Optionally save tokens in the database if needed
 
       // Redirect to the frontend with tokens
@@ -225,7 +225,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`); // Log that the server is running
 });
-
 
 // Load environment variables from .env file.
 // Import necessary libraries (express, cors, bcryptjs, jsonwebtoken, request, and @prisma/client).

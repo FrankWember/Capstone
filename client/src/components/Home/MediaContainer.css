@@ -1,9 +1,11 @@
-/* MediaContainer.css */
 .media-container {
+  position: relative;
+  left: 0px;
   background-color: #181818;
   color: #ffffff;
   padding: 20px;
   min-height: 100vh;
+  border-radius: 30px;
 }
 
 .content-wrapper {
@@ -31,8 +33,9 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
+
   gap: 20px;
+  display: flex;
 }
 
 @media (min-width: 768px) {
