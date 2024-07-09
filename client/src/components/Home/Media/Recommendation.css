@@ -1,0 +1,43 @@
+.map-container {
+  position: fixed;
+  width: calc(100% - 450px); /* Adjust the width to take up remaining space */
+  height: 100vh; /* Full height of the viewport */
+  margin-left: 450px; /* Offset by the width of the sidebar */
+  overflow: hidden; /* Hide any overflowing content */
+  border: rebeccapurple solid 3px;
+}
+
+.address {
+  font-size: 30px;
+}
+
+.get-location-button {
+  position: absolute;
+  top: 60px;
+  left: 100px;
+  z-index: 10;
+  padding: 12px 24px; /* Increased padding for a more substantial button */
+  background-color: #1db954; /* Spotify green color */
+  color: white;
+  border: none;
+  border-radius: 50px; /* Rounded button */
+  cursor: pointer;
+  font-size: 18px; /* Larger font size */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for a 3D effect */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for background and transform */
+}
+
+.get-location-button:hover {
+  background-color: #1ed760;
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+.get-location-button:active {
+  background-color: #1aa34a; /* Darker shade for active state */
+  transform: scale(1); /* Reset scale on active state */
+}
+
+.get-location-button:focus {
+  outline: none; /* Remove default focus outline */
+  box-shadow: 0px 0px 0px 4px rgba(29, 185, 84, 0.3); /* Custom focus outline */
+}

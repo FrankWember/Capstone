@@ -3,16 +3,24 @@ import "./MediaContainer.css";
 import SideBar from "../SideBar/SideBar";
 import SpotifyCard from "./Media/SpotifyCard";
 import { useNavigate } from "react-router-dom";
+import SpotifyPlayer from "./Media/SpotifyPlayer";
 
 const MediaContainer = ({ token, weather }) => {
+  // State to store the top tracks
   const [topTracks, setTopTracks] = useState([]);
+  // State to store recommended tracks
   const [recommendedTracks, setRecommendedTracks] = useState([]);
+  // State to store saved playlists
   const [savedPlaylist, setSavedPlaylist] = useState([]);
+  // State to store featured playlists
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
+  // State to store any error messages
   const [error, setError] = useState(null);
+  // State to store the currently playing track URI
+  const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const navigate = useNavigate();
 
-  // Helper function to make API requests to Spotify
+  // Function to fetch data from the Spotify API
   const fetchWebApi = async (endpoint, method = "GET", body) => {
     try {
       const res = await fetch(`https://api.spotify.com/${endpoint}`, {
@@ -25,41 +33,41 @@ const MediaContainer = ({ token, weather }) => {
       });
 
       if (!res.ok) throw new Error(`Error: ${res.status}`);
-      return await res.json(); // Return the response data as JSON
+      return await res.json();
     } catch (error) {
-      setError(error.message); // Set any errors to the state
+      setError(error.message);
       return null;
     }
   };
 
-  // Fetch the user's top tracks from Spotify
+  // Function to get the user's top tracks
   const getTopTracks = async () => {
     const data = await fetchWebApi("v1/me/top/tracks?limit=5");
-    if (data) setTopTracks(data.items); // Set the fetched top tracks to the state
+    if (data) setTopTracks(data.items);
   };
 
-  // Fetch recommendations based on the user's top tracks
+  // Function to get track recommendations based on seed tracks
   const getRecommendations = async (seedTracks) => {
     const seedTrackIds = seedTracks.map((track) => track.id).join(",");
     const data = await fetchWebApi(
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
-    if (data) setRecommendedTracks(data.tracks); // Set the fetched recommendations to the state
+    if (data) setRecommendedTracks(data.tracks);
   };
 
-  // Fetch the user's saved playlists from Spotify
+  // Function to get the user's saved playlists
   const getSavedPlaylist = async () => {
     const data = await fetchWebApi("v1/me/playlists");
-    if (data) setSavedPlaylist(data.items); // Set the fetched saved playlists to the state
+    if (data) setSavedPlaylist(data.items);
   };
 
-  // Fetch the featured playlists from Spotify
+  // Function to get featured playlists
   const getFeaturedPlaylists = async () => {
     const data = await fetchWebApi("v1/browse/featured-playlists");
-    if (data) setFeaturedPlaylists(data.playlists.items); // Set the fetched featured playlists to the state
+    if (data) setFeaturedPlaylists(data.playlists.items);
   };
 
-  // Use useEffect to fetch data when the token changes
+  // Fetch data when the component mounts and when the token changes
   useEffect(() => {
     if (token) {
       getTopTracks().then((topTracks) => {
@@ -70,7 +78,12 @@ const MediaContainer = ({ token, weather }) => {
     }
   }, [token]);
 
-  // Display an error message if there was an error fetching data
+  // Handle play track action
+  const handlePlayTrack = (trackUri) => {
+    setCurrentTrackUri(trackUri);
+  };
+
+  // Render error message if there is an error
   if (error) {
     return <div className="error-message">Error: {error}</div>;
   }
@@ -86,7 +99,6 @@ const MediaContainer = ({ token, weather }) => {
           <p>{weather.main.temp}°C</p>
         </div>
       )}
-
       <div className="media-container">
         <div className="section">
           <h3 className="section-title">
@@ -95,11 +107,15 @@ const MediaContainer = ({ token, weather }) => {
           </h3>
           <div className="gridItem">
             {topTracks.map((track) => (
-              <SpotifyCard key={track.id} item={track} />
+              <SpotifyCard
+                key={track.id}
+                item={track}
+                token={token}
+                onClick={() => handlePlayTrack(track.uri)}
+              />
             ))}
           </div>
         </div>
-
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>
@@ -107,11 +123,15 @@ const MediaContainer = ({ token, weather }) => {
           </h3>
           <div className="gridItem">
             {recommendedTracks.map((track) => (
-              <SpotifyCard key={track.id} item={track} />
+              <SpotifyCard
+                key={track.id}
+                item={track}
+                token={token}
+                onClick={() => handlePlayTrack(track.uri)}
+              />
             ))}
           </div>
         </div>
-
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>
@@ -123,12 +143,12 @@ const MediaContainer = ({ token, weather }) => {
                 key={playlist.id}
                 item={playlist}
                 isPlaylist
+                token={token}
                 onClick={() => navigate(`/playlist/${playlist.id}`)}
               />
             ))}
           </div>
         </div>
-
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>
@@ -140,12 +160,16 @@ const MediaContainer = ({ token, weather }) => {
                 key={playlist.id}
                 item={playlist}
                 isPlaylist
+                token={token}
                 onClick={() => navigate(`/playlist/${playlist.id}`)}
               />
             ))}
           </div>
         </div>
       </div>
+      {currentTrackUri && (
+        <SpotifyPlayer token={token} trackUri={currentTrackUri} />
+      )}
     </div>
   );
 };

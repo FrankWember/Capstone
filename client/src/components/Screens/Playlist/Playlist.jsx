@@ -1,80 +1,67 @@
-// src/components/PlaylistPage.jsx
+// src/components/Playlist/Playlist.js
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { PlayIcon, ChevronLeftIcon, ClockIcon } from "@heroicons/react/solid";
-import "./PlaylistPage.css"; // Import custom CSS
+import { ClockIcon } from "@heroicons/react/solid";
+import "./Playlist.css";
 import SideBar from "../../SideBar/SideBar";
 
-const PlaylistPage = ({ token }) => {
+const Playlist = ({ token }) => {
   const { playlistId } = useParams();
-  const [tracks, setTracks] = useState([]);
-  const [playlistDetails, setPlaylistDetails] = useState({});
+  const [playlistDetails, setPlaylistDetails] = useState(null);
+  const [playlistTracks, setPlaylistTracks] = useState([]);
   const [error, setError] = useState(null);
 
-  // Function to fetch playlist tracks
-  const fetchPlaylistTracks = async (playlistId) => {
+  const fetchWebApi = async (endpoint, method = "GET", body) => {
     try {
-      const res = await fetch(
-        `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: body ? JSON.stringify(body) : null,
+      });
 
       if (!res.ok) throw new Error(`Error: ${res.status}`);
-
-      const data = await res.json();
-      setTracks(data.items);
+      return await res.json();
     } catch (error) {
       setError(error.message);
-    }
-  };
-
-  // Function to fetch playlist details
-  const fetchPlaylistDetails = async (playlistId) => {
-    try {
-      const res = await fetch(
-        `https://api.spotify.com/v1/playlists/${playlistId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error(`Error: ${res.status}`);
-
-      const data = await res.json();
-      setPlaylistDetails(data);
-    } catch (error) {
-      setError(error.message);
+      return null;
     }
   };
 
   useEffect(() => {
-    if (playlistId && token) {
-      fetchPlaylistTracks(playlistId);
-      fetchPlaylistDetails(playlistId);
+    const getPlaylistDetails = async () => {
+      const details = await fetchWebApi(`v1/playlists/${playlistId}`);
+      const tracks = await fetchWebApi(`v1/playlists/${playlistId}/tracks`);
+      if (details && tracks) {
+        setPlaylistDetails(details);
+        setPlaylistTracks(tracks.items);
+      }
+    };
+
+    if (token && playlistId) {
+      getPlaylistDetails();
     }
-  }, [playlistId, token]);
+  }, [token, playlistId]);
+
+  const formatDuration = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = ((ms % 60000) / 1000).toFixed(0);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="error-message">Error: {error}</div>;
   }
 
   return (
-    <>
+    <div className="playlist-page">
       <SideBar />
-      <div className="playlist-page-container">
-        <div className="playlist-header">
-          <button className="back-button" onClick={() => window.history.back()}>
-            <ChevronLeftIcon className="icon" />
-          </button>
-          <div className="playlist-details">
+      <div className="playlist-container">
+        {playlistDetails && (
+          <div className="playlist-header">
             {playlistDetails.images && playlistDetails.images[0] && (
               <img
                 src={playlistDetails.images[0].url}
@@ -83,22 +70,17 @@ const PlaylistPage = ({ token }) => {
               />
             )}
             <div>
-              <h1 className="playlist-title">{playlistDetails.name}</h1>
-              <p className="playlist-description">
+              <div className="playlist-title">{playlistDetails.name}</div>
+              <div className="playlist-description">
                 {playlistDetails.description}
-              </p>
+              </div>
               <p className="playlist-owner">
                 {playlistDetails.owner &&
                   `By ${playlistDetails.owner.display_name}`}
               </p>
             </div>
           </div>
-        </div>
-        <div className="playlist-actions">
-          <button className="play-button">
-            <PlayIcon className="icon" /> Play
-          </button>
-        </div>
+        )}
         <div className="playlist-tracks">
           <table className="tracks-table">
             <thead>
@@ -106,14 +88,13 @@ const PlaylistPage = ({ token }) => {
                 <th className="table-header">#</th>
                 <th className="table-header">Title</th>
                 <th className="table-header">Album</th>
-                <th className="table-header">Date added</th>
                 <th className="table-header">
                   <ClockIcon className="icon" />
                 </th>
               </tr>
             </thead>
             <tbody>
-              {tracks.map((track, index) => (
+              {playlistTracks.map((track, index) => (
                 <tr key={track.track.id} className="track-row">
                   <td className="table-cell">{index + 1}</td>
                   <td className="table-cell track-title">
@@ -125,7 +106,7 @@ const PlaylistPage = ({ token }) => {
                           className="track-cover"
                         />
                       )}
-                      <div>
+                      <div className="track-details">
                         <span className="track-name">{track.track.name}</span>
                         <span className="track-artists">
                           {track.track.artists
@@ -137,9 +118,6 @@ const PlaylistPage = ({ token }) => {
                   </td>
                   <td className="table-cell">{track.track.album.name}</td>
                   <td className="table-cell">
-                    {new Date(track.added_at).toLocaleDateString()}
-                  </td>
-                  <td className="table-cell">
                     {formatDuration(track.track.duration_ms)}
                   </td>
                 </tr>
@@ -148,15 +126,8 @@ const PlaylistPage = ({ token }) => {
           </table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-// Helper function to format track duration
-const formatDuration = (ms) => {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = ((ms % 60000) / 1000).toFixed(0);
-  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-};
-
-export default PlaylistPage;
+export default Playlist;
