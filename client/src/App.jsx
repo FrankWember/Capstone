@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
@@ -8,29 +7,27 @@ import {
 } from "react-router-dom";
 import Login from "./components/Screens/Login/Login";
 import Signup from "./components/Screens/Signup/Signup";
-import Trending from "./components/Screens/Trending/Trending";
-import Favorites from "./components/Screens/Favorites/Favorites";
 import Player from "./components/Screens/Player/Player";
-import Library from "./components/Screens/Library/Library";
 import Home from "./components/Home/Home";
-import MediaContainer from "./components/Home/MediaContainer";
+import Playlist from "./components/Screens/Playlist/Playlist";
 import "./App.css";
+import Recommendation from "./components/Screens/Recommendation/Recommendation";
 
-// ProtectedRoute Component to restrict access to certain routes
 const ProtectedRoute = ({ children }) => {
-  const userToken = localStorage.getItem("userToken"); // Get user token from local storage
+  const userToken = localStorage.getItem("userToken");
   if (!userToken) {
-    return <Navigate to="/" />; // Redirect to login if not authenticated
+    return <Navigate to="/" />;
   }
 
-  return children; // Render the protected component
+  return children;
 };
 
 const App = () => {
-  const [token, setToken] = useState(""); // State to store Spotify token
+  const [token, setToken] = useState("");
+  const [userLocation, setUserLocation] = useState(null);
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
-    // Function to extract tokens from URL parameters
     const extractTokensFromURL = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const accessToken = urlParams.get("access_token");
@@ -44,16 +41,13 @@ const App = () => {
         localStorage.setItem("spotifyRefreshToken", refreshToken);
       }
 
-      // Remove tokens from URL after storing them
       window.history.replaceState({}, document.title, window.location.pathname);
     };
 
-    // Call the function to extract tokens from URL
     extractTokensFromURL();
   }, []);
 
   useEffect(() => {
-    // Function to fetch the token from the backend
     const fetchToken = async () => {
       const userToken = localStorage.getItem("userToken");
       const accessToken = localStorage.getItem("spotifyToken");
@@ -83,11 +77,9 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Function to refresh the token periodically
     const refreshAccessToken = async () => {
       const userToken = localStorage.getItem("userToken");
       const refreshToken = localStorage.getItem("spotifyRefreshToken");
-      console.log(accessToken);
       if (userToken) {
         try {
           const response = await fetch(
@@ -100,7 +92,6 @@ const App = () => {
           );
 
           const data = await response.json();
-          console.log(data);
           if (data.access_token) {
             setToken(data.access_token);
             localStorage.setItem("spotifyToken", data.access_token);
@@ -111,7 +102,7 @@ const App = () => {
       }
     };
 
-    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000); // Refresh token every 55 minutes
+    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -120,13 +111,38 @@ const App = () => {
       <div className="Home">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} /> I don't understand why
-          the Signup CSS inherits the login CSS
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/home"
             element={
               <ProtectedRoute>
-                <Home token={token} />
+                <Home
+                  token={token}
+                  userLocation={userLocation}
+                  setUserLocation={setUserLocation}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/recommendation"
+            element={
+              <ProtectedRoute>
+                <Recommendation
+                  token={token}
+                  userLocation={userLocation}
+                  setUserLocation={setUserLocation}
+                  weather={weather}
+                />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/home/player"
+            element={
+              <ProtectedRoute>
+                <Player token={token} />
               </ProtectedRoute>
             }
           />
@@ -134,39 +150,7 @@ const App = () => {
             path="/playlist/:playlistId"
             element={
               <ProtectedRoute>
-                <MediaContainer token={token} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/library"
-            element={
-              <ProtectedRoute>
-                <Library token={token} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/trending"
-            element={
-              <ProtectedRoute>
-                <Trending token={token} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/favorite"
-            element={
-              <ProtectedRoute>
-                <Favorites token={token} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/player"
-            element={
-              <ProtectedRoute>
-                <Player token={token} />
+                <Playlist token={token} />
               </ProtectedRoute>
             }
           />

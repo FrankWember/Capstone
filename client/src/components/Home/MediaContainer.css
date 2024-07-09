@@ -1,146 +1,52 @@
-.media-container {
-  position: relative;
-  left: 0px;
-  background-color: #181818;
-  color: #ffffff;
-  padding: 20px;
+/* src/components/MediaContainer/MediaContainer.css */
+
+.app-container {
+  display: flex;
   min-height: 100vh;
-  border-radius: 30px;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
 }
 
-.content-wrapper {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+.media-container {
+  flex-grow: 1;
+  margin-left: 450px;
+  padding: 20px;
+  border-radius: 30px 0 30px 30px;
+  background-color: #090813;
+  overflow-y: auto;
+}
+
+.media-container::-webkit-scrollbar {
+  display: none;
 }
 
 .section {
-  margin-bottom: 40px;
+  margin-bottom: 50px;
+  padding-bottom: 20px; /* Add padding to separate sections */
+  border-bottom: 2px solid #333; /* Add a border to separate sections */
 }
 
 .section-title {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
+  margin-bottom: 10px;
 }
 
 .section-title .icon {
   font-size: 24px;
-  margin-right: 10px;
 }
 
-.grid {
-  display: grid;
-
-  gap: 20px;
+.gridItem {
   display: flex;
+  flex-wrap: wrap;
+  overflow-x: scroll; /* Enable horizontal scrolling */
+  gap: 20px; /* Space between grid items */
+  padding: 10px 0; /* Space around the grid */
 }
 
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.playlist-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.back-button {
-  background: none;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 18px;
-  margin-right: 20px;
-}
-
-.playlist-details {
-  display: flex;
-  align-items: center;
-}
-
-.playlist-cover {
-  width: 500px;
-  height: 500px;
-  margin-right: 20px;
-  object-fit: cover;
-}
-
-.playlist-title {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.playlist-description,
-.playlist-owner {
-  color: #b3b3b3;
-}
-
-.track-card {
-  background-color: #282828;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.track-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.track-cover {
-  width: 100px;
-  height: 100px;
-  margin-right: 15px;
-  object-fit: cover;
-  display: flex;
-}
-
-.track-name {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.track-artists {
-  font-size: 14px;
-  color: #b3b3b3;
-}
-
-.play-button {
-  background-color: #1db954;
-  border: none;
-  color: #ffffff;
-  padding: 10px;
-  border-radius: 20px;
-
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.play-button .icon {
-  margin-right: 8px;
-}
-
-.play-button:hover {
-  background-color: #1ed760;
+.gridItem::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar in webkit browsers */
 }
 
 .error-message {
@@ -149,4 +55,5 @@
   padding: 20px;
   border-radius: 10px;
   text-align: center;
+  margin: 20px;
 }
