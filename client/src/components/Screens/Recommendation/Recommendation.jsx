@@ -17,13 +17,14 @@ const libraries = ["places"]; // Static array of libraries
 
 const Recommendation = ({ onLocationUpdate }) => {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyD0C4fyraXl5PcRc6OEH7M-v43XtV3yUdQ", // Replace with your API key
+    googleMapsApiKey: "AIzaSyBBv8sZWRTNpE5qIE9Y0jPvjMHXIAnNw70",
     libraries,
   });
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [address, setAddress] = useState("");
   const [weather, setWeather] = useState(null);
+  const [placeTypes, setPlaceTypes] = useState([]);
   const [bgColor, setBgColor] = useState("#f5f5f5");
 
   // Function to fetch weather data from OpenWeatherMap API
@@ -44,7 +45,7 @@ const Recommendation = ({ onLocationUpdate }) => {
   };
 
   const getAddress = async (lat, lng) => {
-    const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyD0C4fyraXl5PcRc6OEH7M-v43XtV3yUdQ`;
+    const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBBv8sZWRTNpE5qIE9Y0jPvjMHXIAnNw70`;
     try {
       const response = await fetch(geocodingUrl);
       const data = await response.json();
@@ -56,6 +57,26 @@ const Recommendation = ({ onLocationUpdate }) => {
     } catch (error) {
       console.error("Error fetching address:", error);
     }
+  };
+
+  const fetchPlaceTypes = (lat, lng) => {
+    const service = new window.google.maps.places.PlacesService(
+      document.createElement("div")
+    );
+    const request = {
+      location: new window.google.maps.LatLng(lat, lng),
+      radius: "10", // Search within 5 meters
+    };
+
+    service.nearbySearch(request, (results, status) => {
+      console.log(results);
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        const types = results.map((place) => place.types).flat();
+        setPlaceTypes(types);
+      } else {
+        console.error("Error fetching place types:", status);
+      }
+    });
   };
 
   const fetchCurrentLocation = () => {
@@ -72,6 +93,7 @@ const Recommendation = ({ onLocationUpdate }) => {
           }
           getAddress(location.lat, location.lng);
           fetchWeatherData(location.lat, location.lng); // Fetch weather data for the current location
+          fetchPlaceTypes(location.lat, location.lng); // Fetch place types for the current location
         },
         (error) => {
           console.error("Error getting the current location: ", error);
@@ -141,6 +163,7 @@ const Recommendation = ({ onLocationUpdate }) => {
               >
                 <h3>Your Location</h3>
                 <p>{address}</p>
+                <p>Place Types: {placeTypes.join(", ")}</p>
               </div>
             )}
           </div>
