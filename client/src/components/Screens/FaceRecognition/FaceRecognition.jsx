@@ -13,7 +13,7 @@ const FaceRecognition = () => {
 
   useEffect(() => {
     const loadModels = async () => {
-      const MODEL_URL = `${window.location.origin}/models`;
+      const MODEL_URL = `/models`;
 
       await Promise.all([
         faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
