@@ -10,6 +10,8 @@ const MediaContainer = ({ token, weather }) => {
   const [topTracks, setTopTracks] = useState([]);
   // State to store recommended tracks
   const [recommendedTracks, setRecommendedTracks] = useState([]);
+  // State to store recently played tracks
+  const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState([]);
   // State to store saved playlists
   const [savedPlaylist, setSavedPlaylist] = useState([]);
   // State to store featured playlists
@@ -55,6 +57,12 @@ const MediaContainer = ({ token, weather }) => {
     if (data) setRecommendedTracks(data.tracks);
   };
 
+  // Function to get the user's recently played tracks
+  const getRecentlyPlayedTracks = async () => {
+    const data = await fetchWebApi("v1/me/player/recently-played?limit=25");
+    if (data) setRecentlyPlayedTracks(data.items);
+  };
+
   // Function to get the user's saved playlists
   const getSavedPlaylist = async () => {
     const data = await fetchWebApi("v1/me/playlists");
@@ -75,6 +83,7 @@ const MediaContainer = ({ token, weather }) => {
       });
       getSavedPlaylist();
       getFeaturedPlaylists();
+      getRecentlyPlayedTracks();
     }
   }, [token]);
 
@@ -128,6 +137,22 @@ const MediaContainer = ({ token, weather }) => {
                 item={track}
                 token={token}
                 onClick={() => handlePlayTrack(track.uri)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="section">
+          <h3 className="section-title">
+            <span className="icon">🎵</span>
+            Recently Played Tracks
+          </h3>
+          <div className="gridItem">
+            {recentlyPlayedTracks.map((track) => (
+              <SpotifyCard
+                key={track.track.id}
+                item={track.track}
+                token={token}
+                onClick={() => handlePlayTrack(track.track.uri)}
               />
             ))}
           </div>

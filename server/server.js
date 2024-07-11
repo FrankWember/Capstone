@@ -112,6 +112,7 @@ app.get("/auth/login", async (req, res) => {
     "streaming",
     "user-read-playback-state",
     "user-modify-playback-state",
+    "user-read-recently-played",
     "user-read-currently-playing",
     "playlist-read-private",
     "playlist-read-collaborative",
@@ -119,7 +120,12 @@ app.get("/auth/login", async (req, res) => {
     "playlist-modify-public",
     "user-library-read",
     "user-library-modify",
+    "user-follow-read",
+    "user-follow-modify",
+    "ugc-image-upload",
+    "app-remote-control",
   ].join(" ");
+  
 
   const authQueryParameters = new URLSearchParams({
     response_type: "code",
@@ -179,6 +185,11 @@ async function getAndStoreTopTracks(access_token) {
     const userTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/tracks`, access_token);
     await storeTracks(userTopTracks, access_token);
 
+    const userRecentlyListen = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/player/recently-played?limit=50`, access_token);
+    const recentlyPlayedTracks = userRecentlyListen.items.map((item) => item.track);
+
+    await storeTracks({ items: recentlyPlayedTracks }, access_token);
+
     const userTopArtists = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/artists`, access_token);
 
     for (const artist of userTopArtists.items) {
@@ -206,6 +217,7 @@ async function fetchSpotifyData(url, access_token) {
       } else {
         resolve(body);
       }
+   
     });
   });
 }
