@@ -23,16 +23,22 @@ const Login = () => {
         email,
         password,
       });
+      console.log(response);
 
-      const { userToken } = response.data; // Extract user token from response
+      const { userToken, userId } = response.data; // Extract user token and userId from response
       console.log("Token received:", userToken);
-
       localStorage.setItem("userToken", userToken); // Store token in local storage
+      localStorage.setItem("userId", userId); // Store userId in local storage
+
       console.log(
         "Token stored in localStorage:",
         localStorage.getItem("userToken")
       );
+
       navigate("/home"); // Navigate to home page after successful login
+
+      // Redirect to Spotify login after successful login
+      window.location.href = `http://localhost:3000/auth/login?userId=${userId}`;
     } catch (error) {
       setLoading(false); // Set loading state to false
       console.log("Login error:", error);
@@ -46,7 +52,6 @@ const Login = () => {
         setError("Server is under maintenance"); // Setting error message for server issues
       }
     }
-    window.location.href = "http://localhost:3000/auth/login"; // Redirect to Spotify login
   };
 
   return (
