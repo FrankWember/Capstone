@@ -1,0 +1,25 @@
+.face-recognition-container {
+  display: flex;
+  margin-left: 450px;
+  border: green solid 5px;
+  background-color: rgb(12, 96, 152);
+  height: 100vh;
+}
+
+.video-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 1080px;
+  border: red solid 5px;
+}
+
+#video-feed {
+  position: relative;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
