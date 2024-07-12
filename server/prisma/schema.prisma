@@ -57,29 +57,18 @@ model Recommendation {
   @@index([user_id])
 }
 
-model Track {
-  id          Int       @id @default(autoincrement())
-  spotifyId   String    @unique
-  name        String
-  artists     String
-  album       String
-  previewUrl  String?
-  features    Json
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
-}
 
 model Recommendation {
   id          Int       @id @default(autoincrement())
-  userId      Int
+  user_id      Int
   location    String
   weather     String
-  placeTypes  String
+  place_types  String
   expression  String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
 
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [user_id], references: [id])
 
-  @@index([userId])
+  @@index([user_id])
 }
