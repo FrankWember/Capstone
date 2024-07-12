@@ -91,8 +91,8 @@ const Recommendation = ({ onLocationUpdate }) => {
             onLocationUpdate(location);
           }
           getAddress(location.lat, location.lng);
-          fetchWeatherData(location.lat, location.lng); // Fetch weather data for the current location
-          fetchPlaceTypes(location.lat, location.lng); // Fetch place types for the current location
+          fetchWeatherData(location.lat, location.lng);
+          fetchPlaceTypes(location.lat, location.lng);
         },
         (error) => {
           console.error("Error getting the current location: ", error);
