@@ -14,6 +14,7 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 
 // Spotify API and authentication configuration
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
+const SPOTIFY_API_URL = "https://api.spotify.com/v1";
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID; // Spotify Client ID from environment variables
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET; // Spotify Client Secret from environment variables
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI; // Spotify Redirect URI from environment variables
@@ -46,48 +47,37 @@ app.post("/signup", async (req, res) => {
 
 // Endpoint for user login
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body; // Extract user credentials from request body
+  const { email, password } = req.body;
 
   try {
-    // Find the user by email
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(404).json({ error: "User not found" }); // Return error if user not found
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // Verify the password
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({ error: "Invalid password" }); // Return error if password is invalid
+      return res.status(401).json({ error: "Invalid password" });
     }
 
-    // Generate a JWT token
-    const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, {
-      expiresIn: "1h", // Token expires in 1 hour
-    });
+    const userToken = jwt.sign({ user_id: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
-    // Check for existing session and update or create one
-    const existingSession = await prisma.session.findFirst({
-      where: { userId: user.id },
-    });
+    const existingSession = await prisma.session.findFirst({ where: { user_id: user.id } });
 
     if (existingSession) {
-      // Update the existing session with the new token
       await prisma.session.update({
-        where: { userId: user.id },
+        where: { id: existingSession.id },
         data: { token: userToken },
       });
     } else {
-      // Create a new session with the new token
-      await prisma.session.create({
-        data: { userId: user.id, token: userToken },
-      });
+      await prisma.session.create({ data: { user_id: user.id, token: userToken } });
     }
+  
+    res.json({ userToken, user_id: user.id, user });
 
-    res.json({ userToken, user }); // Respond with the user token and user data
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error: error.message }); // Handle errors
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -98,15 +88,23 @@ app.get("/protected", async (req, res) => {
   try {
     // Verify the token
     const decoded = jwt.verify(token, SECRET_KEY);
-    res.json({ userId: decoded.userId }); // Respond with the user ID
+    res.json({ user_id: decoded.user_id }); // Respond with the user ID
   } catch (error) {
     res.status(401).json({ error: error.message }); // Handle errors
   }
 });
 
 // Request user authorization from Spotify
-app.get("/auth/login", (req, res) => {
-  // Define the required scopes for Spotify access
+app.get("/auth/login", async (req, res) => {
+
+  const user_id = req.query.user_id;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "user_id is required" });
+  }
+
+  console.log("Login User_id:", user_id);
+
   const scope = [
     "user-read-private",
     "user-read-email",
@@ -114,6 +112,7 @@ app.get("/auth/login", (req, res) => {
     "streaming",
     "user-read-playback-state",
     "user-modify-playback-state",
+    "user-read-recently-played",
     "user-read-currently-playing",
     "playlist-read-private",
     "playlist-read-collaborative",
@@ -121,17 +120,20 @@ app.get("/auth/login", (req, res) => {
     "playlist-modify-public",
     "user-library-read",
     "user-library-modify",
+    "user-follow-read",
+    "user-follow-modify",
+    "ugc-image-upload",
+    "app-remote-control",
   ].join(" ");
 
-  // Create query parameters for the authorization URL
   const authQueryParameters = new URLSearchParams({
     response_type: "code",
     client_id: CLIENT_ID,
     scope: scope,
     redirect_uri: REDIRECT_URI,
+    state: user_id, // Include user_id in the state parameter
   });
 
-  // Redirect the user to Spotify's authorization URL
   res.redirect(
     "https://accounts.spotify.com/authorize/?" + authQueryParameters.toString()
   );
@@ -139,9 +141,12 @@ app.get("/auth/login", (req, res) => {
 
 // Handle callback and request access token from Spotify
 app.get("/auth/callback", (req, res) => {
-  const code = req.query.code; // Extract authorization code from query
+  const code = req.query.code;
+  const user_id = req.query.state; // Extract user_id from the state parameter
 
-  // Options for the token request
+  // Log state to verify it contains the user_id
+  console.log("Callback State (user_id):", user_id);
+
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
     form: {
@@ -150,30 +155,115 @@ app.get("/auth/callback", (req, res) => {
       grant_type: "authorization_code",
     },
     headers: {
-      Authorization:
-        "Basic " +
-        Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
+      Authorization: "Basic " + Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     json: true,
   };
 
-  // Request the access and refresh tokens
   request.post(authOptions, async (error, response, body) => {
     if (!error && response.statusCode === 200) {
-      const { access_token, refresh_token } = body; // Extract tokens from response
+      const { access_token, refresh_token } = body;
 
-      // Optionally save tokens in the database if needed
+      // Log user_id to ensure it's correctly extracted &
+      console.log("Extracted user_id:", user_id);
 
-      // Redirect to the frontend with tokens
-      res.redirect(
-        `http://localhost:5173/home?access_token=${access_token}&refresh_token=${refresh_token}`
-      );
+      await getAndStoreTopTracks(access_token);
+
+      res.redirect(`http://localhost:5173/home?access_token=${access_token}&refresh_token=${refresh_token}`);
     } else {
-      res.status(400).json({ error: "Invalid token" }); // Handle errors
+      res.status(400).json({ error: "Invalid token" });
     }
   });
 });
+
+// Function to get and store top tracks
+async function getAndStoreTopTracks(access_token) {
+  try {
+    const userTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/tracks`, access_token);
+    await storeTracks(userTopTracks, access_token);
+
+    const userRecentlyListen = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/player/recently-played?limit=50`, access_token);
+    const recentlyPlayedTracks = userRecentlyListen.items.map((item) => item.track);
+
+    await storeTracks({ items: recentlyPlayedTracks }, access_token);
+
+    const userTopArtists = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/artists`, access_token);
+
+    for (const artist of userTopArtists.items) {
+      const artistTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/artists/${artist.id}/top-tracks?market=US`, access_token);
+      await storeTracks(artistTopTracks, access_token);
+    }
+  } catch (error) {
+    console.error("Error fetching or storing top tracks:", error);
+  }
+}
+
+// Helper function to fetch data from Spotify API
+async function fetchSpotifyData(url, access_token) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url,
+      headers: { Authorization: `Bearer ${access_token}` },
+      json: true,
+    };
+    request.get(options, (error, response, body) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
+
+// Helper function to store tracks in the database
+async function storeTracks(tracksData, access_token) {
+  // Determine the correct array to iterate over
+  const items = tracksData.items || tracksData.tracks;
+
+  if (!items) {
+    console.error("Error: No tracks data available to store.");
+    return;
+  }
+
+  for (const track of items) {
+    // Check if the track already exists
+    const existingTrack = await prisma.spotifyMusicTrack.findUnique({ where: { spotify_id: track.id } });
+
+    if (!existingTrack) {
+      // If the track doesn't exist, create it
+      await prisma.spotifyMusicTrack.create({
+        data: {
+          spotify_id: track.id,
+          name: track.name,
+          artists: track.artists.map((artist) => artist.name).join(", "),
+          album: track.album.name,
+          preview_url: track.preview_url,
+          features: await getTrackFeatures(track.id, access_token),
+        },
+      });
+    }
+  }
+}
+
+// Function to get track features from Spotify API
+async function getTrackFeatures(trackId, access_token) {
+  const options = {
+    url: `${SPOTIFY_API_URL}/audio-features/${trackId}`,
+    headers: { Authorization: `Bearer ${access_token}` },
+    json: true,
+  };
+  return new Promise((resolve, reject) => {
+    request.get(options, (error, response, body) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
+  });
+}
 
 // Endpoint to return access and refresh tokens
 app.get("/auth/token", (req, res) => {
@@ -225,32 +315,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`); // Log that the server is running
 });
-
-// Load environment variables from .env file.
-// Import necessary libraries (express, cors, bcryptjs, jsonwebtoken, request, and @prisma/client).
-// Express App Initialization:
-
-// Initialize the Express application and Prisma Client.
-// Enable CORS for all routes to allow cross-origin requests.
-// Use middleware to parse JSON request bodies.
-// Spotify API Configuration:
-
-// Set up constants for Spotify API URLs and credentials.
-// User Signup Endpoint (/signup):
-
-// Handles user registration by checking for existing users, hashing the password, and creating a new user in the database.
-// User Login Endpoint (/login):
-
-// Handles user login by verifying email and password, generating a JWT token, and managing user sessions in the database.
-// Protected Route Example (/protected):
-
-// A sample protected route that requires a valid JWT token to access and responds with the user ID.
-// Spotify Authentication Endpoints:
-
-// /auth/login: Redirects users to Spotify for authorization.
-// /auth/callback: Handles the callback from Spotify, exchanges the authorization code for access and refresh tokens, and redirects to the frontend.
-// /auth/token: Returns the access and refresh tokens if present.
-// /refresh_token: Refreshes the access token using the refresh token.
-// Server Initialization:
-
-// Sets the server to listen on a specified port or default to port 3000 and logs that the server is running.
