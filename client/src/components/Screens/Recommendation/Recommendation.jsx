@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import axios from "axios";
 import SideBar from "../../SideBar/SideBar";
 import "./Recommendation.css"; // Import the CSS file
 
@@ -26,6 +27,8 @@ const Recommendation = ({ onLocationUpdate }) => {
   const [weather, setWeather] = useState(null);
   const [placeTypes, setPlaceTypes] = useState([]);
   const [bgColor, setBgColor] = useState("#f5f5f5");
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Function to fetch weather data from OpenWeatherMap API
   const fetchWeatherData = async (lat, lon) => {
@@ -36,7 +39,6 @@ const Recommendation = ({ onLocationUpdate }) => {
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error(`Error: ${response.status}`);
       const data = await response.json();
-      console.log(data); // Log the weather data for debugging purposes
       setWeather(data); // Set the fetched weather data to the state
       setBgColor(getBackgroundColor(data.main.temp)); // Set the background color based on temperature
     } catch (error) {
@@ -65,11 +67,10 @@ const Recommendation = ({ onLocationUpdate }) => {
     );
     const request = {
       location: new window.google.maps.LatLng(lat, lng),
-      radius: "10", // Search within 5 meters
+      radius: "10", // Search within 10 meters
     };
 
     service.nearbySearch(request, (results, status) => {
-      console.log(results);
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         const types = results.map((place) => place.types).flat();
         setPlaceTypes(types);
@@ -81,6 +82,7 @@ const Recommendation = ({ onLocationUpdate }) => {
 
   const fetchCurrentLocation = () => {
     if (navigator.geolocation) {
+      setLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const location = {
@@ -92,13 +94,41 @@ const Recommendation = ({ onLocationUpdate }) => {
             onLocationUpdate(location);
           }
           getAddress(location.lat, location.lng);
-          fetchWeatherData(location.lat, location.lng); // Fetch weather data for the current location
-          fetchPlaceTypes(location.lat, location.lng); // Fetch place types for the current location
+          fetchWeatherData(location.lat, location.lng);
+          fetchPlaceTypes(location.lat, location.lng);
+          setLoading(false);
         },
         (error) => {
           console.error("Error getting the current location: ", error);
+          setLoading(false);
         }
       );
+    }
+  };
+
+  const saveRecommendation = async () => {
+    const userId = localStorage.getItem("user_id");
+    const recommendationData = {
+      userId,
+      location: address,
+      weather: weather
+        ? `${weather.main.temp}°C, ${weather.weather[0].description}`
+        : "",
+      placeTypes: placeTypes.join(", "),
+      expression: "", // This could be updated with actual expression data if available
+    };
+
+    try {
+      setSaving(true);
+      await axios.post(
+        "http://localhost:3000/save-recommendation",
+        recommendationData
+      );
+      console.log("Recommendation saved successfully");
+      setSaving(false);
+    } catch (error) {
+      console.error("Failed to save recommendation:", error);
+      setSaving(false);
     }
   };
 
@@ -135,8 +165,20 @@ const Recommendation = ({ onLocationUpdate }) => {
         className="recommendation-container"
         style={{ backgroundColor: bgColor }}
       >
-        <button className="get-location-button" onClick={fetchCurrentLocation}>
-          Get Current Location
+        <button
+          className="get-location-button"
+          onClick={fetchCurrentLocation}
+          disabled={loading}
+        >
+          {loading ? "Fetching Location..." : "Get Current Location"}
+        </button>
+        <button
+          className="save-recommendation-button"
+          onClick={saveRecommendation}
+          style={{ backgroundColor: "blue" }}
+          disabled={saving}
+        >
+          {saving ? "Saving..." : "Save Recommendation"}
         </button>
         <div className="content">
           <div className="info-container">
