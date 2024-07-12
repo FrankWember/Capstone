@@ -105,9 +105,8 @@ const Recommendation = ({ onLocationUpdate }) => {
     }
   };
 
-  const saveRecommendation = async () => {
+  const saveRecommendation = async (expression) => {
     const userId = localStorage.getItem("userId");
-    console.log(userId);
     const recommendationData = {
       user_id: userId,
       location: address,
@@ -115,6 +114,7 @@ const Recommendation = ({ onLocationUpdate }) => {
         ? `${weather.main.temp}°C, ${weather.weather[0].description}`
         : "",
       place_types: placeTypes.join(", "),
+      expression: expression || "", // Add expression to the data sent
     };
 
     try {
@@ -175,7 +175,7 @@ const Recommendation = ({ onLocationUpdate }) => {
         </button>
         <button
           className="save-recommendation-button"
-          onClick={saveRecommendation}
+          onClick={() => saveRecommendation("")} // Pass an empty string for the expression
           style={{ backgroundColor: "blue" }}
           disabled={saving}
         >

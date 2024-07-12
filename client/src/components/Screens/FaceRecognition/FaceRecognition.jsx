@@ -8,6 +8,10 @@ const FaceRecognition = () => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [isModelLoaded, setIsModelLoaded] = useState(false);
+  const [isRecognizing, setIsRecognizing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState("");
+  const [intervalId, setIntervalId] = useState(null);
 
   const videoWidth = 1080;
   const videoHeight = 720;
@@ -26,24 +30,36 @@ const FaceRecognition = () => {
       ]);
 
       setIsModelLoaded(true);
-
-      try {
-        videoRef.current.srcObject = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false,
-        });
-      } catch (err) {
-        console.error("Error accessing webcam: ", err);
-      }
     };
 
     loadModels();
-  }, [videoWidth, videoHeight]);
+  }, []);
+
+  const startRecognition = async () => {
+    try {
+      videoRef.current.srcObject = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      setIsRecognizing(true);
+      handleVideoOnPlay();
+    } catch (err) {
+      console.error("Error accessing webcam: ", err);
+    }
+  };
+
+  const stopRecognition = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+      setIsRecognizing(false);
+    }
+  };
 
   const handleVideoOnPlay = () => {
     if (!isModelLoaded) return;
 
-    const intervalId = setInterval(async () => {
+    const id = setInterval(async () => {
       if (
         canvasRef.current &&
         videoRef.current &&
@@ -99,46 +115,75 @@ const FaceRecognition = () => {
             drawBox.draw(canvasRef.current);
           });
 
-          // Extract the most prominent expression and send it to the backend
           if (resizedDetections.length > 0) {
             const expressions = resizedDetections[0].expressions;
             const prominentExpression = Object.keys(expressions).reduce(
               (a, b) => (expressions[a] > expressions[b] ? a : b)
             );
 
-            // Send the expression to the backend
-            sendExpressionToBackend(prominentExpression);
+            setLoading(true);
+            await sendRecommendationToBackend(prominentExpression);
+            setLoading(false);
+            setNotification(
+              `Recommendation saved with expression: ${prominentExpression}`
+            );
+            setTimeout(() => setNotification(""), 3000);
+            stopRecognition();
           }
         }
       }
-    }, 5000); // Capture expression every 5 seconds
+    }, 5000);
 
-    return () => clearInterval(intervalId);
+    setIntervalId(id);
   };
 
-  const sendExpressionToBackend = async (expression) => {
+  const sendRecommendationToBackend = async (expression) => {
     const userId = localStorage.getItem("userId");
+
+    const recommendationData = {
+      user_id: userId,
+      expression,
+      location: "", // Placeholder for location data
+      weather: "", // Placeholder for weather data
+      place_types: "", // Placeholder for place types data
+    };
 
     try {
       await axios.post(
-        "http://localhost:3000/save-expression",
-        { user_id: userId, expression },
+        "http://localhost:3000/save-recommendation",
+        recommendationData,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-      console.log("Expression saved successfully");
+      console.log("Recommendation saved successfully");
     } catch (error) {
-      console.error("Failed to save expression:", error);
+      console.error("Failed to save recommendation:", error);
+      setNotification("Failed to save recommendation");
+      setTimeout(() => setNotification(""), 3000);
     }
   };
 
   return (
-    <div>
+    <div className="face-recognition-container">
       <SideBar />
-      <div className="face-recognition-container">
+      <div className="main-content">
+        <div className="controls">
+          <button
+            onClick={startRecognition}
+            className="start-button"
+            disabled={!isModelLoaded || isRecognizing}
+          >
+            {isModelLoaded ? "Start Facial Recognition" : "Loading Models..."}
+          </button>
+          {isRecognizing && (
+            <button onClick={stopRecognition} className="stop-button">
+              Stop Recognition
+            </button>
+          )}
+        </div>
         <div className="video-container">
           <video
             ref={videoRef}
@@ -148,15 +193,20 @@ const FaceRecognition = () => {
             autoPlay
             onPlay={handleVideoOnPlay}
             onLoadedData={handleVideoOnPlay}
-            style={{ position: "relative" }}
           />
           <canvas
             ref={canvasRef}
             width={videoWidth}
             height={videoHeight}
-            style={{ position: "absolute", top: 0, left: 0 }}
+            className="canvas"
           />
         </div>
+        {loading && (
+          <div className="loading-overlay">
+            <div className="loading-text">Saving recommendation...</div>
+          </div>
+        )}
+        {notification && <div className="notification">{notification}</div>}
       </div>
     </div>
   );

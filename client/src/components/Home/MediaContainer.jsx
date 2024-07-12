@@ -18,6 +18,9 @@ const MediaContainer = ({ token, weather }) => {
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   // State to store any error messages
   const [error, setError] = useState(null);
+
+  const [followedArtists, setFollowedArtists] = useState([]);
+  const [savedAudiobooks, setSavedAudiobooks] = useState([]);
   // State to store the currently playing track URI
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const navigate = useNavigate();
@@ -45,11 +48,16 @@ const MediaContainer = ({ token, weather }) => {
   // Function to get the user's top tracks
   const getTopTracks = async () => {
     const data = await fetchWebApi("v1/me/top/tracks?limit=5");
-    if (data) setTopTracks(data.items);
+    if (data) {
+      setTopTracks(data.items);
+      return data.items;
+    }
+    return [];
   };
 
   // Function to get track recommendations based on seed tracks
   const getRecommendations = async (seedTracks) => {
+    console.log(seedTracks);
     const seedTrackIds = seedTracks.map((track) => track.id).join(",");
     const data = await fetchWebApi(
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
@@ -62,6 +70,16 @@ const MediaContainer = ({ token, weather }) => {
   const getRecentlyPlayedTracks = async () => {
     const data = await fetchWebApi("v1/me/player/recently-played?limit=25");
     if (data) setRecentlyPlayedTracks(data.items);
+  };
+
+  const getFollowedArtists = async () => {
+    const data = await fetchWebApi("v1/me/following?type=artist");
+    if (data) setFollowedArtists(data.artists.items);
+  };
+
+  const getSavedAudiobooks = async () => {
+    const data = await fetchWebApi("v1/me/audiobooks");
+    if (data) setSavedAudiobooks(data.items);
   };
 
   // Function to get the user's saved playlists
@@ -80,8 +98,11 @@ const MediaContainer = ({ token, weather }) => {
   useEffect(() => {
     if (token) {
       getTopTracks().then((topTracks) => {
-        if (topTracks) getRecommendations(topTracks);
+        console.log(topTracks);
+        getRecommendations(topTracks);
       });
+      getFollowedArtists();
+      getSavedAudiobooks();
       getSavedPlaylist();
       getFeaturedPlaylists();
       getRecentlyPlayedTracks();
@@ -126,6 +147,40 @@ const MediaContainer = ({ token, weather }) => {
             ))}
           </div>
         </div>
+        <div className="section">
+          <h3 className="section-title">
+            <span className="icon">🎵</span>
+            You Top Artist
+          </h3>
+          <div className="gridItem">
+            {followedArtists.map((track) => (
+              <SpotifyCard
+                key={track.id}
+                item={track}
+                token={token}
+                onClick={() => handlePlayTrack(track.uri)}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="section">
+          <h3 className="section-title">
+            <span className="icon">🎵</span>
+            Your Favorite Books
+          </h3>
+          <div className="gridItem">
+            {savedAudiobooks.map((track) => (
+              <SpotifyCard
+                key={track.id}
+                item={track}
+                token={token}
+                onClick={() => handlePlayTrack(track.uri)}
+              />
+            ))}
+          </div>
+        </div>
+
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>

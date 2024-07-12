@@ -43,16 +43,17 @@ model SpotifyMusicTrack {
 }
 
 model Recommendation {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  location     String
-  weather      String
-  place_types  String
-  expression   String
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @default(now())
+  id          Int       @id @default(autoincrement())
+  user_id     Int
+  location    String
+  weather     String
+  place_types String
+  expression  String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
-  user         User      @relation(fields: [user_id], references: [id])
+  user        User      @relation(fields: [user_id], references: [id])
 
   @@index([user_id])
+  @@unique([user_id, location, weather, place_types])
 }

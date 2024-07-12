@@ -117,11 +117,7 @@ const App = () => {
             path="/home"
             element={
               <ProtectedRoute>
-                <Home
-                  token={token}
-                  userLocation={userLocation}
-                  setUserLocation={setUserLocation}
-                />
+                <Home token={token} />
               </ProtectedRoute>
             }
           />

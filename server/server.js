@@ -334,7 +334,6 @@ app.get("/refresh_token", (req, res) => {
   });
 });
 
-// Endpoint to save recommendation
 app.post("/save-recommendation", async (req, res) => {
   const { user_id, location, weather, place_types, expression } = req.body;
   console.log("Request body:", req.body);
@@ -343,34 +342,16 @@ app.post("/save-recommendation", async (req, res) => {
     const recommendation = await prisma.recommendation.create({
       data: {
         user_id: parseInt(user_id, 10),
-        location,
-        weather,
-        place_types,
+        location: location || "",
+        weather: weather || "",
+        place_types: place_types || "",
         expression: expression || "",
       },
     });
-
     res.status(201).json(recommendation);
   } catch (error) {
     console.error("Error saving recommendation:", error);
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.post("/save-expression", async (req, res) => {
-  const { user_id, expression } = req.body;
-  console.log(req.body);
-
-  try {
-    const recommendation = await prisma.recommendation.updateMany({
-      where: { user_id: parseInt(user_id, 10) },
-      data: { expression },
-    });
-
-    res.status(201).json(recommendation);
-  } catch (error) {
-    console.error("Error saving expression:", error);
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: "Failed to save recommendation" });
   }
 });
 
