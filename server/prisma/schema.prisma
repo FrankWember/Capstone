@@ -12,47 +12,47 @@ model User {
   email           String            @unique
   password        String
   name            String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
   sessions        Session[]
-  recommendations Recommendation[]  // Add this line to link with the Recommendation model
+  recommendations Recommendation[]  // Link with the Recommendation model
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  token       String   @unique
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
-  @@index([userId])
+  @@index([user_id])
 }
 
-model Track {
-  id          Int       @id @default(autoincrement())
-  spotifyId   String    @unique
-  name        String
-  artists     String
-  album       String
-  previewUrl  String?
-  features    Json
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+model SpotifyMusicTrack {
+  id           Int       @id @default(autoincrement())
+  spotify_id   String    @unique
+  name         String
+  artists      String
+  album        String
+  preview_url  String?
+  features     Json
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
 }
 
 model Recommendation {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  location    String
-  weather     String
-  placeTypes  String
-  expression  String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  location     String
+  weather      String
+  place_types  String
+  expression   String
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
 
-  user        User      @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [user_id], references: [id])
 
-  @@index([userId])
+  @@index([user_id])
 }
