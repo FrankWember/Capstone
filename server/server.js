@@ -71,9 +71,8 @@ app.post("/login", async (req, res) => {
       });
     } else {
       await prisma.session.create({ data: { userId: user.id, token: userToken } });
-      await prisma.session.create({ data: { user_id: user.id, token: userToken } });
     }
-  
+
     res.json({ userToken, user_id: user.id, user });
 
   } catch (error) {
@@ -97,7 +96,6 @@ app.get("/protected", async (req, res) => {
 
 // Request user authorization from Spotify
 app.get("/auth/login", async (req, res) => {
-
   const user_id = req.query.user_id;
 
   if (!user_id) {
@@ -310,6 +308,48 @@ app.get("/refresh_token", (req, res) => {
     }
   });
 });
+
+// Endpoint to save recommendation
+app.post("/save-recommendation", async (req, res) => {
+  const { user_id, location, weather, place_types, expression } = req.body;
+  console.log("Request body:", req.body);
+
+  try {
+    const recommendation = await prisma.recommendation.create({
+      data: {
+        user_id: parseInt(user_id, 10),
+        location,
+        weather,
+        place_types,
+        expression: expression || "",
+      },
+    });
+
+    res.status(201).json(recommendation);
+  } catch (error) {
+    console.error("Error saving recommendation:", error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post("/save-expression", async (req, res) => {
+  const { user_id, expression } = req.body;
+  console.log("Received expression:", expression);
+
+  try {
+
+    const recommendation = await prisma.recommendation.updateMany({
+      where: { user_id: parseInt(user_id, 10) },
+      data: { expression },
+    });
+
+    res.status(201).json(recommendation);
+  } catch (error) {
+    console.error("Error saving expression:", error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 
 // Set the server port from environment variable or default to 3000
 const PORT = process.env.PORT || 3000;

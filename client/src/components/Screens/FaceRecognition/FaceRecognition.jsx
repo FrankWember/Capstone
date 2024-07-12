@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
+import axios from "axios";
 import "./FaceRecognition.css";
 import SideBar from "../../SideBar/SideBar";
 
@@ -97,11 +98,41 @@ const FaceRecognition = () => {
             });
             drawBox.draw(canvasRef.current);
           });
+
+          // Extract the most prominent expression and send it to the backend
+          if (resizedDetections.length > 0) {
+            const expressions = resizedDetections[0].expressions;
+            const prominentExpression = Object.keys(expressions).reduce(
+              (a, b) => (expressions[a] > expressions[b] ? a : b)
+            );
+
+            // Send the expression to the backend
+            sendExpressionToBackend(prominentExpression);
+          }
         }
       }
-    }, 1000);
+    }, 5000); // Capture expression every 5 seconds
 
     return () => clearInterval(intervalId);
+  };
+
+  const sendExpressionToBackend = async (expression) => {
+    const userId = localStorage.getItem("user_id");
+
+    try {
+      await axios.post(
+        "http://localhost:3000/save-expression",
+        { user_id: userId, expression },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Expression saved successfully");
+    } catch (error) {
+      console.error("Failed to save expression:", error);
+    }
   };
 
   return (

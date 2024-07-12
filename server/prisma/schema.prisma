@@ -56,19 +56,3 @@ model Recommendation {
 
   @@index([user_id])
 }
-
-
-model Recommendation {
-  id          Int       @id @default(autoincrement())
-  user_id      Int
-  location    String
-  weather     String
-  place_types  String
-  expression  String
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @default(now())
-
-  user        User      @relation(fields: [user_id], references: [id])
-
-  @@index([user_id])
-}

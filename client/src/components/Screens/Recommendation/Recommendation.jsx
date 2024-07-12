@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios";
-import axios from "axios";
 import SideBar from "../../SideBar/SideBar";
-import "./Recommendation.css"; // Import the CSS file
+import "./Recommendation.css";
 
 const mapContainerStyle = {
-  width: "100%", // Full width of the container
-  height: "100%", // Full height of the container
+  width: "100%",
+  height: "100%",
 };
 
 const defaultCenter = {
@@ -15,7 +14,7 @@ const defaultCenter = {
   lng: -73.98633,
 };
 
-const libraries = ["places"]; // Static array of libraries
+const libraries = ["places"];
 
 const Recommendation = ({ onLocationUpdate }) => {
   const { isLoaded, loadError } = useLoadScript({
@@ -31,7 +30,6 @@ const Recommendation = ({ onLocationUpdate }) => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Function to fetch weather data from OpenWeatherMap API
   const fetchWeatherData = async (lat, lon) => {
     const apiKey = "5de13611132ea8b25abcbcec9f74d951";
     const endpoint = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
@@ -40,10 +38,10 @@ const Recommendation = ({ onLocationUpdate }) => {
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error(`Error: ${response.status}`);
       const data = await response.json();
-      setWeather(data); // Set the fetched weather data to the state
-      setBgColor(getBackgroundColor(data.main.temp)); // Set the background color based on temperature
+      setWeather(data);
+      setBgColor(getBackgroundColor(data.main.temp));
     } catch (error) {
-      console.error("Failed to fetch weather data:", error); // Log any errors that occur during the fetch
+      console.error("Failed to fetch weather data:", error);
     }
   };
 
@@ -68,8 +66,7 @@ const Recommendation = ({ onLocationUpdate }) => {
     );
     const request = {
       location: new window.google.maps.LatLng(lat, lng),
-      radius: "10", // Search within 10 meters
-      radius: "10", // Search within 10 meters
+      radius: "10",
     };
 
     service.nearbySearch(request, (results, status) => {
@@ -109,22 +106,27 @@ const Recommendation = ({ onLocationUpdate }) => {
   };
 
   const saveRecommendation = async () => {
-    const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("userId");
+    console.log(userId);
     const recommendationData = {
-      userId,
+      user_id: userId,
       location: address,
       weather: weather
         ? `${weather.main.temp}°C, ${weather.weather[0].description}`
         : "",
-      placeTypes: placeTypes.join(", "),
-      expression: "", // This could be updated with actual expression data if available
+      place_types: placeTypes.join(", "),
     };
 
     try {
       setSaving(true);
       await axios.post(
         "http://localhost:3000/save-recommendation",
-        recommendationData
+        recommendationData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       console.log("Recommendation saved successfully");
       setSaving(false);
@@ -136,28 +138,25 @@ const Recommendation = ({ onLocationUpdate }) => {
 
   useEffect(() => {
     fetchCurrentLocation();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, []);
 
   if (loadError) return <div>Error loading maps</div>;
   if (!isLoaded) return <div>Loading Maps...</div>;
 
-  // Custom icon for the marker
   const customIcon = {
-    url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", // URL to the custom marker image
-    scaledSize: new window.google.maps.Size(50, 50), // Adjust the size as needed
+    url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+    scaledSize: new window.google.maps.Size(50, 50),
   };
 
-  // Function to get the weather icon URL based on weather data
   const getWeatherIconUrl = (icon) => {
     return `http://openweathermap.org/img/wn/${icon}@2x.png`;
   };
 
-  // Function to get background color based on temperature
   const getBackgroundColor = (temp) => {
-    if (temp <= 20) return "#a2cffe"; // Very cold temperatures (light blue)
-    if (temp <= 25) return "#ffd56b"; // Warm temperatures (light yellow)
-    if (temp <= 30) return "#ff9442"; // Hot temperatures (orange)
-    return "#f94e10"; // Very hot temperatures (red-orange)
+    if (temp <= 20) return "#a2cffe";
+    if (temp <= 25) return "#ffd56b";
+    if (temp <= 30) return "#ff9442";
+    return "#f94e10";
   };
 
   return (
