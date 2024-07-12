@@ -60,9 +60,9 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    const userToken = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: "1h" });
+    const userToken = jwt.sign({ user_id: user.id }, SECRET_KEY, { expiresIn: "1h" });
 
-    const existingSession = await prisma.session.findFirst({ where: { userId: user.id } });
+    const existingSession = await prisma.session.findFirst({ where: { user_id: user.id } });
 
     if (existingSession) {
       await prisma.session.update({
@@ -71,9 +71,11 @@ app.post("/login", async (req, res) => {
       });
     } else {
       await prisma.session.create({ data: { userId: user.id, token: userToken } });
+      await prisma.session.create({ data: { user_id: user.id, token: userToken } });
     }
+  
+    res.json({ userToken, user_id: user.id, user });
 
-    res.json({ userToken, userId: user.id, user }); // Return userId here
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -87,7 +89,7 @@ app.get("/protected", async (req, res) => {
   try {
     // Verify the token
     const decoded = jwt.verify(token, SECRET_KEY);
-    res.json({ userId: decoded.userId }); // Respond with the user ID
+    res.json({ user_id: decoded.user_id }); // Respond with the user ID
   } catch (error) {
     res.status(401).json({ error: error.message }); // Handle errors
   }
@@ -95,15 +97,14 @@ app.get("/protected", async (req, res) => {
 
 // Request user authorization from Spotify
 app.get("/auth/login", async (req, res) => {
-  // For demonstration purposes, we assume the userId is obtained after login.
-  // In a real application, you would need to handle this securely.
-  const userId = req.query.userId;
 
-  if (!userId) {
-    return res.status(400).json({ error: "userId is required" });
+  const user_id = req.query.user_id;
+
+  if (!user_id) {
+    return res.status(400).json({ error: "user_id is required" });
   }
 
-  console.log("Login UserId:", userId);
+  console.log("Login User_id:", user_id);
 
   const scope = [
     "user-read-private",
@@ -112,6 +113,7 @@ app.get("/auth/login", async (req, res) => {
     "streaming",
     "user-read-playback-state",
     "user-modify-playback-state",
+    "user-read-recently-played",
     "user-read-currently-playing",
     "playlist-read-private",
     "playlist-read-collaborative",
@@ -119,6 +121,10 @@ app.get("/auth/login", async (req, res) => {
     "playlist-modify-public",
     "user-library-read",
     "user-library-modify",
+    "user-follow-read",
+    "user-follow-modify",
+    "ugc-image-upload",
+    "app-remote-control",
   ].join(" ");
 
   const authQueryParameters = new URLSearchParams({
@@ -126,7 +132,7 @@ app.get("/auth/login", async (req, res) => {
     client_id: CLIENT_ID,
     scope: scope,
     redirect_uri: REDIRECT_URI,
-    state: userId, // Include userId in the state parameter
+    state: user_id, // Include user_id in the state parameter
   });
 
   res.redirect(
@@ -137,10 +143,10 @@ app.get("/auth/login", async (req, res) => {
 // Handle callback and request access token from Spotify
 app.get("/auth/callback", (req, res) => {
   const code = req.query.code;
-  const userId = req.query.state; // Extract userId from the state parameter
+  const user_id = req.query.state; // Extract user_id from the state parameter
 
-  // Log state to verify it contains the userId
-  console.log("Callback State (userId):", userId);
+  // Log state to verify it contains the user_id
+  console.log("Callback State (user_id):", user_id);
 
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
@@ -160,8 +166,8 @@ app.get("/auth/callback", (req, res) => {
     if (!error && response.statusCode === 200) {
       const { access_token, refresh_token } = body;
 
-      // Log userId to ensure it's correctly extracted
-      console.log("Extracted userId:", userId);
+      // Log user_id to ensure it's correctly extracted &
+      console.log("Extracted user_id:", user_id);
 
       await getAndStoreTopTracks(access_token);
 
@@ -172,36 +178,16 @@ app.get("/auth/callback", (req, res) => {
   });
 });
 
-
- //Endpoint to get the recommendation factors
-
-app.post("/save-recommendation", async (req, res) => {
-  const { userId, location, weather, placeTypes, expression } = req.body;
-  console.log(req.body);
-  try {
-    const parsedUserId = parseInt(userId, 10);
-    const recommendation = await prisma.recommendation.create({
-      data: {
-        userId: parsedUserId,
-        location: location || "",
-        weather: weather || "", 
-        placeTypes: placeTypes || "",
-        expression: expression || "",   
-      },
-    });
-    res.status(201).json(recommendation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to save recommendation" });
-  }
-});
-
-
 // Function to get and store top tracks
 async function getAndStoreTopTracks(access_token) {
   try {
     const userTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/tracks`, access_token);
     await storeTracks(userTopTracks, access_token);
+
+    const userRecentlyListen = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/player/recently-played?limit=50`, access_token);
+    const recentlyPlayedTracks = userRecentlyListen.items.map((item) => item.track);
+
+    await storeTracks({ items: recentlyPlayedTracks }, access_token);
 
     const userTopArtists = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/artists`, access_token);
 
@@ -213,8 +199,6 @@ async function getAndStoreTopTracks(access_token) {
     console.error("Error fetching or storing top tracks:", error);
   }
 }
-
-
 
 // Helper function to fetch data from Spotify API
 async function fetchSpotifyData(url, access_token) {
@@ -246,17 +230,17 @@ async function storeTracks(tracksData, access_token) {
 
   for (const track of items) {
     // Check if the track already exists
-    const existingTrack = await prisma.track.findUnique({ where: { spotifyId: track.id } });
+    const existingTrack = await prisma.spotifyMusicTrack.findUnique({ where: { spotify_id: track.id } });
 
     if (!existingTrack) {
       // If the track doesn't exist, create it
-      await prisma.track.create({
+      await prisma.spotifyMusicTrack.create({
         data: {
-          spotifyId: track.id,
+          spotify_id: track.id,
           name: track.name,
           artists: track.artists.map((artist) => artist.name).join(", "),
           album: track.album.name,
-          previewUrl: track.preview_url,
+          preview_url: track.preview_url,
           features: await getTrackFeatures(track.id, access_token),
         },
       });
@@ -332,36 +316,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`); // Log that the server is running
 });
-
-
-
-
-
-  // Load environment variables from .env file.
-  // Import necessary libraries (express, cors, bcryptjs, jsonwebtoken, request, and @prisma/client).
-  // Express App Initialization:
-
-  // Initialize the Express application and Prisma Client.
-  // Enable CORS for all routes to allow cross-origin requests.
-  // Use middleware to parse JSON request bodies.
-  // Spotify API Configuration:
-
-  // Set up constants for Spotify API URLs and credentials.
-  // User Signup Endpoint (/signup):
-
-  // Handles user registration by checking for existing users, hashing the password, and creating a new user in the database.
-  // User Login Endpoint (/login):
-
-  // Handles user login by verifying email and password, generating a JWT token, and managing user sessions in the database.
-  // Protected Route Example (/protected):
-
-  // A sample protected route that requires a valid JWT token to access and responds with the user ID.
-  // Spotify Authentication Endpoints:
-
-  // /auth/login: Redirects users to Spotify for authorization.
-  // /auth/callback: Handles the callback from Spotify, exchanges the authorization code for access and refresh tokens, and redirects to the frontend.
-  // /auth/token: Returns the access and refresh tokens if present.
-  // /refresh_token: Refreshes the access token using the refresh token.
-  // Server Initialization:
-
-  // Sets the server to listen on a specified port or default to port 3000 and logs that the server is running.

@@ -59,6 +59,16 @@ function SideBar() {
             Recommendations
           </NavLink>
         </li>
+        <li className="nav-item">
+          <NavLink
+            to="/face_mood"
+            className="nav-link"
+            activeClassName="active"
+          >
+            <SearchIcon className="bi me-2" width="20" height="20" />
+            Set your Mood
+          </NavLink>
+        </li>
       </ul>
       <hr />
       <Dropdown className="mt-auto">

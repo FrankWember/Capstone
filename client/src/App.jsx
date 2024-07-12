@@ -12,6 +12,7 @@ import Home from "./components/Home/Home";
 import Playlist from "./components/Screens/Playlist/Playlist";
 import "./App.css";
 import Recommendation from "./components/Screens/Recommendation/Recommendation";
+import FaceRecognition from "./components/Screens/FaceRecognition/FaceRecognition";
 
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
@@ -134,6 +135,15 @@ const App = () => {
                   setUserLocation={setUserLocation}
                   weather={weather}
                 />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/face_mood"
+            element={
+              <ProtectedRoute>
+                <FaceRecognition token={token} />
               </ProtectedRoute>
             }
           />
