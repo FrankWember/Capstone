@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios";
+import axios from "axios";
 import SideBar from "../../SideBar/SideBar";
 import "./Recommendation.css"; // Import the CSS file
 
@@ -67,6 +68,7 @@ const Recommendation = ({ onLocationUpdate }) => {
     );
     const request = {
       location: new window.google.maps.LatLng(lat, lng),
+      radius: "10", // Search within 10 meters
       radius: "10", // Search within 10 meters
     };
 
