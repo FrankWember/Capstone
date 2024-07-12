@@ -117,7 +117,7 @@ const FaceRecognition = () => {
   };
 
   const sendExpressionToBackend = async (expression) => {
-    const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("userId");
 
     try {
       await axios.post(

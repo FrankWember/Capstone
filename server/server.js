@@ -48,7 +48,7 @@ app.post("/signup", async (req, res) => {
 // Endpoint for user login
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
+  console.log(req.body);
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -60,9 +60,13 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    const userToken = jwt.sign({ user_id: user.id }, SECRET_KEY, { expiresIn: "1h" });
+    const userToken = jwt.sign({ user_id: user.id }, SECRET_KEY, {
+      expiresIn: "1h",
+    });
 
-    const existingSession = await prisma.session.findFirst({ where: { user_id: user.id } });
+    const existingSession = await prisma.session.findFirst({
+      where: { user_id: user.id },
+    });
 
     if (existingSession) {
       await prisma.session.update({
@@ -70,11 +74,12 @@ app.post("/login", async (req, res) => {
         data: { token: userToken },
       });
     } else {
-      await prisma.session.create({ data: { userId: user.id, token: userToken } });
+      await prisma.session.create({
+        data: { user_id: user.id, token: userToken },
+      });
     }
 
     res.json({ userToken, user_id: user.id, user });
-
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -154,7 +159,9 @@ app.get("/auth/callback", (req, res) => {
       grant_type: "authorization_code",
     },
     headers: {
-      Authorization: "Basic " + Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
+      Authorization:
+        "Basic " +
+        Buffer.from(CLIENT_ID + ":" + CLIENT_SECRET).toString("base64"),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     json: true,
@@ -169,7 +176,9 @@ app.get("/auth/callback", (req, res) => {
 
       await getAndStoreTopTracks(access_token);
 
-      res.redirect(`http://localhost:5173/home?access_token=${access_token}&refresh_token=${refresh_token}`);
+      res.redirect(
+        `http://localhost:5173/home?access_token=${access_token}&refresh_token=${refresh_token}`
+      );
     } else {
       res.status(400).json({ error: "Invalid token" });
     }
@@ -179,18 +188,32 @@ app.get("/auth/callback", (req, res) => {
 // Function to get and store top tracks
 async function getAndStoreTopTracks(access_token) {
   try {
-    const userTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/tracks`, access_token);
+    const userTopTracks = await fetchSpotifyData(
+      `${SPOTIFY_API_URL}/me/top/tracks`,
+      access_token
+    );
     await storeTracks(userTopTracks, access_token);
 
-    const userRecentlyListen = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/player/recently-played?limit=50`, access_token);
-    const recentlyPlayedTracks = userRecentlyListen.items.map((item) => item.track);
+    const userRecentlyListen = await fetchSpotifyData(
+      `${SPOTIFY_API_URL}/me/player/recently-played?limit=50`,
+      access_token
+    );
+    const recentlyPlayedTracks = userRecentlyListen.items.map(
+      (item) => item.track
+    );
 
     await storeTracks({ items: recentlyPlayedTracks }, access_token);
 
-    const userTopArtists = await fetchSpotifyData(`${SPOTIFY_API_URL}/me/top/artists`, access_token);
+    const userTopArtists = await fetchSpotifyData(
+      `${SPOTIFY_API_URL}/me/top/artists`,
+      access_token
+    );
 
     for (const artist of userTopArtists.items) {
-      const artistTopTracks = await fetchSpotifyData(`${SPOTIFY_API_URL}/artists/${artist.id}/top-tracks?market=US`, access_token);
+      const artistTopTracks = await fetchSpotifyData(
+        `${SPOTIFY_API_URL}/artists/${artist.id}/top-tracks?market=US`,
+        access_token
+      );
       await storeTracks(artistTopTracks, access_token);
     }
   } catch (error) {
@@ -228,7 +251,9 @@ async function storeTracks(tracksData, access_token) {
 
   for (const track of items) {
     // Check if the track already exists
-    const existingTrack = await prisma.spotifyMusicTrack.findUnique({ where: { spotify_id: track.id } });
+    const existingTrack = await prisma.spotifyMusicTrack.findUnique({
+      where: { spotify_id: track.id },
+    });
 
     if (!existingTrack) {
       // If the track doesn't exist, create it
@@ -334,10 +359,9 @@ app.post("/save-recommendation", async (req, res) => {
 
 app.post("/save-expression", async (req, res) => {
   const { user_id, expression } = req.body;
-  console.log("Received expression:", expression);
+  console.log(req.body);
 
   try {
-
     const recommendation = await prisma.recommendation.updateMany({
       where: { user_id: parseInt(user_id, 10) },
       data: { expression },
@@ -349,7 +373,6 @@ app.post("/save-expression", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 
 // Set the server port from environment variable or default to 3000
 const PORT = process.env.PORT || 3000;

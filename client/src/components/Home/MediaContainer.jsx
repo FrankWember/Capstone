@@ -54,6 +54,7 @@ const MediaContainer = ({ token, weather }) => {
     const data = await fetchWebApi(
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
+    console.log(data);
     if (data) setRecommendedTracks(data.tracks);
   };
 
