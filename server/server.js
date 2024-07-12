@@ -70,6 +70,7 @@ app.post("/login", async (req, res) => {
         data: { token: userToken },
       });
     } else {
+      await prisma.session.create({ data: { userId: user.id, token: userToken } });
       await prisma.session.create({ data: { user_id: user.id, token: userToken } });
     }
   
