@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { PlayIcon } from "@heroicons/react/solid"; // Import Play icon from Heroicons
-import "./SpotifyCard.css"; // Import custom CSS for styling
+import { PlayIcon } from "@heroicons/react/solid";
+import "./SpotifyCard.css";
 
 const SpotifyCard = ({ item, isPlaylist, onClick }) => {
   // Handle click event

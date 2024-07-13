@@ -1,26 +1,123 @@
 .spotify-player {
+  position: fixed;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  justify-content: space-between;
+  bottom: 0;
+  height: 15%; /* Increased height for larger player */
+  width: 100%;
+  background: #181818; /* Dark background similar to Spotify */
+  padding: 20px 40px;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  border-radius: 20px;
+}
+
+.spotify-player-info {
+  display: flex;
+  align-items: center;
+}
+
+.spotify-player-info img {
+  width: 250px;
+  height: 250px;
+  border-radius: 20px;
+  margin-right: 15px;
+}
+
+.track-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.track-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+}
+
+.track-artist,
+.track-album {
+  font-size: 14px;
+  color: #b3b3b3;
+}
+
+.spotify-player-controls {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  position: relative;
+  bottom: 80px;
+  left: 30%;
 }
 
 .spotify-player-button {
-  background-color: #1db954;
+  background: none;
   border: none;
-  border-radius: 50px;
   color: white;
-  padding: 10px 20px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  margin: 0 15px;
 }
 
-.spotify-player-button:hover {
-  background-color: #1ed760;
+.spotify-player-button:hover .spotify-player-icon {
+  color: #1db954; /* Spotify green for hover effect */
 }
 
 .spotify-player-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
+}
+
+.spotify-player-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.progress-time {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-bar {
+  width: 100%;
+  margin: 5px 0;
+  background: #b3b3b3;
+  border-radius: 2px;
+}
+
+.spotify-player-volume {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.volume-bar {
+  width: 150px;
+  margin-left: 10px;
+  background: #b3b3b3;
+}
+
+.playlist-dropdown {
+  position: absolute;
+  bottom: 70px;
+  background: #282828;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  width: 220px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.playlist-item {
+  padding: 12px;
+  cursor: pointer;
+  color: white;
+}
+
+.playlist-item:hover {
+  background: #3a3a3a;
 }

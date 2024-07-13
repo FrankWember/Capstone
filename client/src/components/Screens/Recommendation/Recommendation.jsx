@@ -153,7 +153,7 @@ const Recommendation = ({ onLocationUpdate }) => {
   };
 
   const getBackgroundColor = (temp) => {
-    if (temp <= 20) return "#a2cffe";
+    if (temp <= 22) return "#a2cffe";
     if (temp <= 25) return "#ffd56b";
     if (temp <= 30) return "#ff9442";
     return "#f94e10";
