@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { PlayIcon } from "@heroicons/react/solid"; // Import Play icon from Heroicons
-import "./SpotifyCard.css"; // Import custom CSS for styling
+import { PlayIcon } from "@heroicons/react/solid";
+import "./SpotifyCard.css";
 
-const SpotifyCard = ({ item, isPlaylist, onClick }) => {
+const SpotifyCard = ({ item, type, onClick }) => {
   // Handle click event
   const handleClick = () => {
     if (onClick) {
@@ -23,10 +23,16 @@ const SpotifyCard = ({ item, isPlaylist, onClick }) => {
     : item.album?.artists.map((artist) => artist.name).join(", ");
 
   return (
-    <div className="spotify-card" onClick={handleClick}>
-      <div className="spotify-card-image-wrapper">
+    <div className={`spotify-card spotify-card-${type}`} onClick={handleClick}>
+      <div
+        className={`spotify-card-image-wrapper spotify-card-image-wrapper-${type}`}
+      >
         {imageUrl && (
-          <img src={imageUrl} className="spotify-card-image" alt={name} />
+          <img
+            src={imageUrl}
+            className={`spotify-card-image spotify-card-image-${type}`}
+            alt={name}
+          />
         )}
         <div className="spotify-card-overlay">
           <button className="spotify-card-play-button">
@@ -44,7 +50,7 @@ const SpotifyCard = ({ item, isPlaylist, onClick }) => {
 
 SpotifyCard.propTypes = {
   item: PropTypes.object.isRequired,
-  isPlaylist: PropTypes.bool,
+  type: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };
 

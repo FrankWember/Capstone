@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { PlayIcon, PauseIcon } from "@heroicons/react/solid"; // Import Play and Pause icons from Heroicons
-import "./SpotifyPlayer.css"; // Import custom CSS for styling
+import {
+  PlayIcon,
+  PauseIcon,
+  FastForwardIcon,
+  RewindIcon,
+  VolumeUpIcon,
+  PlusIcon,
+} from "@heroicons/react/solid";
+import "./SpotifyPlayer.css";
 
 const SpotifyPlayer = ({ token, trackUri }) => {
-  // State to store the Spotify player instance
   const [player, setPlayer] = useState(null);
-  // State to manage whether the player is paused or playing
   const [isPaused, setIsPaused] = useState(true);
-  // State to store the Spotify device ID
   const [deviceId, setDeviceId] = useState(null);
+  const [volume, setVolume] = useState(50);
+  const [trackInfo, setTrackInfo] = useState({});
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+  const [playlists, setPlaylists] = useState([]);
+  const [selectedPlaylists, setSelectedPlaylists] = useState([]);
+  const [showPlaylists, setShowPlaylists] = useState(false);
 
   useEffect(() => {
-    // Function to initialize the Spotify player
     const initializePlayer = () => {
       const player = new window.Spotify.Player({
         name: "MoodTune Player",
@@ -23,18 +34,14 @@ const SpotifyPlayer = ({ token, trackUri }) => {
 
       setPlayer(player);
 
-      // Event listener for when the player is ready
       player.addListener("ready", ({ device_id }) => {
-        console.log("Ready with Device ID", device_id);
         setDeviceId(device_id);
       });
 
-      // Event listener for when the player goes offline
       player.addListener("not_ready", ({ device_id }) => {
         console.log("Device ID has gone offline", device_id);
       });
 
-      // Event listeners for various errors
       player.addListener("initialization_error", ({ message }) => {
         console.error("Failed to initialize", message);
       });
@@ -51,28 +58,73 @@ const SpotifyPlayer = ({ token, trackUri }) => {
         console.error("Failed to perform playback", message);
       });
 
-      // Event listener for player state changes
       player.addListener("player_state_changed", (state) => {
         if (!state) return;
         setIsPaused(state.paused);
+        setTrackInfo({
+          name: state.track_window.current_track.name,
+          artist: state.track_window.current_track.artists
+            .map((artist) => artist.name)
+            .join(", "),
+          album: state.track_window.current_track.album.name,
+          image: state.track_window.current_track.album.images[0].url,
+        });
+        setProgress(state.position);
+        setDuration(state.duration);
+
+        if (!state.paused && !intervalId) {
+          const id = setInterval(() => {
+            setProgress((prevProgress) => prevProgress + 1000);
+          }, 1000);
+          setIntervalId(id);
+        } else if (state.paused && intervalId) {
+          clearInterval(intervalId);
+          setIntervalId(null);
+        }
       });
 
-      // Connect the player
       player.connect();
     };
 
-    // Check if the Spotify SDK is already loaded
     if (window.Spotify) {
       initializePlayer();
     } else {
-      // Wait for the Spotify SDK to be ready
       window.onSpotifyWebPlaybackSDKReady = () => {
         initializePlayer();
       };
     }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [token, intervalId]);
+
+  useEffect(() => {
+    if (player && trackUri) {
+      play({ spotify_uri: trackUri, playerInstance: player });
+    }
+  }, [trackUri]);
+
+  useEffect(() => {
+    const fetchPlaylists = async () => {
+      try {
+        const res = await fetch(`https://api.spotify.com/v1/me/playlists`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        setPlaylists(data.items);
+      } catch (error) {
+        console.error("Error fetching playlists", error);
+      }
+    };
+
+    fetchPlaylists();
   }, [token]);
 
-  // Function to play a track using the Spotify player
   const play = ({
     spotify_uri,
     playerInstance: {
@@ -80,7 +132,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     },
   }) => {
     getOAuthToken((access_token) => {
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
         method: "PUT",
         body: JSON.stringify({ uris: [spotify_uri] }),
         headers: {
@@ -91,27 +143,175 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     });
   };
 
-  // Handle play/pause button click
   const handlePlayPause = () => {
+    if (!deviceId) {
+      console.error("Device ID is not set");
+      return;
+    }
     if (isPaused) {
-      play({
-        playerInstance: player,
-        spotify_uri: trackUri,
-      });
+      play({ playerInstance: player, spotify_uri: trackUri });
     } else {
       player.pause();
     }
   };
 
+  const handleNextTrack = () => {
+    if (player) {
+      player.nextTrack();
+    }
+  };
+
+  const handlePreviousTrack = () => {
+    if (player) {
+      player.previousTrack();
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const newVolume = e.target.value;
+    setVolume(newVolume);
+    if (player) {
+      player.setVolume(newVolume / 100);
+    }
+  };
+
+  const handlePlaylistSelection = (playlistId) => {
+    setSelectedPlaylists((prevSelected) =>
+      prevSelected.includes(playlistId)
+        ? prevSelected.filter((id) => id !== playlistId)
+        : [...prevSelected, playlistId]
+    );
+  };
+
+  const handleAddToPlaylists = () => {
+    if (!trackUri || selectedPlaylists.length === 0) return;
+
+    selectedPlaylists.forEach((playlistId) => {
+      fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uris: [trackUri] }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log(`Track added to playlist ${playlistId}`);
+          } else {
+            console.error(`Error adding track to playlist ${playlistId}`);
+          }
+        })
+        .catch((error) => {
+          console.error(`Error adding track to playlist ${playlistId}`, error);
+        });
+    });
+    setShowPlaylists(false);
+  };
+
+  const formatTime = (milliseconds) => {
+    const minutes = Math.floor(milliseconds / 60000);
+    const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
+    return seconds == 60
+      ? minutes + 1 + ":00"
+      : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+  };
+
   return (
     <div className="spotify-player">
-      <button onClick={handlePlayPause} className="spotify-player-button">
-        {isPaused ? (
-          <PlayIcon className="spotify-player-icon" />
-        ) : (
-          <PauseIcon className="spotify-player-icon" />
+      <div className="spotify-player-info">
+        {trackInfo.image && <img src={trackInfo.image} alt="Album cover" />}
+        <div className="track-details">
+          <p className="track-name">{trackInfo.name}</p>
+          <p className="track-artist">{trackInfo.artist}</p>
+          <p className="track-album">{trackInfo.album}</p>
+        </div>
+      </div>
+      <div className="playlist-dropdown-container">
+        <button
+          onClick={() => setShowPlaylists(!showPlaylists)}
+          className="spotify-player-button"
+        >
+          <PlusIcon className="spotify-player-icon" />
+        </button>
+        {showPlaylists && (
+          <div className="playlist-dropdown">
+            <div className="playlist-dropdown-header">Select Playlists</div>
+            {playlists.map((playlist) => (
+              <label key={playlist.id} className="playlist-item">
+                {playlist.images[0] && (
+                  <img
+                    src={playlist.images[0].url}
+                    alt={playlist.name}
+                    className="playlist-item-image"
+                  />
+                )}
+                <div className="playlist-item-info">
+                  <p className="playlist-item-name">{playlist.name}</p>
+                  <p className="playlist-item-tracks">
+                    {playlist.tracks.total} songs
+                  </p>
+                </div>
+
+                <input
+                  type="checkbox"
+                  name="playlist"
+                  value={playlist.id}
+                  checked={selectedPlaylists.includes(playlist.id)}
+                  onChange={() => handlePlaylistSelection(playlist.id)}
+                  className="playlist-checkbox"
+                />
+              </label>
+            ))}
+            <button
+              onClick={handleAddToPlaylists}
+              className="save-playlists-button"
+            >
+              Save to Selected Playlists
+            </button>
+          </div>
         )}
-      </button>
+      </div>
+      <div className="spotify-player-controls">
+        <button onClick={handlePreviousTrack} className="spotify-player-button">
+          <RewindIcon className="spotify-player-icon" />
+        </button>
+        <button onClick={handlePlayPause} className="spotify-player-button">
+          {isPaused ? (
+            <PlayIcon className="spotify-player-icon" />
+          ) : (
+            <PauseIcon className="spotify-player-icon" />
+          )}
+        </button>
+        <button onClick={handleNextTrack} className="spotify-player-button">
+          <FastForwardIcon className="spotify-player-icon" />
+        </button>
+      </div>
+      <div className="spotify-player-progress">
+        <div className="progress-time">
+          <span>{formatTime(progress)}</span>
+          <input
+            type="range"
+            min="0"
+            max={duration}
+            value={progress}
+            onChange={(e) => setProgress(e.target.value)}
+            className="progress-bar"
+          />
+          <span>{formatTime(duration - progress)}</span>
+        </div>
+      </div>
+      <div className="spotify-player-volume">
+        <VolumeUpIcon className="spotify-player-icon" />
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="volume-bar"
+        />
+      </div>
     </div>
   );
 };

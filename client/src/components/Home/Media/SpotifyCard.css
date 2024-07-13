@@ -1,37 +1,31 @@
-/* src/components/Media/SpotifyCard.css */
-
+/* General Styles for Spotify Cards */
 .spotify-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #021029;
+  position: relative;
+  width: 330px;
+  margin: 20px;
+  background-color: #282c34;
   border-radius: 10px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  width: 200px;
-  margin: 15px;
+  transition: transform 0.2s;
 }
 
 .spotify-card:hover {
-  transform: scale(1.07);
-  box-shadow: 20px 10px 26px rgba(185, 152, 198, 0.3);
+  transform: scale(1.05);
 }
 
 .spotify-card-image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  height: 340px;
+  margin: 5px 0;
 }
 
 .spotify-card-image {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  border-bottom: 2px solid #353535;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .spotify-card-overlay {
@@ -43,37 +37,132 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.5s ease;
+  background-color: rgba(88, 88, 88, 0.5);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.spotify-card:hover .spotify-card-overlay {
+  opacity: 1;
 }
 
 .spotify-card-play-button {
   background: none;
   border: none;
-  color: #1db954;
+  color: white;
   cursor: pointer;
   outline: none;
 }
 
 .spotify-card-play-icon {
-  width: 6s0px;
-  height: 60px;
-  color: #1db954;
+  position: relative;
+  width: 90px;
+  height: 90px;
+  left: 120px;
+  top: 120px;
+  color: rgb(0, 192, 64);
 }
 
 .spotify-card-body {
-  padding: 20px;
+  padding: 15px;
   text-align: center;
 }
 
 .spotify-card-title {
-  font-size: 18px;
-  color: #ffffff;
-  margin: 10px 0 5px 0;
+  margin: 0;
+  font-size: 1.4em;
   font-weight: bold;
+  color: white;
 }
 
 .spotify-card-text {
-  font-size: 14px;
+  margin: 10px 0 0;
+  font-size: 1em;
   color: #b3b3b3;
-  margin: 0;
+}
+
+/* Different styles for each type of card */
+.spotify-card-artist {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(0, 10, 22),
+    rgb(0, 14, 60),
+    rgb(0, 10, 22)
+  );
+}
+
+.spotify-card-track {
+  background-color: #1e1e1e;
+}
+
+.spotify-card-playlist {
+  background-color: #3a3a3a;
+}
+
+.spotify-card-audiobook {
+  background-color: #4b4b4b;
+}
+
+/* Different image styles for each type of card */
+.spotify-card-image-wrapper-artist {
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.spotify-card-image-artist {
+  border-radius: 50%;
+}
+
+.spotify-card-image-wrapper-track,
+.spotify-card-image-wrapper-playlist,
+.spotify-card-image-wrapper-audiobook {
+  border-radius: 10px;
+}
+
+.spotify-card-image-track,
+.spotify-card-image-playlist,
+.spotify-card-image-audiobook {
+  border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .spotify-card {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .spotify-card-image-wrapper {
+    height: 200px;
+  }
+
+  .spotify-card-title {
+    font-size: 1.2em;
+  }
+
+  .spotify-card-text {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .spotify-card-image-wrapper {
+    height: 150px;
+  }
+
+  .spotify-card-title {
+    font-size: 1em;
+  }
+
+  .spotify-card-text {
+    font-size: 0.8em;
+  }
+
+  .spotify-card-play-icon {
+    width: 48px;
+    height: 48px;
+  }
 }
