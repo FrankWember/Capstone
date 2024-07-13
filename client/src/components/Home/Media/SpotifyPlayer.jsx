@@ -74,6 +74,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
 
         if (!state.paused && !intervalId) {
           const id = setInterval(() => {
+            console.log(progress);
             setProgress((prevProgress) => prevProgress + 1000);
           }, 1000);
           setIntervalId(id);
@@ -237,7 +238,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
       </div>
       <div className="spotify-player-progress">
         <div className="progress-time">
-          <span>{formatTime(progress)}</span>
+          <span>{formatTime(progress)} </span>
           <input
             type="range"
             min="0"
@@ -246,7 +247,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
             onChange={(e) => setProgress(e.target.value)}
             className="progress-bar"
           />
-          <span>{formatTime(duration - progress)}</span>
+          <span> {formatTime(duration - progress)}</span>
         </div>
       </div>
       <div className="spotify-player-volume">

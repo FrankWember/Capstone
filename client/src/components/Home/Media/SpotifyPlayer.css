@@ -4,9 +4,9 @@
   align-items: center;
   justify-content: space-between;
   bottom: 0;
-  height: 15%; /* Increased height for larger player */
+  height: 100px;
   width: 100%;
-  background: #181818; /* Dark background similar to Spotify */
+  background: #181818;
   padding: 20px 40px;
   box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2);
   z-index: 10;
@@ -19,10 +19,10 @@
 }
 
 .spotify-player-info img {
-  width: 250px;
-  height: 250px;
-  border-radius: 20px;
-  margin-right: 15px;
+  width: 100px;
+  height: 90px;
+  border-radius: 30px;
+  margin: 15px;
 }
 
 .track-details {
@@ -33,13 +33,14 @@
 
 .track-name {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 20px;
   color: white;
 }
 
 .track-artist,
 .track-album {
-  font-size: 14px;
+  font-style: italic;
+  font-size: 16px;
   color: #b3b3b3;
 }
 
@@ -48,8 +49,8 @@
   align-items: center;
   margin-right: 20px;
   position: relative;
-  bottom: 80px;
-  left: 30%;
+  bottom: 20px;
+  left: 20%;
 }
 
 .spotify-player-button {
@@ -61,7 +62,7 @@
 }
 
 .spotify-player-button:hover .spotify-player-icon {
-  color: #1db954; /* Spotify green for hover effect */
+  color: #1db954;
 }
 
 .spotify-player-icon {
@@ -70,10 +71,13 @@
 }
 
 .spotify-player-progress {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 40%;
+  bottom: -24px;
+  right: 200px;
+  width: 60%;
 }
 
 .progress-time {
@@ -85,7 +89,7 @@
 
 .progress-bar {
   width: 100%;
-  margin: 5px 0;
+  margin: 10px;
   background: #b3b3b3;
   border-radius: 2px;
 }
