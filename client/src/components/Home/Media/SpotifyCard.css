@@ -1,4 +1,3 @@
-/* General Styles for Spotify Cards */
 .spotify-card {
   position: relative;
   width: 330px;
@@ -37,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(88, 88, 88, 0.5);
+  background-color: rgba(85, 85, 85, 0.5);
   opacity: 0;
   transition: opacity 0.5s;
 }
@@ -55,12 +54,12 @@
 }
 
 .spotify-card-play-icon {
-  position: relative;
+  position: fixed;
   width: 90px;
   height: 90px;
   left: 120px;
   top: 120px;
-  color: rgb(0, 192, 64);
+  color: rgb(42, 255, 113);
 }
 
 .spotify-card-body {
@@ -105,11 +104,11 @@
 
 /* Different image styles for each type of card */
 .spotify-card-image-wrapper-artist {
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
+  border-radius: 80%;
+  width: 300px;
+  height: 300px;
   overflow: hidden;
-  margin: 0 auto;
+  margin: 15px auto;
 }
 
 .spotify-card-image-artist {
@@ -119,50 +118,11 @@
 .spotify-card-image-wrapper-track,
 .spotify-card-image-wrapper-playlist,
 .spotify-card-image-wrapper-audiobook {
-  border-radius: 10px;
+  border-radius: 15px;
 }
 
 .spotify-card-image-track,
 .spotify-card-image-playlist,
 .spotify-card-image-audiobook {
-  border-radius: 10px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .spotify-card {
-    width: 100%;
-    margin: 10px 0;
-  }
-
-  .spotify-card-image-wrapper {
-    height: 200px;
-  }
-
-  .spotify-card-title {
-    font-size: 1.2em;
-  }
-
-  .spotify-card-text {
-    font-size: 0.9em;
-  }
-}
-
-@media (max-width: 480px) {
-  .spotify-card-image-wrapper {
-    height: 150px;
-  }
-
-  .spotify-card-title {
-    font-size: 1em;
-  }
-
-  .spotify-card-text {
-    font-size: 0.8em;
-  }
-
-  .spotify-card-play-icon {
-    width: 48px;
-    height: 48px;
-  }
+  border-radius: 15px;
 }

@@ -1,9 +1,7 @@
-/* src/components/Playlist/Playlist.css */
-
 .playlist-page {
   display: flex;
   height: 100vh;
-  margin-left: 450px; /* Add margin to account for the sidebar width */
+  margin-left: 450px;
 }
 
 .playlist-container {
@@ -102,10 +100,10 @@
 .track-details {
   display: flex;
   flex-direction: column;
-  width: 300px; /* Set maximum width for text elements */
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden; /* Hide overflow text */
-  text-overflow: ellipsis; /* Show ellipsis for overflow text */
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .track-name {

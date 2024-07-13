@@ -4,53 +4,48 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: #343a40; /* Dark background */
+  background-color: #343a40;
   color: white;
   padding: 20px;
   margin-top: 7px;
   border-radius: 30px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   font-family: "Roboto", sans-serif;
 }
 
 .sidebar a {
   color: white;
-  text-decoration: none; /* Remove underline from links */
+  text-decoration: none;
 }
 
 .sidebar a:hover {
-  color: #1ed760; /* Spotify green color */
+  color: #1ed760;
 }
 
 .sidebar .nav-link.active {
-  background-color: #1ed760; /* Highlight active link */
-  border-radius: 4px; /* Add slight rounding to active link */
+  background-color: #1ed760;
+  border-radius: 4px;
 }
 
 .sidebar hr {
-  border-color: rgba(
-    255,
-    255,
-    255,
-    0.2
-  ); /* Lighten the color of the horizontal rule */
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .sidebar .dropdown-toggle::after {
-  display: none; /* Remove the default dropdown arrow */
+  display: none;
 }
 
 .sidebar .dropdown-menu {
-  background-color: #343a40; /* Match the background of the dropdown to the sidebar */
-  border: none; /* Remove the border from the dropdown */
+  background-color: #343a40;
+  border: none;
 }
 
 .sidebar .dropdown-item {
-  color: white; /* White text for dropdown items */
+  color: white;
 }
 
 .sidebar .dropdown-item:hover {
-  background-color: #1ed760; /* Green background on hover */
+  background-color: #1ed760;
 }
 
 .sidebar .bi {
@@ -63,16 +58,16 @@
 }
 
 .sidebar .form-control:focus {
-  background-color: rgba(255, 255, 255, 0.2); /* Slightly darker on focus */
-  box-shadow: none; /* Remove the default focus shadow */
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
 }
 
 .sidebar .btn-outline-success {
-  color: white; /* White text */
-  border-color: white; /* White border */
+  color: white;
+  border-color: white;
 }
 
 .sidebar .btn-outline-success:hover {
-  background-color: #1ed760; /* Green background on hover */
-  border-color: #1ed760; /* Match border to background */
+  background-color: #1ed760;
+  border-color: #1ed760;
 }
