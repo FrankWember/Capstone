@@ -20,6 +20,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
   const [duration, setDuration] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
   const [playlists, setPlaylists] = useState([]);
+  const [selectedPlaylists, setSelectedPlaylists] = useState([]);
   const [showPlaylists, setShowPlaylists] = useState(false);
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const SpotifyPlayer = ({ token, trackUri }) => {
       setPlayer(player);
 
       player.addListener("ready", ({ device_id }) => {
-        console.log("Ready with Device ID", device_id);
         setDeviceId(device_id);
       });
 
@@ -74,7 +74,6 @@ const SpotifyPlayer = ({ token, trackUri }) => {
 
         if (!state.paused && !intervalId) {
           const id = setInterval(() => {
-            console.log(progress);
             setProgress((prevProgress) => prevProgress + 1000);
           }, 1000);
           setIntervalId(id);
@@ -150,10 +149,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
       return;
     }
     if (isPaused) {
-      play({
-        playerInstance: player,
-        spotify_uri: trackUri,
-      });
+      play({ playerInstance: player, spotify_uri: trackUri });
     } else {
       player.pause();
     }
@@ -179,28 +175,38 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     }
   };
 
-  const handleAddToPlaylist = (playlistId) => {
-    if (!trackUri) return;
+  const handlePlaylistSelection = (playlistId) => {
+    setSelectedPlaylists((prevSelected) =>
+      prevSelected.includes(playlistId)
+        ? prevSelected.filter((id) => id !== playlistId)
+        : [...prevSelected, playlistId]
+    );
+  };
 
-    fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ uris: [trackUri] }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("Track added to playlist");
-          setShowPlaylists(false);
-        } else {
-          console.error("Error adding track to playlist");
-        }
+  const handleAddToPlaylists = () => {
+    if (!trackUri || selectedPlaylists.length === 0) return;
+
+    selectedPlaylists.forEach((playlistId) => {
+      fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uris: [trackUri] }),
       })
-      .catch((error) => {
-        console.error("Error adding track to playlist", error);
-      });
+        .then((response) => {
+          if (response.ok) {
+            console.log(`Track added to playlist ${playlistId}`);
+          } else {
+            console.error(`Error adding track to playlist ${playlistId}`);
+          }
+        })
+        .catch((error) => {
+          console.error(`Error adding track to playlist ${playlistId}`, error);
+        });
+    });
+    setShowPlaylists(false);
   };
 
   const formatTime = (milliseconds) => {
@@ -221,6 +227,51 @@ const SpotifyPlayer = ({ token, trackUri }) => {
           <p className="track-album">{trackInfo.album}</p>
         </div>
       </div>
+      <div className="playlist-dropdown-container">
+        <button
+          onClick={() => setShowPlaylists(!showPlaylists)}
+          className="spotify-player-button"
+        >
+          <PlusIcon className="spotify-player-icon" />
+        </button>
+        {showPlaylists && (
+          <div className="playlist-dropdown">
+            <div className="playlist-dropdown-header">Select Playlists</div>
+            {playlists.map((playlist) => (
+              <label key={playlist.id} className="playlist-item">
+                {playlist.images[0] && (
+                  <img
+                    src={playlist.images[0].url}
+                    alt={playlist.name}
+                    className="playlist-item-image"
+                  />
+                )}
+                <div className="playlist-item-info">
+                  <p className="playlist-item-name">{playlist.name}</p>
+                  <p className="playlist-item-tracks">
+                    {playlist.tracks.total} songs
+                  </p>
+                </div>
+
+                <input
+                  type="checkbox"
+                  name="playlist"
+                  value={playlist.id}
+                  checked={selectedPlaylists.includes(playlist.id)}
+                  onChange={() => handlePlaylistSelection(playlist.id)}
+                  className="playlist-checkbox"
+                />
+              </label>
+            ))}
+            <button
+              onClick={handleAddToPlaylists}
+              className="save-playlists-button"
+            >
+              Save to Selected Playlists
+            </button>
+          </div>
+        )}
+      </div>
       <div className="spotify-player-controls">
         <button onClick={handlePreviousTrack} className="spotify-player-button">
           <RewindIcon className="spotify-player-icon" />
@@ -238,7 +289,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
       </div>
       <div className="spotify-player-progress">
         <div className="progress-time">
-          <span>{formatTime(progress)} </span>
+          <span>{formatTime(progress)}</span>
           <input
             type="range"
             min="0"
@@ -247,7 +298,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
             onChange={(e) => setProgress(e.target.value)}
             className="progress-bar"
           />
-          <span> {formatTime(duration - progress)}</span>
+          <span>{formatTime(duration - progress)}</span>
         </div>
       </div>
       <div className="spotify-player-volume">
@@ -261,25 +312,6 @@ const SpotifyPlayer = ({ token, trackUri }) => {
           className="volume-bar"
         />
       </div>
-      <button
-        onClick={() => setShowPlaylists(!showPlaylists)}
-        className="spotify-player-button"
-      >
-        <PlusIcon className="spotify-player-icon" />
-      </button>
-      {showPlaylists && (
-        <div className="playlist-dropdown">
-          {playlists.map((playlist) => (
-            <div
-              key={playlist.id}
-              className="playlist-item"
-              onClick={() => handleAddToPlaylist(playlist.id)}
-            >
-              {playlist.name}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

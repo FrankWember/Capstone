@@ -6,23 +6,16 @@ import { useNavigate } from "react-router-dom";
 import SpotifyPlayer from "./Media/SpotifyPlayer";
 
 const MediaContainer = ({ token, weather }) => {
-  // State to store the top tracks
+  // State to store various data
   const [topTracks, setTopTracks] = useState([]);
-  // State to store recommended tracks
   const [recommendedTracks, setRecommendedTracks] = useState([]);
-  // State to store recently played tracks
   const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState([]);
-  // State to store saved playlists
   const [savedPlaylist, setSavedPlaylist] = useState([]);
-  // State to store featured playlists
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
-  // State to store any error messages
-  const [error, setError] = useState(null);
-
   const [followedArtists, setFollowedArtists] = useState([]);
   const [savedAudiobooks, setSavedAudiobooks] = useState([]);
-  // State to store the currently playing track URI
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Function to fetch data from the Spotify API
@@ -57,12 +50,10 @@ const MediaContainer = ({ token, weather }) => {
 
   // Function to get track recommendations based on seed tracks
   const getRecommendations = async (seedTracks) => {
-    console.log(seedTracks);
     const seedTrackIds = seedTracks.map((track) => track.id).join(",");
     const data = await fetchWebApi(
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
-    console.log(data);
     if (data) setRecommendedTracks(data.tracks);
   };
 
@@ -72,11 +63,13 @@ const MediaContainer = ({ token, weather }) => {
     if (data) setRecentlyPlayedTracks(data.items);
   };
 
+  // Function to get the user's followed artists
   const getFollowedArtists = async () => {
     const data = await fetchWebApi("v1/me/following?type=artist");
     if (data) setFollowedArtists(data.artists.items);
   };
 
+  // Function to get the user's saved audiobooks
   const getSavedAudiobooks = async () => {
     const data = await fetchWebApi("v1/me/audiobooks");
     if (data) setSavedAudiobooks(data.items);
@@ -98,7 +91,6 @@ const MediaContainer = ({ token, weather }) => {
   useEffect(() => {
     if (token) {
       getTopTracks().then((topTracks) => {
-        console.log(topTracks);
         getRecommendations(topTracks);
       });
       getFollowedArtists();
@@ -142,6 +134,7 @@ const MediaContainer = ({ token, weather }) => {
                 key={track.id}
                 item={track}
                 token={token}
+                type="track"
                 onClick={() => handlePlayTrack(track.uri)}
               />
             ))}
@@ -150,37 +143,37 @@ const MediaContainer = ({ token, weather }) => {
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>
-            You Top Artist
+            Your Top Artists
           </h3>
           <div className="gridItem">
-            {followedArtists.map((track) => (
+            {followedArtists.map((artist) => (
               <SpotifyCard
-                key={track.id}
-                item={track}
+                key={artist.id}
+                item={artist}
                 token={token}
-                onClick={() => handlePlayTrack(track.uri)}
+                type="artist"
+                onClick={() => handlePlayTrack(artist.uri)}
               />
             ))}
           </div>
         </div>
-
         <div className="section">
           <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Your Favorite Books
+            <span className="icon">📚</span>
+            Your Favorite Audiobooks
           </h3>
           <div className="gridItem">
-            {savedAudiobooks.map((track) => (
+            {savedAudiobooks.map((audiobook) => (
               <SpotifyCard
-                key={track.id}
-                item={track}
+                key={audiobook.id}
+                item={audiobook}
                 token={token}
-                onClick={() => handlePlayTrack(track.uri)}
+                type="audiobook"
+                onClick={() => handlePlayTrack(audiobook.uri)}
               />
             ))}
           </div>
         </div>
-
         <div className="section">
           <h3 className="section-title">
             <span className="icon">🎵</span>
@@ -192,6 +185,7 @@ const MediaContainer = ({ token, weather }) => {
                 key={track.id}
                 item={track}
                 token={token}
+                type="track"
                 onClick={() => handlePlayTrack(track.uri)}
               />
             ))}
@@ -208,6 +202,7 @@ const MediaContainer = ({ token, weather }) => {
                 key={track.track.id}
                 item={track.track}
                 token={token}
+                type="track"
                 onClick={() => handlePlayTrack(track.track.uri)}
               />
             ))}
@@ -223,8 +218,8 @@ const MediaContainer = ({ token, weather }) => {
               <SpotifyCard
                 key={playlist.id}
                 item={playlist}
-                isPlaylist
                 token={token}
+                type="playlist"
                 onClick={() => navigate(`/playlist/${playlist.id}`)}
               />
             ))}
@@ -240,8 +235,8 @@ const MediaContainer = ({ token, weather }) => {
               <SpotifyCard
                 key={playlist.id}
                 item={playlist}
-                isPlaylist
                 token={token}
+                type="playlist"
                 onClick={() => navigate(`/playlist/${playlist.id}`)}
               />
             ))}
