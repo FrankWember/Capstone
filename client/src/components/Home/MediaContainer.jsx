@@ -5,7 +5,7 @@ import SpotifyCard from "./Media/SpotifyCard";
 import { useNavigate } from "react-router-dom";
 import SpotifyPlayer from "./Media/SpotifyPlayer";
 
-const MediaContainer = ({ token, weather }) => {
+const MediaContainer = ({ token, setCurrentTrackUri }) => {
   // State to store various data
   const [topTracks, setTopTracks] = useState([]);
   const [recommendedTracks, setRecommendedTracks] = useState([]);
@@ -14,7 +14,6 @@ const MediaContainer = ({ token, weather }) => {
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   const [followedArtists, setFollowedArtists] = useState([]);
   const [savedAudiobooks, setSavedAudiobooks] = useState([]);
-  const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -113,15 +112,6 @@ const MediaContainer = ({ token, weather }) => {
 
   return (
     <div className="app-container">
-      <SideBar />
-      {weather && (
-        <div className="weather-info">
-          <h3>Current Weather</h3>
-          <p>{weather.name}</p>
-          <p>{weather.weather[0].description}</p>
-          <p>{weather.main.temp}°C</p>
-        </div>
-      )}
       <div className="media-container">
         <div className="section">
           <h3 className="section-title">
@@ -243,9 +233,6 @@ const MediaContainer = ({ token, weather }) => {
           </div>
         </div>
       </div>
-      {currentTrackUri && (
-        <SpotifyPlayer token={token} trackUri={currentTrackUri} />
-      )}
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MediaContainer from "./MediaContainer";
+import SideBar from "../SideBar/SideBar";
 
-const Home = ({ token }) => {
+const Home = ({ token, setCurrentTrackUri }) => {
   return (
     <div>
-      <MediaContainer token={token} />
+      <SideBar />
+      <MediaContainer token={token} setCurrentTrackUri={setCurrentTrackUri} />
     </div>
   );
 };
