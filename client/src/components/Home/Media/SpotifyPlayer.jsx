@@ -221,10 +221,12 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     <div className="spotify-player">
       <div className="spotify-player-info">
         {trackInfo.image && <img src={trackInfo.image} alt="Album cover" />}
-        <div className="player-track-details">
-          <p className="player-track-name">{trackInfo.name}</p>
-          <p className="player-track-artist">{trackInfo.artist}</p>
-          <p className="player-track-album">{trackInfo.album}</p>
+        <div className="player-track-container">
+          <div className="player-track-details">
+            <p className="marquee player-track-name">{trackInfo.name}</p>
+            <p className="player-track-artist">{trackInfo.artist}</p>
+            <p className="player-track-album">{trackInfo.album}</p>
+          </div>
         </div>
       </div>
       <div className="playlist-dropdown-container">
