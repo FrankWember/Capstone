@@ -142,7 +142,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
                 item={artist}
                 token={token}
                 type="artist"
-                onClick={() => handlePlayTrack(artist.uri)}
+                onClick={() => navigate(`/artist/${artist.id}`)}
               />
             ))}
           </div>

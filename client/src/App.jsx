@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Login from "./components/Screens/Login/Login";
 import Signup from "./components/Screens/Signup/Signup";
-import Player from "./components/Screens/Player/Player";
+import Player from "./components/Screens/ArtistPage/ArtistPage";
 import Home from "./components/Home/Home";
 import Playlist from "./components/Screens/Playlist/Playlist";
 import Recommendation from "./components/Screens/Recommendation/Recommendation";
@@ -15,6 +15,7 @@ import FaceRecognition from "./components/Screens/FaceRecognition/FaceRecognitio
 
 import "./App.css";
 import SpotifyPlayer from "./components/Home/Media/SpotifyPlayer";
+import ArtistPage from "./components/Screens/ArtistPage/ArtistPage";
 
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
@@ -159,6 +160,17 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Playlist
+                  token={token}
+                  setCurrentTrackUri={setCurrentTrackUri}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/artist/:artistId"
+            element={
+              <ProtectedRoute>
+                <ArtistPage
                   token={token}
                   setCurrentTrackUri={setCurrentTrackUri}
                 />
