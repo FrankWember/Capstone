@@ -6,7 +6,7 @@
 
 .playlist-container {
   flex-grow: 1;
-  padding: 30px;
+  padding: 40px;
   background-color: #22272d;
   color: #ffffff;
   font-family: "Roboto", sans-serif;
@@ -24,7 +24,7 @@
 .playlist-cover {
   width: 400px;
   height: 400px;
-  border-radius: 15px;
+  border-radius: 50%;
   margin-right: 30px;
 }
 
@@ -129,21 +129,23 @@
 }
 .back-button {
   display: flex;
+  position: relative;
+  top: 0px;
   align-items: center;
-
   color: white;
   border: none;
   border-radius: 15px;
   padding: 10px 20px;
-  margin-bottom: 20px;
+  margin: 20px;
   cursor: pointer;
   font-size: 20px;
   font-weight: bold;
-  transition: background-color 1s;
+  background-color: #5b5a5a;
+  transition: background-color 0.5s;
 }
 
 .back-button:hover {
-  background-color: #18902c;
+  background-color: #18882f;
 }
 
 .back-icon {

@@ -61,12 +61,12 @@ const Playlist = ({ token, setCurrentTrackUri }) => {
     <div className="playlist-page">
       <SideBar />
       <div className="playlist-container">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <ArrowLeftIcon className="back-icon" />
-          Back
-        </button>
         {playlistDetails && (
           <div className="playlist-header">
+            <button className="back-button" onClick={() => navigate(-1)}>
+              <ArrowLeftIcon className="back-icon" />
+              Back
+            </button>
             {playlistDetails.images && playlistDetails.images[0] && (
               <img
                 src={playlistDetails.images[0].url}
