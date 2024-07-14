@@ -16,32 +16,49 @@
 .spotify-player-info {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .spotify-player-info img {
-  width: 100px;
-  height: 90px;
+  width: 80px;
+  height: 70px;
   border-radius: 5px;
   margin: 15px;
 }
 
-.track-details {
+.player-track-details {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border: #1db954 solid 3px;
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+  overflow: hidden;
+  position: relative;
 }
 
-.track-name {
+.player-track-name {
   font-weight: bold;
   font-size: 20px;
   color: white;
+  width: 100pxs;
 }
 
-.track-artist,
-.track-album {
+.player-track-artist {
   font-style: italic;
   font-size: 16px;
   color: #b3b3b3;
+  width: 100px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .spotify-player-controls {
