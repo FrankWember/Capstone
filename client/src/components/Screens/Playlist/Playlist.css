@@ -1,52 +1,54 @@
 .playlist-page {
   display: flex;
   height: 100vh;
-  margin-left: 450px;
+  margin-left: 440px;
 }
 
 .playlist-container {
   flex-grow: 1;
-  padding: 20px;
-  background-color: #090813;
+  padding: 30px;
+  background-color: #22272d;
   color: #ffffff;
   font-family: "Roboto", sans-serif;
-  overflow-y: auto; /* Allow scrolling for the playlist content */
+  overflow-y: auto;
+  border-radius: 30px;
+  margin-top: 7px;
 }
 
 .playlist-header {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .playlist-cover {
-  width: 500px;
-  height: 600px;
-  border-radius: 10px;
-  margin-right: 20px;
+  width: 400px;
+  height: 400px;
+  border-radius: 15px;
+  margin-right: 30px;
 }
 
 .playlist-title {
-  font-size: 52px;
+  font-size: 48px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  color: #ffffff;
 }
 
 .playlist-description {
-  font-size: 26px;
+  font-size: 18px;
   font-style: italic;
   margin-bottom: 10px;
   color: #b3b3b3;
 }
 
 .playlist-owner {
-  font-size: 24px;
-  color: #534f4f;
+  font-size: 16px;
+  color: #b3b3b3;
 }
 
 .playlist-tracks {
   margin-top: 20px;
-  border: #ff4d4d solid;
 }
 
 .tracks-table {
@@ -56,11 +58,10 @@
 
 .table-header {
   text-align: left;
-  padding: 20px;
-  font-size: 24px;
+  padding: 10px;
+  font-size: 18px;
   color: #b3b3b3;
-  border-bottom: 1px solid #333;
-  border: #003f69 solid;
+  border-bottom: 1px solid #253246;
 }
 
 .track-row {
@@ -69,57 +70,52 @@
 }
 
 .track-row:hover {
-  background-color: #1e1a32;
+  background-color: #014d62;
+  transition: 0.5s;
 }
 
 .table-cell {
-  padding: 5px;
-  font-size: 20px;
+  padding: 10px;
+  font-size: 16px;
   border-bottom: 1px solid #333;
 }
 
 .track-title {
   display: flex;
   align-items: center;
-  border: #228439 solid;
 }
 
 .track-info {
   display: flex;
   align-items: center;
-  border: #bf31a8 solid;
 }
 
 .track-cover {
   width: 100px;
   height: 100px;
   border-radius: 7px;
-  margin-right: 30px;
+  margin-right: 20px;
 }
 
 .track-details {
   display: flex;
   flex-direction: column;
-  width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .track-name {
   font-weight: bold;
   margin-bottom: 5px;
+  color: #ffffff;
 }
 
 .track-artists {
-  font-size: 18px;
+  font-size: 14px;
   color: #b3b3b3;
-  font-style: italic;
 }
 
 .icon {
-  width: 50px;
-  height: 50px;
+  width: 24px;
+  height: 24px;
   color: #b3b3b3;
 }
 
@@ -130,4 +126,28 @@
   border-radius: 10px;
   text-align: center;
   margin: 20px;
+}
+.back-button {
+  display: flex;
+  align-items: center;
+
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  transition: background-color 1s;
+}
+
+.back-button:hover {
+  background-color: #18902c;
+}
+
+.back-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 }

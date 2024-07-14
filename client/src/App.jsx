@@ -10,9 +10,11 @@ import Signup from "./components/Screens/Signup/Signup";
 import Player from "./components/Screens/Player/Player";
 import Home from "./components/Home/Home";
 import Playlist from "./components/Screens/Playlist/Playlist";
-import "./App.css";
 import Recommendation from "./components/Screens/Recommendation/Recommendation";
 import FaceRecognition from "./components/Screens/FaceRecognition/FaceRecognition";
+
+import "./App.css";
+import SpotifyPlayer from "./components/Home/Media/SpotifyPlayer";
 
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
@@ -24,7 +26,9 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
+  //Managing the state of the components
   const [token, setToken] = useState("");
+  const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [weather, setWeather] = useState(null);
 
@@ -117,7 +121,7 @@ const App = () => {
             path="/home"
             element={
               <ProtectedRoute>
-                <Home token={token} />
+                <Home token={token} setCurrentTrackUri={setCurrentTrackUri} />
               </ProtectedRoute>
             }
           />
@@ -134,7 +138,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/face_mood"
             element={
@@ -143,7 +146,6 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/home/player"
             element={
@@ -156,11 +158,17 @@ const App = () => {
             path="/playlist/:playlistId"
             element={
               <ProtectedRoute>
-                <Playlist token={token} />
+                <Playlist
+                  token={token}
+                  setCurrentTrackUri={setCurrentTrackUri}
+                />
               </ProtectedRoute>
             }
           />
         </Routes>
+        {token && currentTrackUri && (
+          <SpotifyPlayer token={token} trackUri={currentTrackUri} />
+        )}
       </div>
     </Router>
   );

@@ -1,13 +1,14 @@
 // src/components/Playlist/Playlist.js
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { ClockIcon } from "@heroicons/react/solid";
+import { useParams, useNavigate } from "react-router-dom";
+import { ClockIcon, ArrowLeftIcon } from "@heroicons/react/solid";
 import "./Playlist.css";
 import SideBar from "../../SideBar/SideBar";
 
-const Playlist = ({ token }) => {
+const Playlist = ({ token, setCurrentTrackUri }) => {
   const { playlistId } = useParams();
+  const navigate = useNavigate();
   const [playlistDetails, setPlaylistDetails] = useState(null);
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [error, setError] = useState(null);
@@ -60,6 +61,10 @@ const Playlist = ({ token }) => {
     <div className="playlist-page">
       <SideBar />
       <div className="playlist-container">
+        <button className="back-button" onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="back-icon" />
+          Back
+        </button>
         {playlistDetails && (
           <div className="playlist-header">
             {playlistDetails.images && playlistDetails.images[0] && (
@@ -95,7 +100,11 @@ const Playlist = ({ token }) => {
             </thead>
             <tbody>
               {playlistTracks.map((track, index) => (
-                <tr key={track.track.id} className="track-row">
+                <tr
+                  key={track.track.id}
+                  className="track-row"
+                  onClick={() => setCurrentTrackUri(track.track.uri)}
+                >
                   <td className="table-cell">{index + 1}</td>
                   <td className="table-cell track-title">
                     <div className="track-info">

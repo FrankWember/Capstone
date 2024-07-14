@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Dropdown, Form, FormControl, Button } from "react-bootstrap";
 import "@fontsource/roboto";
 import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/outline";
-import "./SideBar.css"; // Import custom CSS for the sidebar
+import "./SideBar.css";
 
 function SideBar() {
   const [search, setSearch] = useState("");
