@@ -1,11 +1,17 @@
 require("dotenv").config(); 
 const express = require("express");
-const cors = require("cors"); 
+const cors = require("cors");
+const request = require('request');
+const { PrismaClient } = require("@prisma/client");
+
 const {
   getAndStoreTopTracks,
   signup,
   login,
 } = require("./helpers"); // Import helper functions
+
+
+const prisma = new PrismaClient();
 
 const app = express(); // Initialize the Express app
 
@@ -183,14 +189,20 @@ app.get("/refresh_token", (req, res) => {
     }
   });
 });
-
 app.post("/save-recommendation", async (req, res) => {
   const { user_id, location, weather, place_types, expression } = req.body;
   console.log("Request body:", req.body);
 
   try {
-    const recommendation = await prisma.recommendation.create({
-      data: {
+    const recommendation = await prisma.recommendation.upsert({
+      where: { user_id: parseInt(user_id, 10) },
+      update: {
+        location: location || "",
+        weather: weather || "",
+        place_types: place_types || "",
+        expression: expression || "",
+      },
+      create: {
         user_id: parseInt(user_id, 10),
         location: location || "",
         weather: weather || "",
@@ -204,6 +216,7 @@ app.post("/save-recommendation", async (req, res) => {
     res.status(500).json({ error: "Failed to save recommendation" });
   }
 });
+
 
 // Set the server port from environment variable or default to 3000
 const PORT = process.env.PORT || 3000;

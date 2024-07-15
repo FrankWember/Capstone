@@ -1,5 +1,3 @@
-// helpers.js
-
 const request = require("request");
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -136,7 +134,10 @@ async function signup(email, password, name) {
 
 // Helper function for user login
 async function login(email, password) {
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email }
+  });
+
   if (!user) {
     throw new Error("User not found");
   }
@@ -145,28 +146,17 @@ async function login(email, password) {
   if (!valid) {
     throw new Error("Invalid password");
   }
+  const payload = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+  };
 
-  const userToken = jwt.sign({ user_id: user.id }, SECRET_KEY, {
-    expiresIn: "1h",
-  });
-
-  const existingSession = await prisma.session.findFirst({
-    where: { user_id: user.id },
-  });
-
-  if (existingSession) {
-    await prisma.session.update({
-      where: { id: existingSession.id },
-      data: { token: userToken },
-    });
-  } else {
-    await prisma.session.create({
-      data: { user_id: user.id, token: userToken },
-    });
-  }
+  const userToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' }); // Token expires in 1 hour
 
   return { userToken, user_id: user.id, user };
 }
+
 
 module.exports = {
   getAndStoreTopTracks,
