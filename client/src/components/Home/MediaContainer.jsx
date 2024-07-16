@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./MediaContainer.css";
 import SideBar from "../SideBar/SideBar";
 import SpotifyCard from "./Media/SpotifyCard";
+import CategoryCard from "./Media/CategoryCard";
 import { useNavigate } from "react-router-dom";
 import SpotifyPlayer from "./Media/SpotifyPlayer";
 
@@ -14,10 +15,11 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   const [followedArtists, setFollowedArtists] = useState([]);
   const [savedAudiobooks, setSavedAudiobooks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many request" with spotify
+  // Function to fetch data from the Spotify API with retry mechanism
   const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
     try {
       const res = await fetch(`https://api.spotify.com/${endpoint}`, {
@@ -94,17 +96,23 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     if (data) setFeaturedPlaylists(data.playlists.items);
   };
 
+  // Function to get categories
+  const getCategories = async () => {
+    const data = await fetchWebApi("v1/browse/categories?limit=20");
+    if (data) setCategories(data.categories.items);
+  };
+
   // Fetch data when the component mounts and when the token changes
   useEffect(() => {
     if (token) {
-      getTopTracks().then((topTracks) => {
-        getRecommendations(topTracks);
-      });
+      getTopTracks();
+      // getRecommendations(topTracks);
       getFollowedArtists();
       getSavedAudiobooks();
       getSavedPlaylist();
       getFeaturedPlaylists();
       getRecentlyPlayedTracks();
+      getCategories();
     }
   }, [token]);
 
@@ -120,6 +128,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
 
   return (
     <div className="app-container">
+      <SideBar />
       <div className="media-container">
         <div className="section">
           <h3 className="section-title">
@@ -134,6 +143,22 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
                 token={token}
                 type="track"
                 onClick={() => handlePlayTrack(track.uri)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="section">
+          <h3 className="section-title">
+            <span className="icon">🎵</span>
+            Categories
+          </h3>
+          <div className="gridItem">
+            {categories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                item={category}
+                token={token}
+                type="category"
               />
             ))}
           </div>
