@@ -100,6 +100,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const getCategories = async () => {
     const data = await fetchWebApi("v1/browse/categories?limit=20");
     if (data) setCategories(data.categories.items);
+    console.log(data);
   };
 
   // Fetch data when the component mounts and when the token changes
@@ -159,6 +160,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
                 item={category}
                 token={token}
                 type="category"
+                onClick={() => navigate(`/category/${category.id}`)}
               />
             ))}
           </div>
