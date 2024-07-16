@@ -16,6 +16,7 @@ import FaceRecognition from "./components/Screens/FaceRecognition/FaceRecognitio
 import "./App.css";
 import SpotifyPlayer from "./components/Home/Media/SpotifyPlayer";
 import ArtistPage from "./components/Screens/ArtistPage/ArtistPage";
+import CategoryPage from "./components/Screens/CategoryPage/CategoryPage";
 
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
@@ -152,6 +153,17 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Player token={token} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/category/:categoryId"
+            element={
+              <ProtectedRoute>
+                <CategoryPage
+                  token={token}
+                  setCurrentTrackUri={setCurrentTrackUri}
+                />
               </ProtectedRoute>
             }
           />
