@@ -17,8 +17,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Function to fetch data from the Spotify API
-  const fetchWebApi = async (endpoint, method = "GET", body) => {
+  // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many request" with spotify
+  const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
     try {
       const res = await fetch(`https://api.spotify.com/${endpoint}`, {
         method,
@@ -28,6 +28,14 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         },
         body: body ? JSON.stringify(body) : null,
       });
+
+      if (res.status === 429 && retries > 0) {
+        const retryAfter = res.headers.get("Retry-After");
+        await new Promise((resolve) =>
+          setTimeout(resolve, (retryAfter || 1) * 1000)
+        );
+        return fetchWebApi(endpoint, method, body, retries - 1);
+      }
 
       if (!res.ok) throw new Error(`Error: ${res.status}`);
       return await res.json();
