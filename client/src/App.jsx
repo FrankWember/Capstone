@@ -108,7 +108,7 @@ const App = () => {
       }
     };
 
-    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000);
+s    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
