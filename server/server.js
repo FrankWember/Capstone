@@ -194,22 +194,43 @@ app.post("/save-recommendation", async (req, res) => {
   console.log("Request body:", req.body);
 
   try {
-    const recommendation = await prisma.recommendation.upsert({
-      where: { user_id: parseInt(user_id, 10) },
-      update: {
-        location: location || "",
-        weather: weather || "",
-        place_types: place_types || "",
-        expression: expression || "",
-      },
-      create: {
-        user_id: parseInt(user_id, 10),
-        location: location || "",
-        weather: weather || "",
-        place_types: place_types || "",
-        expression: expression || "",
-      },
+    // Parse user_id to an integer
+    const parsedUserId = parseInt(user_id, 10);
+
+    // Check if the recommendation already exists for the given user_id
+    const existingRecommendation = await prisma.recommendation.findUnique({
+      where: { user_id: parsedUserId },
     });
+
+    let recommendation;
+
+    if (existingRecommendation) {
+      // Build the update data object only for fields that are empty
+      const updateData = {
+        location: existingRecommendation.location || location,
+        weather: existingRecommendation.weather || weather,
+        place_types: existingRecommendation.place_types || place_types,
+        expression: existingRecommendation.expression || expression,
+      };
+
+      // Update the existing recommendation
+      recommendation = await prisma.recommendation.update({
+        where: { user_id: parsedUserId },
+        data: updateData,
+      });
+    } else {
+      // Create a new recommendation
+      recommendation = await prisma.recommendation.create({
+        data: {
+          user_id: parsedUserId,
+          location: location || "",
+          weather: weather || "",
+          place_types: place_types || "",
+          expression: expression || "",
+        },
+      });
+    }
+
     res.status(201).json(recommendation);
   } catch (error) {
     console.error("Error saving recommendation:", error);
