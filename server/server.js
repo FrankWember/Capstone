@@ -11,7 +11,6 @@ const {
   login,
 } = require("./helpers"); // Import helper functions
 
-
 const prisma = new PrismaClient();
 
 const app = express(); // Initialize the Express app
