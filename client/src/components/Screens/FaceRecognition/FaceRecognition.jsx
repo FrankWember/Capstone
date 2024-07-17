@@ -137,20 +137,17 @@ const FaceRecognition = () => {
     setIntervalId(id);
   };
 
-  const sendRecommendationToBackend = async (expression) => {
+  const sendRecommendationToBackend = async (expression_value) => {
     const userId = localStorage.getItem("userId");
 
     const recommendationData = {
       user_id: userId,
-      expression,
-      location: "", // Placeholder for location data
-      weather: "", // Placeholder for weather data
-      place_types: "", // Placeholder for place types data
+      expression_value,
     };
 
     try {
       await axios.post(
-        "http://localhost:3000/save-recommendation",
+        "http://localhost:3000/save-expression",
         recommendationData,
         {
           headers: {
