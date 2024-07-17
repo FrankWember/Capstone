@@ -230,7 +230,41 @@ app.post("/save-recommendation", async (req, res) => {
     res.status(500).json({ error: "Failed to save recommendation" });
   }
 });
+app.post("/save-expression", async (req, res) => {
+  const { user_id, expression_value } = req.body;
+  const parsedUserId = parseInt(user_id, 10);
+console.log(req);
+  try {
+    // Check if an expression for this user already exists in my db
+    const existingExpression = await prisma.expression.findUnique({
+      where: { user_id: parsedUserId },
+    });
 
+    let expression;
+    if (existingExpression) {
+      // Update the existing expression
+      expression = await prisma.expression.update({
+        where: { user_id: parsedUserId },
+        data: {
+          expression_value: expression_value || "",
+        },
+      });
+    } else {
+      // Create a new expression
+      expression = await prisma.expression.create({
+        data: {
+          user_id: parsedUserId,
+          expression_value: expression_value || "",
+        },
+      });
+    }
+
+    res.status(201).json(expression);
+  } catch (error) {
+    console.error("Error saving expression:", error);
+    res.status(500).json({ error: "Failed to save expression" });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
