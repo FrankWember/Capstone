@@ -7,6 +7,22 @@ const prisma = new PrismaClient();
 const SPOTIFY_API_URL = "https://api.spotify.com/v1";
 const SECRET_KEY = process.env.SECRET_KEY;
 
+// helper to fetch user data from my db
+
+async function getUserData(userId) {
+  const userExpression = await prisma.expression.findUnique({
+    where: { user_id: userId },
+  });
+
+  const userRecommendation = await prisma.recommendation.findUnique({
+    where: { user_id: userId },
+  });
+
+  const trackFeatures = await prisma.spotifyMusicTrack.findMany();
+  
+  return { userExpression, userRecommendation, trackFeatures };
+}
+
 
 // helper to get and store top tracks
 async function getAndStoreTopTracks(access_token) {
@@ -159,6 +175,7 @@ async function login(email, password) {
 
 
 module.exports = {
+  getUserData,
   getAndStoreTopTracks,
   storeTracks,
   getTrackFeatures,
