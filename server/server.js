@@ -189,34 +189,28 @@ app.get("/refresh_token", (req, res) => {
     }
   });
 });
+
+
 app.post("/save-recommendation", async (req, res) => {
-  const { user_id, location, weather, place_types, expression } = req.body;
-  console.log("Request body:", req.body);
+  const { user_id, location, weather, place_types } = req.body;
+  const parsedUserId = parseInt(user_id, 10);
 
   try {
-    // Parse user_id to an integer
-    const parsedUserId = parseInt(user_id, 10);
-
-    // Check if the recommendation already exists for the given user_id
+    // Check if a recommendation for the user already exists
     const existingRecommendation = await prisma.recommendation.findUnique({
       where: { user_id: parsedUserId },
     });
 
     let recommendation;
-
     if (existingRecommendation) {
-      // Build the update data object only for fields that are empty
-      const updateData = {
-        location: existingRecommendation.location || location,
-        weather: existingRecommendation.weather || weather,
-        place_types: existingRecommendation.place_types || place_types,
-        expression: existingRecommendation.expression || expression,
-      };
-
       // Update the existing recommendation
       recommendation = await prisma.recommendation.update({
         where: { user_id: parsedUserId },
-        data: updateData,
+        data: {
+          location: location || "",
+          weather: weather || "",
+          place_types: place_types || "",
+        },
       });
     } else {
       // Create a new recommendation
@@ -226,7 +220,6 @@ app.post("/save-recommendation", async (req, res) => {
           location: location || "",
           weather: weather || "",
           place_types: place_types || "",
-          expression: expression || "",
         },
       });
     }
@@ -239,8 +232,7 @@ app.post("/save-recommendation", async (req, res) => {
 });
 
 
-// Set the server port from environment variable or default to 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`); // Log that the server is running
+  console.log(`Server is running on port ${PORT}`);
 });
