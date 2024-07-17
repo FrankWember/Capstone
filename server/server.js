@@ -189,27 +189,41 @@ app.get("/refresh_token", (req, res) => {
     }
   });
 });
+
+
 app.post("/save-recommendation", async (req, res) => {
-  const { user_id, location, weather, place_types, expression } = req.body;
-  console.log("Request body:", req.body);
+  const { user_id, location, weather, place_types } = req.body;
+  const parsedUserId = parseInt(user_id, 10);
 
   try {
-    const recommendation = await prisma.recommendation.upsert({
-      where: { user_id: parseInt(user_id, 10) },
-      update: {
-        location: location || "",
-        weather: weather || "",
-        place_types: place_types || "",
-        expression: expression || "",
-      },
-      create: {
-        user_id: parseInt(user_id, 10),
-        location: location || "",
-        weather: weather || "",
-        place_types: place_types || "",
-        expression: expression || "",
-      },
+    // Check if a recommendation for the user already exists
+    const existingRecommendation = await prisma.recommendation.findUnique({
+      where: { user_id: parsedUserId },
     });
+
+    let recommendation;
+    if (existingRecommendation) {
+      // Update the existing recommendation
+      recommendation = await prisma.recommendation.update({
+        where: { user_id: parsedUserId },
+        data: {
+          location: location || "",
+          weather: weather || "",
+          place_types: place_types || "",
+        },
+      });
+    } else {
+      // Create a new recommendation
+      recommendation = await prisma.recommendation.create({
+        data: {
+          user_id: parsedUserId,
+          location: location || "",
+          weather: weather || "",
+          place_types: place_types || "",
+        },
+      });
+    }
+
     res.status(201).json(recommendation);
   } catch (error) {
     console.error("Error saving recommendation:", error);
@@ -218,8 +232,7 @@ app.post("/save-recommendation", async (req, res) => {
 });
 
 
-// Set the server port from environment variable or default to 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`); // Log that the server is running
+  console.log(`Server is running on port ${PORT}`);
 });
