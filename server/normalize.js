@@ -5,10 +5,16 @@ function normalizeData({ userExpression, userRecommendation, trackFeatures }) {
         }
       : null;
   
+    // Extract temperature and weather condition from the weather description
+    const weatherParts = userRecommendation.weather.split(", ");
+    const temperature = parseFloat(weatherParts[0]);
+    const weatherCondition = weatherParts[1];
+  
     const normalizedUserRecommendation = userRecommendation
       ? {
           location: userRecommendation.location,
-          weather: userRecommendation.weather,
+          temperature,
+          weatherCondition,
           placeTypes: userRecommendation.place_types,
         }
       : null;
@@ -29,7 +35,7 @@ function normalizeData({ userExpression, userRecommendation, trackFeatures }) {
       danceability: track.features.danceability,
       instrumentalness: track.features.instrumentalness,
     }));
-
+  
     return { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures };
   }
   
