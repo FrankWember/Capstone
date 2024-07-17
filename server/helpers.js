@@ -7,8 +7,9 @@ const prisma = new PrismaClient();
 const SPOTIFY_API_URL = "https://api.spotify.com/v1";
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// helper to fetch user data from my db
+const { normalizeData } = require("./normalize");
 
+// Helper to fetch user data from my db
 async function getUserData(userId) {
   const userExpression = await prisma.expression.findUnique({
     where: { user_id: userId },
@@ -19,8 +20,10 @@ async function getUserData(userId) {
   });
 
   const trackFeatures = await prisma.spotifyMusicTrack.findMany();
-  
-  return { userExpression, userRecommendation, trackFeatures };
+
+  const normalizedData = normalizeData({ userExpression, userRecommendation, trackFeatures });
+
+  return normalizedData;
 }
 
 
