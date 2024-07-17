@@ -60,7 +60,7 @@ const CategoryPage = ({ token, setCurrentTrackUri }) => {
           Back
         </button>
         <h1 className="category-name">{categoryName}</h1>
-        <div className="playlists-grid">
+        <div className="category-grid">
           {playlists.map((playlist) => (
             <SpotifyCard
               key={playlist.id}
