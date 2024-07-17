@@ -5,6 +5,7 @@ const request = require('request');
 const { PrismaClient } = require("@prisma/client");
 
 const {
+  getUserData,
   getAndStoreTopTracks,
   signup,
   login,
