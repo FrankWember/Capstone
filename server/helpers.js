@@ -21,9 +21,9 @@ async function getUserData(userId) {
 
   const trackFeatures = await prisma.spotifyMusicTrack.findMany();
 
-  const normalizedData = normalizeData({ userExpression, userRecommendation, trackFeatures });
+  const { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures } = normalizeData({ userExpression, userRecommendation, trackFeatures });
 
-  return normalizedData;
+  return { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures };
 }
 
 
