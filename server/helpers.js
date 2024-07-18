@@ -10,7 +10,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const { normalizeData } = require("./normalize");
 
 // Helper to fetch user data from my db
-async function getUserData(userId) {
+async function getRecommendation(userId) {
   const userExpression = await prisma.expression.findUnique({
     where: { user_id: userId },
   });
@@ -32,7 +32,7 @@ async function getUserData(userId) {
   
   console.log('Recommended tracks:', recommendedTracks[1]);
 
-  return { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures };
+  return recommendedTracks;
 }
 
 
@@ -92,7 +92,7 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
     criteria = { ...tempCriteria };
   }
 
-  console.log('Combining Criteria:', criteria);
+  // console.log('Combining Criteria:', criteria);
 
 
   //Filtering it based on mood criteria
@@ -307,7 +307,7 @@ async function login(email, password) {
 
 
 module.exports = {
-  getUserData,
+  getRecommendation,
   getAndStoreTopTracks,
   storeTracks,
   getTrackFeatures,
