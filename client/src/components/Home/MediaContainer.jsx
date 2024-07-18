@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./MediaContainer.css";
 import SideBar from "../SideBar/SideBar";
 import SpotifyCard from "./Media/SpotifyCard";
@@ -16,6 +17,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [followedArtists, setFollowedArtists] = useState([]);
   const [savedAudiobooks, setSavedAudiobooks] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [moodRecommendedTracks, setMoodRecommendedTracks] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -50,6 +52,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   // Function to get the user's top tracks
   const getTopTracks = async () => {
     const data = await fetchWebApi("v1/me/top/tracks?limit=5");
+    console.log(data.items);
     if (data) {
       setTopTracks(data.items);
       return data.items;
@@ -64,6 +67,23 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
       `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
     if (data) setRecommendedTracks(data.tracks);
+  };
+
+  // Function to get recommended tracks based on mood
+  const getMoodRecommendedTracks = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      console.log(userId);
+      const url = `http://localhost:3000/recommend-tracks?user_id=${userId}`;
+      const response = await fetch(url);
+
+      const data = await response.json();
+      console.log("Recommendation response:", data);
+      setMoodRecommendedTracks(data);
+    } catch (error) {
+      console.error("Failed to fetch mood recommended tracks:", error);
+      setError("Failed to fetch mood recommended tracks.");
+    }
   };
 
   // Function to get the user's recently played tracks
@@ -100,7 +120,6 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const getCategories = async () => {
     const data = await fetchWebApi("v1/browse/categories?limit=20");
     if (data) setCategories(data.categories.items);
-    console.log(data);
   };
 
   // Fetch data when the component mounts and when the token changes
@@ -108,6 +127,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     if (token) {
       getTopTracks();
       // getRecommendations(topTracks);
+      getMoodRecommendedTracks();
       getFollowedArtists();
       getSavedAudiobooks();
       getSavedPlaylist();
@@ -138,6 +158,23 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
           </h3>
           <div className="gridItem">
             {topTracks.map((track) => (
+              <SpotifyCard
+                key={track.id}
+                item={track}
+                token={token}
+                type="track"
+                onClick={() => handlePlayTrack(track.uri)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="section">
+          <h3 className="section-title">
+            <span className="icon">🎵</span>
+            Recommended Based on Your Mood
+          </h3>
+          <div className="gridItem">
+            {moodRecommendedTracks.map((track) => (
               <SpotifyCard
                 key={track.id}
                 item={track}
