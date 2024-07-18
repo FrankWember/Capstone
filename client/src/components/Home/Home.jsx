@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import MediaContainer from "./MediaContainer";
-import SideBar from "../SideBar/SideBar";
-
+import "./Home.css";
 const Home = ({ token, setCurrentTrackUri }) => {
   return (
-    <div>
-      <SideBar />
+    <div className="main-contianer">
       <MediaContainer token={token} setCurrentTrackUri={setCurrentTrackUri} />
     </div>
   );

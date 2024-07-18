@@ -1,19 +1,17 @@
 .app-container {
   display: flex;
   height: 100vh;
-  margin-left: 440px;
 }
 
 .media-container {
-  flex-grow: 1;
   padding: 30px;
-  background-color: #22272d;
+  background-color: #27303b;
   color: #ffffff;
   font-family: "Roboto", sans-serif;
   overflow-y: auto;
   border-radius: 20px;
-  margin-top: 7px;
-  margin-right: 10px;
+  margin-top: 2px;
+  margin-right: 2px;
   margin-bottom: 10px;
 }
 
@@ -40,7 +38,7 @@
 
 .gridItem {
   border-radius: 50px;
-  background-color: #212128;
+  background-color: #22272d;
   display: flex;
   flex-wrap: nowrap;
   overflow-x: scroll;

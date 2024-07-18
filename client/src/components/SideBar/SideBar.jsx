@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Dropdown, Form, FormControl, Button } from "react-bootstrap";
-import "@fontsource/roboto";
-import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/outline";
+import { useNavigate } from "react-router-dom";
+import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid"; // Make sure to import your icons
 import "./SideBar.css";
 
 function SideBar() {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -19,74 +17,53 @@ function SideBar() {
   };
 
   return (
-    <div className="sidebar d-flex flex-column p-3 text-white">
-      <NavLink
-        to="/"
-        className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
-        activeClassName="active"
-      >
-        <HomeIcon className="bi me-2" width="40" height="32" />
-        <span className="fs-4">MoodTune</span>
-      </NavLink>
-      <Form className="d-flex mb-3" onSubmit={handleSearchSubmit}>
-        <FormControl
+    <div className="sidebar">
+      <div className="sidebar-logo" onClick={() => navigate("/")}>
+        <HomeIcon className="sidebar-icon" />
+        <span className="sidebar-text">MoodTune</span>
+      </div>
+      <form className="sidebar-search" onSubmit={handleSearchSubmit}>
+        <input
           type="search"
           placeholder="Search"
-          className="me-2"
-          aria-label="Search"
           value={search}
           onChange={handleSearchChange}
         />
-        <Button variant="outline-success" type="submit">
-          <SearchIcon className="bi me-2" width="20" height="20" />
-        </Button>
-      </Form>
+        <button type="submit">
+          <SearchIcon className="sidebar-icon" />
+        </button>
+      </form>
       <hr />
-      <ul className="nav nav-pills flex-column mb-auto">
-        <li className="nav-item">
-          <NavLink to="/home" className="nav-link" activeClassName="active">
-            <HomeIcon className="bi me-2" width="20" height="20" />
-            Home
-          </NavLink>
+      <ul className="sidebar-nav">
+        <li onClick={() => navigate("/home")}>
+          <div className="sidebar-link">
+            <HomeIcon className="sidebar-icon" />
+            <span className="sidebar-text">Home</span>
+          </div>
         </li>
-        <li className="nav-item">
-          <NavLink
-            to="/recommendation"
-            className="nav-link"
-            activeClassName="active"
-          >
-            <SearchIcon className="bi me-2" width="20" height="20" />
-            Recommendations
-          </NavLink>
+        <li onClick={() => navigate("/recommendation")}>
+          <div className="sidebar-link">
+            <SearchIcon className="sidebar-icon" />
+            <span className="sidebar-text">Recommendations</span>
+          </div>
         </li>
-        <li className="nav-item">
-          <NavLink
-            to="/face_mood"
-            className="nav-link"
-            activeClassName="active"
-          >
-            <SearchIcon className="bi me-2" width="20" height="20" />
-            Set your Mood
-          </NavLink>
+        <li onClick={() => navigate("/face_mood")}>
+          <div className="sidebar-link">
+            <SearchIcon className="sidebar-icon" />
+            <span className="sidebar-text">Set your Mood</span>
+          </div>
         </li>
       </ul>
       <hr />
-      <Dropdown className="mt-auto">
-        <Dropdown.Toggle
-          variant="dark"
-          className="d-flex align-items-center text-white text-decoration-none"
-          id="dropdownUser1"
-        >
-          <UserCircleIcon className="bi me-2" width="40" height="40" />
-          <strong>Username</strong>
-        </Dropdown.Toggle>
-        <Dropdown.Menu variant="dark" className="shadow">
-          <Dropdown.Item href="/profile">Profile</Dropdown.Item>
-          <Dropdown.Item href="/settings">Settings</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item href="/">Sign out</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+      <div className="sidebar-user" onClick={() => navigate("/profile")}>
+        <UserCircleIcon className="sidebar-icon" />
+        <strong>Username</strong>
+        <div className="sidebar-dropdown">
+          <div className="sidebar-dropdown-link" onClick={() => navigate("/")}>
+            Sign out
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
