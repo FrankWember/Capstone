@@ -44,7 +44,7 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
   const moodCriteria = {
     happy: { minValence: 0.8, minEnergy: 0.6 },
     sad: { maxValence: 0.6, maxEnergy: 0.7 },
-    angry: { maxValence: 0.3, minEnergy: 0.6, minLoudness: -7 },
+    angry: { minTempo: 115, minEnergy: 0.5, minLoudness: -4 },
   };
 
   // Defining criteria for recommendation based on weather
@@ -84,7 +84,7 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
     const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
     
     criteria = { ...moodCriteria[mood], ...weatherCriteria[matchingWeatherKey], ...tempCriteria };
-    console.log(criteria);
+
   } else if (mood) {
     criteria = { ...moodCriteria[mood] };
   } else if (weatherCondition) {
@@ -94,7 +94,7 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
     criteria = { ...tempCriteria };
   }
 
-    console.log('Combining Criteria:', criteria);
+    // console.log('Combining Criteria:', criteria);
 
 
   //Filtering it based on mood criteria
