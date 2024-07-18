@@ -39,11 +39,13 @@
 }
 
 .gridItem {
+  border-radius: 50px;
+  background-color: #212128;
   display: flex;
-  flex-wrap: wrap;
-  overflow-x: scroll; /* Enable horizontal scrolling */
-  gap: 20px; /* Space between grid items */
-  padding: 10px 0; /* Space around the grid */
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  gap: 20px;
+  padding: 10px;
 }
 
 .gridItem::-webkit-scrollbar {
