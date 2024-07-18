@@ -22,11 +22,10 @@ async function getUserData(userId) {
   const trackFeatures = await prisma.spotifyMusicTrack.findMany();
 
   const { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures } = normalizeData({ userExpression, userRecommendation, trackFeatures });
-
+  console.log(normalizedUserRecommendation);
   return { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures };
 }
-
-
+getUserData(1)
 // helper to get and store top tracks
 async function getAndStoreTopTracks(access_token) {
   try {
