@@ -70,16 +70,43 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   };
 
   // Function to get recommended tracks based on mood
+
   const getMoodRecommendedTracks = async () => {
     try {
       const userId = localStorage.getItem("userId");
       console.log(userId);
       const url = `http://localhost:3000/recommend-tracks?user_id=${userId}`;
-      const response = await fetch(url);
+      const response = await axios.get(url);
 
-      const data = await response.json();
-      console.log("Recommendation response:", data);
-      setMoodRecommendedTracks(data);
+      const tracksData = await Promise.all(
+        response.data.map(async (track) => {
+          const trackResponse = await axios.get(
+            `https://api.spotify.com/v1/tracks/${track.spotifyId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const trackDetails = trackResponse.data;
+
+          return {
+            id: trackDetails.id,
+            name: trackDetails.name,
+            uri: trackDetails.uri,
+            images: trackDetails.album.images,
+            artists: trackDetails.artists.map((artist) => ({
+              name: artist.name,
+            })),
+            album: trackDetails.album.name,
+            previewUrl: trackDetails.preview_url,
+          };
+        })
+      );
+
+      console.log("Detailed tracks response:", tracksData);
+      setMoodRecommendedTracks(tracksData);
     } catch (error) {
       console.error("Failed to fetch mood recommended tracks:", error);
       setError("Failed to fetch mood recommended tracks.");
