@@ -1,7 +1,6 @@
 .main-content {
   display: flex;
   flex-grow: 1;
-  margin-left: 350px;
   background-color: #f8f9fa;
 }
 body {

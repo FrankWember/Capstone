@@ -35,9 +35,7 @@ const SpotifyCard = ({ item, type, onClick }) => {
           />
         )}
         <div className="spotify-card-overlay">
-          <button className="spotify-card-play-button">
-            <PlayIcon className="spotify-card-play-icon" />
-          </button>
+          <PlayIcon className="spotify-card-play-button" />
         </div>
       </div>
       <div className="spotify-card-body">
