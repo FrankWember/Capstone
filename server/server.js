@@ -71,7 +71,7 @@ app.get("/auth/login", async (req, res) => {
     return res.status(400).json({ error: "user_id is required" });
   }
 
-  console.log("Login User_id:", user_id);
+  // console.log("Login User_id:", user_id);
 
   const scope = [
     "user-read-private",
@@ -112,7 +112,7 @@ app.get("/auth/callback", (req, res) => {
   const code = req.query.code;
   const user_id = req.query.state; // Extracting the user_id from the state parameter
 
-  console.log("Callback State (user_id):", user_id);
+  // console.log("Callback State (user_id):", user_id);
 
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
@@ -151,7 +151,7 @@ app.get("/auth/token", (req, res) => {
   const access_token = req.query.access_token || null;
   const refresh_token = req.query.refresh_token || null;
 
-  console.log(refresh_token);
+  // console.log(refresh_token);
 
   // Check if both tokens are present
   if (access_token && refresh_token) {
@@ -236,7 +236,6 @@ app.post("/save-recommendation", async (req, res) => {
 app.post("/save-expression", async (req, res) => {
   const { user_id, expression_value } = req.body;
   const parsedUserId = parseInt(user_id, 10);
-console.log(req);
   try {
     // Check if an expression for this user already exists in my db
     const existingExpression = await prisma.expression.findUnique({
@@ -272,7 +271,7 @@ console.log(req);
 // Endpoint to get recommended tracks for a user based on user_id
 app.get("/recommend-tracks", async (req, res) => {
   const userId = parseInt(req.query.user_id, 10);
-
+  console.log(req);
   if (userId) {
     return res.status(400).json({ error: "Invalid user_id" });
   }
