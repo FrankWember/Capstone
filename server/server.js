@@ -5,10 +5,10 @@ const request = require('request');
 const { PrismaClient } = require("@prisma/client");
 
 const {
-  getUserData,
   getAndStoreTopTracks,
   signup,
   login,
+  getRecommendation,
 } = require("./helpers"); // Import helper functions
 
 const prisma = new PrismaClient();
@@ -24,6 +24,8 @@ const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID; // Spotify Client ID from envir
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET; // Spotify Client Secret from environment variables
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI; // Spotify Redirect URI from environment variables
 const SECRET_KEY = process.env.SECRET_KEY; // Secret key for JWT signing from environment variables
+
+
 
 // Endpoint for user signup
 app.post("/signup", async (req, res) => {
@@ -230,6 +232,7 @@ app.post("/save-recommendation", async (req, res) => {
     res.status(500).json({ error: "Failed to save recommendation" });
   }
 });
+
 app.post("/save-expression", async (req, res) => {
   const { user_id, expression_value } = req.body;
   const parsedUserId = parseInt(user_id, 10);
@@ -263,6 +266,24 @@ console.log(req);
   } catch (error) {
     console.error("Error saving expression:", error);
     res.status(500).json({ error: "Failed to save expression" });
+  }
+});
+
+// Endpoint to get recommended tracks for a user based on user_id
+app.get("/recommend-tracks", async (req, res) => {
+  const userId = parseInt(req.query.user_id, 10);
+
+  if (userId) {
+    return res.status(400).json({ error: "Invalid user_id" });
+  }
+
+  try {
+    const { recommendedTracks } = await getRecommendation(userId);
+    console.log(recommendedTracks);
+    res.json(recommendedTracks);
+  } catch (error) {
+    console.error("Error getting recommended tracks:", error);
+    res.status(500).json({ error: "Failed to get recommended tracks" });
   }
 });
 
