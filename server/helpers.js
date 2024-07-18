@@ -21,29 +21,22 @@ async function getRecommendation(userId) {
 
   const trackFeatures = await prisma.spotifyMusicTrack.findMany();
 
-  const {
-    normalizedUserExpression,
-    normalizedUserRecommendation,
-    normalizedTrackFeatures,
-  } = normalizeData({ userExpression, userRecommendation, trackFeatures });
-  // console.log(normalizedUserRecommendation, normalizedUserExpression);
+  const { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures } = normalizeData({ userExpression, userRecommendation, trackFeatures });
+  console.log(normalizedUserRecommendation, normalizedUserExpression);
 
-  const recommendedTracks = recommendTracks({
-    normalizedUserExpression,
-    normalizedUserRecommendation,
-    normalizedTrackFeatures,
+  const recommendedTracks = recommendTracks({ 
+    normalizedUserExpression, 
+    normalizedUserRecommendation, 
+    normalizedTrackFeatures 
   });
-
-  // console.log("Recommended tracks:", recommendedTracks[1]);
+  
+  console.log('Recommended tracks:', recommendedTracks[1]);
 
   return recommendedTracks;
 }
 
-function recommendTracks({
-  normalizedUserExpression,
-  normalizedUserRecommendation,
-  normalizedTrackFeatures,
-}) {
+
+function recommendTracks({ normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures }) {
   const { mood } = normalizedUserExpression || {};
   const { weatherCondition, temperature } = normalizedUserRecommendation || {};
 
@@ -88,20 +81,12 @@ function recommendTracks({
   let criteria = {};
   if (mood && weatherCondition) {
     // Find the matching weather criteria based on keywords
-    const matchingWeatherKey = Object.keys(weatherCriteria).find((key) =>
-      matchesWeatherCondition(weatherCondition, key)
-    );
-    criteria = {
-      ...moodCriteria[mood],
-      ...weatherCriteria[matchingWeatherKey],
-      ...tempCriteria,
-    };
+    const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
+    criteria = { ...moodCriteria[mood], ...weatherCriteria[matchingWeatherKey], ...tempCriteria };
   } else if (mood) {
     criteria = { ...moodCriteria[mood] };
   } else if (weatherCondition) {
-    const matchingWeatherKey = Object.keys(weatherCriteria).find((key) =>
-      matchesWeatherCondition(weatherCondition, key)
-    );
+    const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
     criteria = { ...weatherCriteria[matchingWeatherKey], ...tempCriteria };
   } else {
     criteria = { ...tempCriteria };
@@ -109,82 +94,67 @@ function recommendTracks({
 
   // console.log('Combining Criteria:', criteria);
 
+
   //Filtering it based on mood criteria
 
   let filteredTracks = normalizedTrackFeatures;
   if (mood) {
-    filteredTracks = filteredTracks.filter(
-      (track) =>
-        (!criteria.minValence || track.valence >= criteria.minValence) &&
-        (!criteria.maxValence || track.valence <= criteria.maxValence) &&
-        (!criteria.minEnergy || track.energy >= criteria.minEnergy) &&
-        (!criteria.maxEnergy || track.energy <= criteria.maxEnergy) &&
-        (!criteria.minLoudness || track.loudness >= criteria.minLoudness) &&
-        (!criteria.maxLoudness || track.loudness <= criteria.maxLoudness)
-    );
-    console.log("After mood filtering:", filteredTracks.length);
+    filteredTracks = filteredTracks.filter(track => (
+      (!criteria.minValence || track.valence >= criteria.minValence) &&
+      (!criteria.maxValence || track.valence <= criteria.maxValence) &&
+      (!criteria.minEnergy || track.energy >= criteria.minEnergy) &&
+      (!criteria.maxEnergy || track.energy <= criteria.maxEnergy) &&
+      (!criteria.minLoudness || track.loudness >= criteria.minLoudness) &&
+      (!criteria.maxLoudness || track.loudness <= criteria.maxLoudness)
+    ));
+    console.log('After mood filtering:', filteredTracks.length);
   }
 
   // Filternig it based on weather criteria
   if (weatherCondition) {
-    const matchingWeatherKey = Object.keys(weatherCriteria).find((key) =>
-      matchesWeatherCondition(weatherCondition, key)
-    );
+    const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
     if (matchingWeatherKey) {
       const weatherCrit = weatherCriteria[matchingWeatherKey];
-      filteredTracks = filteredTracks.filter(
-        (track) =>
-          (!weatherCrit.minValence ||
-            track.valence >= weatherCrit.minValence) &&
-          (!weatherCrit.maxValence ||
-            track.valence <= weatherCrit.maxValence) &&
-          (!weatherCrit.minEnergy || track.energy >= weatherCrit.minEnergy) &&
-          (!weatherCrit.maxEnergy || track.energy <= weatherCrit.maxEnergy) &&
-          (!weatherCrit.minDanceability ||
-            track.danceability >= weatherCrit.minDanceability) &&
-          (!weatherCrit.maxDanceability ||
-            track.danceability <= weatherCrit.maxDanceability) &&
-          (!weatherCrit.maxLiveness ||
-            track.liveness <= weatherCrit.maxLiveness) &&
-          (!weatherCrit.minLoudness ||
-            track.loudness >= weatherCrit.minLoudness) &&
-          (!weatherCrit.maxLoudness ||
-            track.loudness <= weatherCrit.maxLoudness) &&
-          (!weatherCrit.minTempo || track.tempo >= weatherCrit.minTempo) &&
-          (!weatherCrit.maxTempo || track.tempo <= weatherCrit.maxTempo)
-      );
-      console.log("After weather filtering:", filteredTracks.length);
+      filteredTracks = filteredTracks.filter(track => (
+        (!weatherCrit.minValence || track.valence >= weatherCrit.minValence) &&
+        (!weatherCrit.maxValence || track.valence <= weatherCrit.maxValence) &&
+        (!weatherCrit.minEnergy || track.energy >= weatherCrit.minEnergy) &&
+        (!weatherCrit.maxEnergy || track.energy <= weatherCrit.maxEnergy) &&
+        (!weatherCrit.minDanceability || track.danceability >= weatherCrit.minDanceability) &&
+        (!weatherCrit.maxDanceability || track.danceability <= weatherCrit.maxDanceability) &&
+        (!weatherCrit.maxLiveness || track.liveness <= weatherCrit.maxLiveness) &&
+        (!weatherCrit.minLoudness || track.loudness >= weatherCrit.minLoudness) &&
+        (!weatherCrit.maxLoudness || track.loudness <= weatherCrit.maxLoudness) &&
+        (!weatherCrit.minTempo || track.tempo >= weatherCrit.minTempo) &&
+        (!weatherCrit.maxTempo || track.tempo <= weatherCrit.maxTempo)
+      ));
+      console.log('After weather filtering:', filteredTracks.length);
     }
   }
 
   //Filtering it based on temperature criteria
   if (temperature !== undefined) {
-    filteredTracks = filteredTracks.filter(
-      (track) =>
-        (!tempCriteria.minValence ||
-          track.valence >= tempCriteria.minValence) &&
-        (!tempCriteria.maxValence ||
-          track.valence <= tempCriteria.maxValence) &&
-        (!tempCriteria.minEnergy || track.energy >= tempCriteria.minEnergy) &&
-        (!tempCriteria.maxEnergy || track.energy <= tempCriteria.maxEnergy) &&
-        (!tempCriteria.minDanceability ||
-          track.danceability >= tempCriteria.minDanceability) &&
-        (!tempCriteria.maxDanceability ||
-          track.danceability <= tempCriteria.maxDanceability) &&
-        (!tempCriteria.maxLiveness ||
-          track.liveness <= tempCriteria.maxLiveness) &&
-        (!tempCriteria.minLoudness ||
-          track.loudness >= tempCriteria.minLoudness) &&
-        (!tempCriteria.maxLoudness ||
-          track.loudness <= tempCriteria.maxLoudness) &&
-        (!tempCriteria.minTempo || track.tempo >= tempCriteria.minTempo) &&
-        (!tempCriteria.maxTempo || track.tempo <= tempCriteria.maxTempo)
-    );
-    console.log("After temperature filtering:", filteredTracks.length);
+    filteredTracks = filteredTracks.filter(track => (
+      (!tempCriteria.minValence || track.valence >= tempCriteria.minValence) &&
+      (!tempCriteria.maxValence || track.valence <= tempCriteria.maxValence) &&
+      (!tempCriteria.minEnergy || track.energy >= tempCriteria.minEnergy) &&
+      (!tempCriteria.maxEnergy || track.energy <= tempCriteria.maxEnergy) &&
+      (!tempCriteria.minDanceability || track.danceability >= tempCriteria.minDanceability) &&
+      (!tempCriteria.maxDanceability || track.danceability <= tempCriteria.maxDanceability) &&
+      (!tempCriteria.maxLiveness || track.liveness <= tempCriteria.maxLiveness) &&
+      (!tempCriteria.minLoudness || track.loudness >= tempCriteria.minLoudness) &&
+      (!tempCriteria.maxLoudness || track.loudness <= tempCriteria.maxLoudness) &&
+      (!tempCriteria.minTempo || track.tempo >= tempCriteria.minTempo) &&
+      (!tempCriteria.maxTempo || track.tempo <= tempCriteria.maxTempo)
+    ));
+    console.log('After temperature filtering:', filteredTracks.length);
   }
 
   return filteredTracks;
 }
+
+
+
 
 // helper to get and store top tracks
 async function getAndStoreTopTracks(access_token) {
@@ -221,6 +191,8 @@ async function getAndStoreTopTracks(access_token) {
     console.error("Error fetching or storing top tracks:", error);
   }
 }
+
+
 
 // Helper to fetch data from Spotify API
 async function fetchSpotifyData(url, access_token) {
@@ -311,7 +283,7 @@ async function signup(email, password, name) {
 // Helper function for user login
 async function login(email, password) {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { email }
   });
 
   if (!user) {
@@ -328,10 +300,11 @@ async function login(email, password) {
     name: user.name,
   };
 
-  const userToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "1h" }); // Token expires in 1 hour
+  const userToken = jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' }); // Token expires in 1 hour
 
   return { userToken, user_id: user.id, user };
 }
+
 
 module.exports = {
   getRecommendation,
