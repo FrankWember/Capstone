@@ -271,7 +271,7 @@ app.get("/recommend-tracks", async (req, res) => {
 
   try {
     const recommendedTracks = await getRecommendation(userId);
-    console.log(recommendedTracks);
+
     res.json(recommendedTracks);
   } catch (error) {
     console.error("Error getting recommended tracks:", error);
