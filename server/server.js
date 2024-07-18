@@ -1,7 +1,7 @@
-require("dotenv").config(); 
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const request = require('request');
+const request = require("request");
 const { PrismaClient } = require("@prisma/client");
 
 const {
@@ -24,8 +24,6 @@ const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID; // Spotify Client ID from envir
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET; // Spotify Client Secret from environment variables
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI; // Spotify Redirect URI from environment variables
 const SECRET_KEY = process.env.SECRET_KEY; // Secret key for JWT signing from environment variables
-
-
 
 // Endpoint for user signup
 app.post("/signup", async (req, res) => {
@@ -192,7 +190,6 @@ app.get("/refresh_token", (req, res) => {
   });
 });
 
-
 app.post("/save-recommendation", async (req, res) => {
   const { user_id, location, weather, place_types } = req.body;
   const parsedUserId = parseInt(user_id, 10);
@@ -271,13 +268,9 @@ app.post("/save-expression", async (req, res) => {
 // Endpoint to get recommended tracks for a user based on user_id
 app.get("/recommend-tracks", async (req, res) => {
   const userId = parseInt(req.query.user_id, 10);
-  console.log(req);
-  if (userId) {
-    return res.status(400).json({ error: "Invalid user_id" });
-  }
 
   try {
-    const { recommendedTracks } = await getRecommendation(userId);
+    const recommendedTracks = await getRecommendation(userId);
     console.log(recommendedTracks);
     res.json(recommendedTracks);
   } catch (error) {

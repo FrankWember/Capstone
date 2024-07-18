@@ -52,6 +52,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   // Function to get the user's top tracks
   const getTopTracks = async () => {
     const data = await fetchWebApi("v1/me/top/tracks?limit=5");
+    console.log(data.items);
     if (data) {
       setTopTracks(data.items);
       return data.items;
@@ -72,12 +73,9 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const getMoodRecommendedTracks = async () => {
     try {
       const userId = localStorage.getItem("userId");
+      console.log(userId);
       const url = `http://localhost:3000/recommend-tracks?user_id=${userId}`;
       const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
 
       const data = await response.json();
       console.log("Recommendation response:", data);
