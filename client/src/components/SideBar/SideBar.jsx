@@ -1,11 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid"; // Make sure to import your icons
+import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid";
 import "./SideBar.css";
 
 function SideBar() {
   const [search, setSearch] = useState("");
+  const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("spotifyToken");
+
+    const fetchPlaylists = async () => {
+      try {
+        const response = await fetch(
+          "https://api.spotify.com/v1/me/playlists",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error fetching playlists");
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setPlaylists(data.items);
+      } catch (error) {
+        console.error("Error fetching playlists:", error);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -19,10 +49,10 @@ function SideBar() {
   return (
     <div className="sidebar">
       <div className="sidebar-logo" onClick={() => navigate("/")}>
-        <HomeIcon className="sidebar-icon" />
-        <span className="sidebar-text">MoodTune</span>
+        <HomeIcon className="icon" />
+        <span className="logo-text">MoodTune</span>
       </div>
-      <form className="sidebar-search" onSubmit={handleSearchSubmit}>
+      <form className="search-form" onSubmit={handleSearchSubmit}>
         <input
           type="search"
           placeholder="Search"
@@ -30,36 +60,54 @@ function SideBar() {
           onChange={handleSearchChange}
         />
         <button type="submit">
-          <SearchIcon className="sidebar-icon" />
+          <SearchIcon className="icon" />
         </button>
       </form>
       <hr />
-      <ul className="sidebar-nav">
+      <ul className="nav-list">
         <li onClick={() => navigate("/home")}>
-          <div className="sidebar-link">
-            <HomeIcon className="sidebar-icon" />
-            <span className="sidebar-text">Home</span>
+          <div className="nav-link">
+            <HomeIcon className="icon" />
+            <span className="link-text">Home</span>
           </div>
         </li>
         <li onClick={() => navigate("/recommendation")}>
-          <div className="sidebar-link">
-            <SearchIcon className="sidebar-icon" />
-            <span className="sidebar-text">Recommendations</span>
+          <div className="nav-link">
+            <SearchIcon className="icon" />
+            <span className="link-text">Recommendations</span>
           </div>
         </li>
         <li onClick={() => navigate("/face_mood")}>
-          <div className="sidebar-link">
-            <SearchIcon className="sidebar-icon" />
-            <span className="sidebar-text">Set your Mood</span>
+          <div className="nav-link">
+            <SearchIcon className="icon" />
+            <span className="link-text">Set your Mood</span>
           </div>
         </li>
       </ul>
       <hr />
-      <div className="sidebar-user" onClick={() => navigate("/profile")}>
-        <UserCircleIcon className="sidebar-icon" />
+      <ul className="playlist-list">
+        {playlists.map((playlist) => (
+          <li
+            key={playlist.id}
+            onClick={() => navigate(`/playlist/${playlist.id}`)}
+          >
+            <div className="playlist-item">
+              <img
+                src={playlist.images[0]?.url}
+                alt={playlist.name}
+                className="playlist-cover"
+              />
+              <span className="link-text">{playlist.name}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <hr />
+      <div className="user-section" onClick={() => navigate("/profile")}>
+        <UserCircleIcon className="icon" />
         <strong>Username</strong>
-        <div className="sidebar-dropdown">
-          <div className="sidebar-dropdown-link" onClick={() => navigate("/")}>
+        <div className="dropdown">
+          <div className="dropdown-link" onClick={() => navigate("/")}>
             Sign out
           </div>
         </div>

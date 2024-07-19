@@ -87,12 +87,13 @@
   text-decoration: none;
   padding: 8px;
   border-radius: 4px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-family: cursive;
+  transition: background-color 0.5s ease, transform 0.3s ease;
 }
 
 .sidebar-link:hover,
 .sidebar-link.active {
-  background-color: #1ed760;
+  background-color: #0d8c3a;
   transform: scale(1.05);
 }
 
@@ -125,7 +126,6 @@
 
 .sidebar-dropdown-link {
   color: white;
-  text-decoration: none;
   margin-bottom: 8px;
   transition: color 0.3s ease;
   cursor: pointer;
@@ -139,4 +139,41 @@
   border-color: rgba(255, 255, 255, 0.2);
   width: 100%;
   margin: 16px 0;
+}
+
+.sidebar-playlists {
+  list-style: none;
+  padding: 0;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sidebar-playlists li {
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.sidebar-playlist-cover {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.playlist-text {
+  font-size: 20px;
+}
+
+.playlist-name {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-playlists .sidebar-link:hover {
+  background-color: #333842;
 }
