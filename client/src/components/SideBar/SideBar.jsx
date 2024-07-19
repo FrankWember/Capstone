@@ -92,11 +92,13 @@ function SideBar() {
             onClick={() => navigate(`/playlist/${playlist.id}`)}
           >
             <div className="sidebar-link">
-              <img
-                src={playlist.images[0]?.url}
-                alt={playlist.name}
-                className="sidebar-playlist-cover"
-              />
+              {playlist.images && playlist.images.length > 0 && (
+                <img
+                  src={playlist.images[0].url}
+                  alt={playlist.name}
+                  className="sidebar-playlist-cover"
+                />
+              )}
               <span className="sidebar-text playlist-text">
                 {playlist.name}
               </span>
