@@ -24,7 +24,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many request" with spotify
   const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
     try {
-      const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+      const res = await fetch(`https://api.spotify.com/v1/${endpoint}`, {
         method,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
 
   // Function to get the user's top tracks
   const getTopTracks = async () => {
-    const data = await fetchWebApi("v1/me/top/tracks?limit=5");
+    const data = await fetchWebApi("me/top/tracks?limit=5");
     console.log(data.items);
     if (data) {
       setTopTracks(data.items);
@@ -64,13 +64,12 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const getRecommendations = async (seedTracks) => {
     const seedTrackIds = seedTracks.map((track) => track.id).join(",");
     const data = await fetchWebApi(
-      `v1/recommendations?seed_tracks=${seedTrackIds}&limit=5`
+      `recommendations?seed_tracks=${seedTrackIds}&limit=5`
     );
     if (data) setRecommendedTracks(data.tracks);
   };
 
   // Function to get recommended tracks based on mood
-
   const getMoodRecommendedTracks = async () => {
     try {
       const userId = localStorage.getItem("userId");
@@ -80,28 +79,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
 
       const tracksData = await Promise.all(
         response.data.map(async (track) => {
-          const trackResponse = await axios.get(
-            `https://api.spotify.com/v1/tracks/${track.spotifyId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          const trackDetails = trackResponse.data;
-
-          return {
-            id: trackDetails.id,
-            name: trackDetails.name,
-            uri: trackDetails.uri,
-            images: trackDetails.album.images,
-            artists: trackDetails.artists.map((artist) => ({
-              name: artist.name,
-            })),
-            album: trackDetails.album.name,
-            previewUrl: trackDetails.preview_url,
-          };
+          const trackDetails = await fetchWebApi(`tracks/${track.spotifyId}`);
+          return trackDetails;
         })
       );
 
@@ -115,37 +94,37 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
 
   // Function to get the user's recently played tracks
   const getRecentlyPlayedTracks = async () => {
-    const data = await fetchWebApi("v1/me/player/recently-played?limit=25");
+    const data = await fetchWebApi("me/player/recently-played?limit=25");
     if (data) setRecentlyPlayedTracks(data.items);
   };
 
   // Function to get the user's followed artists
   const getFollowedArtists = async () => {
-    const data = await fetchWebApi("v1/me/following?type=artist");
+    const data = await fetchWebApi("me/following?type=artist");
     if (data) setFollowedArtists(data.artists.items);
   };
 
   // Function to get the user's saved audiobooks
   const getSavedAudiobooks = async () => {
-    const data = await fetchWebApi("v1/me/audiobooks");
+    const data = await fetchWebApi("me/audiobooks");
     if (data) setSavedAudiobooks(data.items);
   };
 
   // Function to get the user's saved playlists
   const getSavedPlaylist = async () => {
-    const data = await fetchWebApi("v1/me/playlists");
+    const data = await fetchWebApi("me/playlists");
     if (data) setSavedPlaylist(data.items);
   };
 
   // Function to get featured playlists
   const getFeaturedPlaylists = async () => {
-    const data = await fetchWebApi("v1/browse/featured-playlists");
+    const data = await fetchWebApi("browse/featured-playlists");
     if (data) setFeaturedPlaylists(data.playlists.items);
   };
 
   // Function to get categories
   const getCategories = async () => {
-    const data = await fetchWebApi("v1/browse/categories?limit=20");
+    const data = await fetchWebApi("browse/categories?limit=20");
     if (data) setCategories(data.categories.items);
   };
 
@@ -153,7 +132,6 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   useEffect(() => {
     if (token) {
       getTopTracks();
-      // getRecommendations(topTracks);
       getMoodRecommendedTracks();
       getFollowedArtists();
       getSavedAudiobooks();
@@ -164,6 +142,11 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    if (topTracks.length > 0) {
+      getRecommendations(topTracks);
+    }
+  }, [topTracks]);
   // Handle play track action
   const handlePlayTrack = (trackUri) => {
     setCurrentTrackUri(trackUri);
