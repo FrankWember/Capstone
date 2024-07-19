@@ -92,14 +92,14 @@
 
 .sidebar-link:hover,
 .sidebar-link.active {
-  background-color: #1ed760;
+  background-color: #0d8c3a;
   transform: scale(1.05);
 }
 
 .sidebar-icon {
   margin-right: 10px;
-  width: 20px;
-  height: 20px;
+  width: 50px;
+  height: 50px;
 }
 
 .sidebar-user {
@@ -112,8 +112,8 @@
 
 .sidebar-user .sidebar-icon {
   margin-bottom: 8px;
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
 }
 
 .sidebar-dropdown {
@@ -139,4 +139,46 @@
   border-color: rgba(255, 255, 255, 0.2);
   width: 100%;
   margin: 16px 0;
+}
+
+.sidebar-playlists {
+  list-style: none;
+  padding: 0;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sidebar-playlists::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.sidebar-playlists li {
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.sidebar-playlist-cover {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.playlist-text {
+  font-size: 20px;
+}
+
+.playlist-name {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar-playlists .sidebar-link:hover {
+  background-color: #333842;
 }

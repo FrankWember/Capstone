@@ -12,7 +12,7 @@ const CategoryCard = ({ item, onClick }) => {
       onClick(item.uri);
     }
   };
-  console.log(item);
+
   // Get the image URL to display
   const imageUrl =
     item.icons && item.icons.length > 0 ? item.icons[0].url : null;

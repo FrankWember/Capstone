@@ -1,11 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid";
 import "./SideBar.css";
 
 function SideBar() {
   const [search, setSearch] = useState("");
+  const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("spotifyToken");
+
+    const fetchPlaylists = async () => {
+      try {
+        const response = await fetch(
+          "https://api.spotify.com/v1/me/playlists",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Error fetching playlists");
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setPlaylists(data.items);
+      } catch (error) {
+        console.error("Error fetching playlists:", error);
+      }
+    };
+
+    fetchPlaylists();
+  }, []);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -53,6 +83,26 @@ function SideBar() {
             <span className="sidebar-text">Set your Mood</span>
           </div>
         </li>
+      </ul>
+      <hr />
+      <ul className="sidebar-playlists">
+        {playlists.map((playlist) => (
+          <li
+            key={playlist.id}
+            onClick={() => navigate(`/playlist/${playlist.id}`)}
+          >
+            <div className="sidebar-link">
+              <img
+                src={playlist.images[0]?.url}
+                alt={playlist.name}
+                className="sidebar-playlist-cover"
+              />
+              <span className="sidebar-text playlist-text">
+                {playlist.name}
+              </span>
+            </div>
+          </li>
+        ))}
       </ul>
       <hr />
       <div className="sidebar-user" onClick={() => navigate("/profile")}>
