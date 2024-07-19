@@ -49,10 +49,10 @@ function SideBar() {
   return (
     <div className="sidebar">
       <div className="sidebar-logo" onClick={() => navigate("/")}>
-        <HomeIcon className="icon" />
-        <span className="logo-text">MoodTune</span>
+        <HomeIcon className="sidebar-icon" />
+        <span className="sidebar-text">MoodTune</span>
       </div>
-      <form className="search-form" onSubmit={handleSearchSubmit}>
+      <form className="sidebar-search" onSubmit={handleSearchSubmit}>
         <input
           type="search"
           placeholder="Search"
@@ -60,54 +60,56 @@ function SideBar() {
           onChange={handleSearchChange}
         />
         <button type="submit">
-          <SearchIcon className="icon" />
+          <SearchIcon className="sidebar-icon" />
         </button>
       </form>
       <hr />
-      <ul className="nav-list">
+      <ul className="sidebar-nav">
         <li onClick={() => navigate("/home")}>
-          <div className="nav-link">
-            <HomeIcon className="icon" />
-            <span className="link-text">Home</span>
+          <div className="sidebar-link">
+            <HomeIcon className="sidebar-icon" />
+            <span className="sidebar-text">Home</span>
           </div>
         </li>
         <li onClick={() => navigate("/recommendation")}>
-          <div className="nav-link">
-            <SearchIcon className="icon" />
-            <span className="link-text">Recommendations</span>
+          <div className="sidebar-link">
+            <SearchIcon className="sidebar-icon" />
+            <span className="sidebar-text">Recommendations</span>
           </div>
         </li>
         <li onClick={() => navigate("/face_mood")}>
-          <div className="nav-link">
-            <SearchIcon className="icon" />
-            <span className="link-text">Set your Mood</span>
+          <div className="sidebar-link">
+            <SearchIcon className="sidebar-icon" />
+            <span className="sidebar-text">Set your Mood</span>
           </div>
         </li>
       </ul>
       <hr />
-      <ul className="playlist-list">
+      <ul className="sidebar-playlists">
         {playlists.map((playlist) => (
           <li
             key={playlist.id}
             onClick={() => navigate(`/playlist/${playlist.id}`)}
           >
-            <div className="playlist-item">
+            <div className="sidebar-link">
               <img
                 src={playlist.images[0]?.url}
                 alt={playlist.name}
-                className="playlist-cover"
+                className="sidebar-playlist-cover"
               />
-              <span className="link-text">{playlist.name}</span>
+              <span className="sidebar-text playlist-text">
+                {playlist.name}
+              </span>
             </div>
           </li>
         ))}
       </ul>
       <hr />
-      <div className="user-section" onClick={() => navigate("/profile")}>
-        <UserCircleIcon className="icon" />
+      <div className="sidebar-user" onClick={() => navigate("/profile")}>
+        <UserCircleIcon className="sidebar-icon" />
         <strong>Username</strong>
-        <div className="dropdown">
-          <div className="dropdown-link" onClick={() => navigate("/")}>
+        <div className="sidebar-dropdown">
+          <div className="sidebar-dropdown-link" onClick={() => navigate("/")}>
             Sign out
           </div>
         </div>
