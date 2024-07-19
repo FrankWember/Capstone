@@ -43,14 +43,14 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
 
   // Defining the criteria for recommendation based on mood
   const moodCriteria = {
-    happy: { minValence: 0.8, minEnergy: 0.6 },
+    happy: { minValence: 0.8, minEnergy: 0.8 },
     sad: { maxValence: 0.8, maxEnergy: 0.7 },
     angry: { minTempo: 115, minEnergy: 0.5, minLoudness: -4 },
   };
 
   // Defining the criteria for recommendation based on weather
   const weatherCriteria = {
-    clear: { minEnergy: 0.6, minValence: 0.5 },
+    clear: { minEnergy: 0.9, minValence: 0.5 },
     cloudy: { maxEnergy: 0.6, maxValence: 0.4 },
     rain: { maxEnergy: 0.5, maxLiveness: 0.4 },
     storm: { maxEnergy: 0.4, maxValence: 0.3 },
