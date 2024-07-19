@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid"; // Make sure to import your icons
+import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid";
 import "./SideBar.css";
 
 function SideBar() {
