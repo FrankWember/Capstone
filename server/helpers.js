@@ -44,13 +44,13 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
   // Defining the criteria for recommendation based on mood
   const moodCriteria = {
     happy: { minValence: 0.8, minEnergy: 0.6 },
-    sad: { maxValence: 0.6, maxEnergy: 0.7 },
+    sad: { maxValence: 0.8, maxEnergy: 0.7 },
     angry: { minTempo: 115, minEnergy: 0.5, minLoudness: -4 },
   };
 
   // Defining the criteria for recommendation based on weather
   const weatherCriteria = {
-    clear: { minEnergy: 0.7, minValence: 0.7 },
+    clear: { minEnergy: 0.6, minValence: 0.5 },
     cloudy: { maxEnergy: 0.6, maxValence: 0.4 },
     rain: { maxEnergy: 0.5, maxLiveness: 0.4 },
     storm: { maxEnergy: 0.4, maxValence: 0.3 },
@@ -75,7 +75,7 @@ function recommendTracks({ normalizedUserExpression, normalizedUserRecommendatio
   }
 
   let filteredTracks = normalizedTrackFeatures;
-
+  console.log(criteria);
   // Filter tracks based on criteria
   if (mood) {
     filteredTracks = filterTracks(filteredTracks, criteria);
@@ -126,7 +126,7 @@ const filterTracks = (tracks, criteria) => {
 const getTemperatureCriteria = (temperature) => {
   const temperatureCriteria = {
     cold: { maxTempo: 110, maxEnergy: 0.6 },
-    mild: { minValence: 0.7, minEnergy: 0.6 },
+    mild: { minValence: 0.8, minEnergy: 0.8 },
     hot: { minTempo: 90, minEnergy: 0.5 },
   };
 
@@ -154,7 +154,7 @@ async function getAndStoreTopTracks(access_token) {
 
     const userRecentlyListen = await fetchSpotifyData(
       `${SPOTIFY_API_URL}/me/player/recently-played?limit=50`,
-      access_token
+        access_token
     );
     const recentlyPlayedTracks = userRecentlyListen.items.map(
       (item) => item.track
