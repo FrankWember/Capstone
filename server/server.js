@@ -5,6 +5,7 @@ const request = require("request");
 const { PrismaClient } = require("@prisma/client");
 
 const {
+  getMusicCategoriesForPlaceTypes,
   getAndStoreTopTracks,
   signup,
   login,
@@ -276,6 +277,17 @@ app.get("/recommend-tracks", async (req, res) => {
   } catch (error) {
     console.error("Error getting recommended tracks:", error);
     res.status(500).json({ error: "Failed to get recommended tracks" });
+  }
+});
+
+app.get('/music-categories/:userId', async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  try {
+    const categories = await getMusicCategoriesForPlaceTypes(userId);
+    res.status(200).json({ categories });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
