@@ -18,10 +18,11 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [savedAudiobooks, setSavedAudiobooks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [moodRecommendedTracks, setMoodRecommendedTracks] = useState([]);
+  const [placeBasedCategories, setPlaceBasedCategories] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many request" with spotify
+  // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many requests" with Spotify
   const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
     try {
       const res = await fetch(`https://api.spotify.com/v1/${endpoint}`, {
@@ -126,6 +127,38 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const getCategories = async () => {
     const data = await fetchWebApi("browse/categories?limit=20");
     if (data) setCategories(data.categories.items);
+    console.log(data);
+  };
+
+  // Function to get the place-based music categories and fetch their details from Spotify
+  const getPlaceBasedCategories = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.get(
+        `http://localhost:3000/music-categories/${userId}`
+      );
+
+      const categoryIds = response.data.categories;
+      const categoriesData = await Promise.all(
+        categoryIds.map(async (categoryId) => {
+          const categoryData = await fetchWebApi(
+            `browse/categories/${categoryId}`
+          );
+          const categoryPlaylists = await fetchWebApi(
+            `browse/categories/${categoryId}/playlists?limit=5`
+          );
+          return {
+            ...categoryData,
+            playlists: categoryPlaylists.playlists.items,
+          };
+        })
+      );
+
+      setPlaceBasedCategories(categoriesData);
+    } catch (error) {
+      console.error("Failed to fetch place-based categories:", error);
+      setError("Failed to fetch place-based categories.");
+    }
   };
 
   // Fetch data when the component mounts and when the token changes
@@ -142,11 +175,20 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     }
   }, [token]);
 
+  // Fetch recommendations based on top tracks
   useEffect(() => {
     if (topTracks.length > 0) {
       getRecommendations(topTracks);
     }
   }, [topTracks]);
+
+  // Fetch place-based categories when the component mounts
+  useEffect(() => {
+    if (token) {
+      getPlaceBasedCategories();
+    }
+  }, [token]);
+
   // Handle play track action
   const handlePlayTrack = (trackUri) => {
     setCurrentTrackUri(trackUri);
@@ -194,6 +236,29 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
               />
             ))}
           </div>
+        </div>
+
+        <div className="section">
+          <h2 className="section-title">
+            <span className="icon">🎵</span>
+            Place Based Categories
+          </h2>
+          {placeBasedCategories.map((category) => (
+            <div key={category.id} className="category-section">
+              <h3>{category.name}</h3>
+              <div className="gridItem">
+                {category.playlists.map((playlist) => (
+                  <SpotifyCard
+                    key={playlist.id}
+                    item={playlist}
+                    token={token}
+                    type="playlist"
+                    onClick={() => navigate(`/playlist/${playlist.id}`)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
         <div className="section">
           <h3 className="section-title">
