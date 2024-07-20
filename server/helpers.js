@@ -419,6 +419,7 @@ const placeTypeToMusicCategory = {
 
 
 module.exports = {
+  getMusicCategoriesForPlaceTypes,
   getRecommendation,
   getAndStoreTopTracks,
   storeTracks,
