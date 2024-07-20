@@ -9,6 +9,50 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 const { normalizeData } = require("./normalize");
 
+//Endpoint to get the Ideal category based on the place type
+
+const getMusicCategoriesForPlaceTypes = async (userId) => {
+  try {
+    // Fetch the record from the database
+    const recommendation = await prisma.recommendation.findUnique({
+      where: { user_id: userId },
+    });
+    console.log(recommendation);
+    if (!recommendation) {
+      throw new Error('Recommendation not found for the given user ID');
+    }
+
+    // Parse the comma-separated place types from my db
+    const placeTypes = recommendation.place_types.split(',');
+
+    // Map each place types to music categories
+    const musicCategories = placeTypes.map(type => placeTypeToMusicCategory[type.trim()]);
+
+    // Remove duplicated value and filter out undefined values from my dataset
+    const uniqueMusicCategories = [...new Set(musicCategories)].filter(Boolean);
+
+    return uniqueMusicCategories;
+  } catch (error) {
+    console.error('Error fetching music categories for place types:', error);
+    throw error;
+  }
+};
+
+const userId = 1; 
+getMusicCategoriesForPlaceTypes(userId)
+  .then(categories => {
+    console.log('Ideal music categories:', categories);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+
+
+
+
+
+
 // Helper to fetch user data from my db
 async function getRecommendation(userId) {
   const userExpression = await prisma.expression.findUnique({
@@ -291,6 +335,87 @@ async function login(email, password) {
 
   return { userToken, user_id: user.id, user };
 }
+
+
+// Mapping of popular place types gotten form the placeApi documentation to music categories using keywords
+const placeTypeToMusicCategory = {
+  // Sports
+  "fitness_center": "Workout",
+  "gym": "Workout",
+  "stadium": "Sports",
+
+  // Transportation
+  "airport": "Travel",
+  "bus_station": "Travel",
+  "train_station": "Travel",
+
+  // Made For You
+  "locality": "Made For You",
+  "political": "Made For You",
+
+  // Education
+  "library": "Focus",
+  "university": "Student",
+
+  // Entertainment and Recreation
+  "amusement_park": "Summer",
+  "aquarium": "Kids & Family",
+  "casino": "Party",
+  "movie_theater": "TV & Movies",
+  "night_club": "Party",
+  "park": "Chill",
+  "tourist_attraction": "Discover",
+  "zoo": "Kids & Family",
+
+  // Food and Drink
+  "restaurant": "Cooking & Dining",
+  "bakery": "Cooking & Dining",
+  "bar": "Party",
+  "cafe": "Chill",
+  "coffee_shop": "Chill",
+  "fast_food_restaurant": "Cooking & Dining",
+
+  // Health and Wellness
+  "dentist": "Health",
+  "doctor": "Health",
+  "hospital": "Health",
+  "pharmacy": "Health",
+  "spa": "Chill",
+
+  // Lodging
+  "hotel": "Travel",
+  "motel": "Travel",
+  "resort_hotel": "Travel",
+
+  // Places of Worship
+  "church": "Christian & Gospel",
+  "mosque": "Religion",
+  "synagogue": "Religion",
+
+  // Shopping
+  "book_store": "Shopping",
+  "clothing_store": "Shopping",
+  "convenience_store": "Shopping",
+  "department_store": "Shopping",
+  "electronics_store": "Shopping",
+  "furniture_store": "Shopping",
+  "grocery_store": "Shopping",
+  "shopping_mall": "Pop",
+  "supermarket": "Shopping",
+  // Automotive
+  "car_dealer": "In the car",
+  "car_rental": "In the car",
+  "car_repair": "In the car",
+  "car_wash": "In the car",
+  "gas_station": "In the car",
+  "parking": "In the car",
+
+  // Culture
+  "art_gallery": "Discover",
+  "museum": "Discover",
+
+  
+};
 
 
 module.exports = {
