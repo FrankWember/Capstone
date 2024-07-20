@@ -70,9 +70,10 @@ const Recommendation = ({ onLocationUpdate }) => {
     };
 
     service.nearbySearch(request, (results, status) => {
+      console.log(results);
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        const types = results.map((place) => place.types).flat();
-        setPlaceTypes(types);
+        const primaryTypes = results.map((place) => place.types[0]);
+        setPlaceTypes(primaryTypes);
       } else {
         console.error("Error fetching place types:", status);
       }
