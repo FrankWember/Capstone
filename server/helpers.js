@@ -48,140 +48,116 @@
     });
 
 
+// Helper to fetch user data from my db
+async function getRecommendation(userId) {
+  const userExpression = await prisma.expression.findUnique({
+    where: { user_id: userId },
+  });
+
+  const userRecommendation = await prisma.recommendation.findUnique({
+    where: { user_id: userId },
+  });
+
+  const trackFeatures = await prisma.spotifyMusicTrack.findMany();
+
+  const { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures } = normalizeData({ userExpression, userRecommendation, trackFeatures });
+  console.log(normalizedUserRecommendation, normalizedUserExpression);
+
+  const recommendedTracks = recommendTracks({ 
+    normalizedUserExpression, 
+    normalizedUserRecommendation, 
+    normalizedTrackFeatures 
+  });
+  
+  console.log('Recommended tracks:', recommendedTracks[1]);
+
+  return recommendedTracks;
+}
 
 
+// Function to recommend tracks based on mood, weather, and temperature
+function recommendTracks({ normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures }) {
+  const { mood } = normalizedUserExpression || {};
+  const { weatherCondition, temperature } = normalizedUserRecommendation || {};
 
+  // Define criteria based on mood
+  const moodCriteria = {
+    happy: { minValence: 0.8 },
+    sad: { maxValence: 0.5 },
+    angry: { minTempo: 115 }
+  };
 
+  // Define criteria based on weather
+  const weatherCriteria = {
+    clear: { minEnergy: 0.9 },
+    cloudy: { maxEnergy: 0.6 },
+    rain: { maxLiveness: 0.4 },
+    storm: { maxValence: 0.3 }
+  };
 
-  // Helper to fetch user data from my db
-  async function getRecommendation(userId) {
-    const userExpression = await prisma.expression.findUnique({
-      where: { user_id: userId },
-    });
+  // Determine temperature criteria
+  const temperatureCriteria = getTemperatureCriteria(temperature);
 
-    const userRecommendation = await prisma.recommendation.findUnique({
-      where: { user_id: userId },
-    });
-
-    const trackFeatures = await prisma.spotifyMusicTrack.findMany();
-
-    const { normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures } = normalizeData({ userExpression, userRecommendation, trackFeatures });
-    console.log(normalizedUserRecommendation, normalizedUserExpression);
-
-    const recommendedTracks = recommendTracks({ 
-      normalizedUserExpression, 
-      normalizedUserRecommendation, 
-      normalizedTrackFeatures 
-    });
-    
-    console.log('Recommended tracks:', recommendedTracks[1]);
-
-    return recommendedTracks;
+  // Combine criteria without overlapping features
+  let criteria = {};
+  if (mood) {
+    criteria = { ...criteria, ...moodCriteria[mood] };
+  }
+  if (weatherCondition) {
+    const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
+    if (matchingWeatherKey) {
+      criteria = { ...criteria, ...weatherCriteria[matchingWeatherKey] };
+    }
+  }
+  if (temperature !== undefined) {
+    criteria = { ...criteria, ...temperatureCriteria };
   }
 
+  // Filter tracks based on combined criteria
+  const filteredTracks = filterTracks(normalizedTrackFeatures, criteria);
+  console.log('After filtering:', filteredTracks.length);
 
-  // function to recommend tracks based on weather and mood
-  function recommendTracks({ normalizedUserExpression, normalizedUserRecommendation, normalizedTrackFeatures }) {
-    const { mood } = normalizedUserExpression || {};
-    const { weatherCondition, temperature } = normalizedUserRecommendation || {};
+  return filteredTracks;
+}
 
-    // Defining the criteria for recommendation based on mood
-    const moodCriteria = {
-      happy: { minValence: 0.8, minEnergy: 0.8 },
-      sad: { maxValence: 0.8, maxEnergy: 0.7 },
-      angry: { minTempo: 115, minEnergy: 0.5, minLoudness: -4 },
-    };
+// Helper function to check if a weather condition has a keyword
+const matchesWeatherCondition = (condition, keyword) => {
+  return condition.toLowerCase().includes(keyword.toLowerCase());
+};
 
-    // Defining the criteria for recommendation based on weather
-    const weatherCriteria = {
-      clear: { minEnergy: 0.9, minValence: 0.5 },
-      cloudy: { maxEnergy: 0.6, maxValence: 0.4 },
-      rain: { maxEnergy: 0.5, maxLiveness: 0.4 },
-      storm: { maxEnergy: 0.4, maxValence: 0.3 },
-    };
+// Helper function to filter tracks based on criteria
+const filterTracks = (tracks, criteria) => {
+  return tracks.filter(track => (
+    (!criteria.minValence || track.valence >= criteria.minValence) &&
+    (!criteria.maxValence || track.valence <= criteria.maxValence) &&
+    (!criteria.minEnergy || track.energy >= criteria.minEnergy) &&
+    (!criteria.maxEnergy || track.energy <= criteria.maxEnergy) &&
+    (!criteria.minDanceability || track.danceability >= criteria.minDanceability) &&
+    (!criteria.maxDanceability || track.danceability <= criteria.maxDanceability) &&
+    (!criteria.maxLiveness || track.liveness <= criteria.maxLiveness) &&
+    (!criteria.minLoudness || track.loudness >= criteria.minLoudness) &&
+    (!criteria.maxLoudness || track.loudness <= criteria.maxLoudness) &&
+    (!criteria.minTempo || track.tempo >= criteria.minTempo) &&
+    (!criteria.maxTempo || track.tempo <= criteria.maxTempo)
+  ));
+};
 
-    // Determine temperature range
+// Helper function to determine temperature criteria
+const getTemperatureCriteria = (temperature) => {
+  const temperatureCriteria = {
+    cold: { maxDanceability: 0.5 },
+    mild: { minLoudness: -5 },
+    hot: { minLiveness: 0.5 }
+  };
 
-    const tempCriteria = getTemperatureCriteria(temperature);
-
-    // Combining the criteria based on available conditions
-    let criteria = {};
-    if (mood && weatherCondition) {
-      const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
-      criteria = { ...moodCriteria[mood], ...weatherCriteria[matchingWeatherKey], ...tempCriteria };
-    } else if (mood) {
-      criteria = { ...moodCriteria[mood] };
-    } else if (weatherCondition) {
-      const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
-      criteria = { ...weatherCriteria[matchingWeatherKey], ...tempCriteria };
-    } else {
-      criteria = { ...tempCriteria };
-    }
-
-    let filteredTracks = normalizedTrackFeatures;
-    console.log(criteria);
-    // Filter tracks based on criteria
-    if (mood) {
-      filteredTracks = filterTracks(filteredTracks, criteria);
-      console.log('After mood filtering:', filteredTracks.length);
-    }
-
-    if (weatherCondition) {
-      const matchingWeatherKey = Object.keys(weatherCriteria).find(key => matchesWeatherCondition(weatherCondition, key));
-      if (matchingWeatherKey) {
-        const weatherCrit = weatherCriteria[matchingWeatherKey];
-        filteredTracks = filterTracks(filteredTracks, weatherCrit);
-        console.log('After weather filtering:', filteredTracks.length);
-      }
-    }
-
-    if (temperature !== undefined) {
-      filteredTracks = filterTracks(filteredTracks, tempCriteria);
-      console.log('After temperature filtering:', filteredTracks.length);
-    }
-
-    return filteredTracks;
+  if (temperature <= 10) {
+    return temperatureCriteria.cold;
+  } else if (temperature > 10 && temperature <= 25) {
+    return temperatureCriteria.mild;
+  } else {
+    return temperatureCriteria.hot;
   }
-
-
-  // Helper function to check if a weather condition has a keyword
-  const matchesWeatherCondition = (condition, keyword) => {
-    return condition.toLowerCase().includes(keyword.toLowerCase());
-  };
-
-  // Helper function to filter tracks based on criteria
-  const filterTracks = (tracks, criteria) => {
-    return tracks.filter(track => (
-      (!criteria.minValence || track.valence >= criteria.minValence) &&
-      (!criteria.maxValence || track.valence <= criteria.maxValence) &&
-      (!criteria.minEnergy || track.energy >= criteria.minEnergy) &&
-      (!criteria.maxEnergy || track.energy <= criteria.maxEnergy) &&
-      (!criteria.minDanceability || track.danceability >= criteria.minDanceability) &&
-      (!criteria.maxDanceability || track.danceability <= criteria.maxDanceability) &&
-      (!criteria.maxLiveness || track.liveness <= criteria.maxLiveness) &&
-      (!criteria.minLoudness || track.loudness >= criteria.minLoudness) &&
-      (!criteria.maxLoudness || track.loudness <= criteria.maxLoudness) &&
-      (!criteria.minTempo || track.tempo >= criteria.minTempo) &&
-      (!criteria.maxTempo || track.tempo <= criteria.maxTempo)
-    ));
-  };
-
-  // Helper function to determine temperature criteria
-  const getTemperatureCriteria = (temperature) => {
-    const temperatureCriteria = {
-      cold: { maxTempo: 110, maxEnergy: 0.6 },
-      mild: { minValence: 0.8, minEnergy: 0.8 },
-      hot: { minTempo: 90, minEnergy: 0.5 },
-    };
-
-    if (temperature <= 10) {
-      return temperatureCriteria.cold;
-    } else if (temperature > 10 && temperature <= 25) {
-      return temperatureCriteria.mild;
-    } else {
-      return temperatureCriteria.hot;
-    }
-  };
+};
 
 
 
