@@ -163,7 +163,6 @@ const App = () => {
                     token={token}
                     userLocation={userLocation}
                     setUserLocation={setUserLocation}
-                    weather={weather}
                   />
                 </Suspense>
               </ProtectedRoute>
