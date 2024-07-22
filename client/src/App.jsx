@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,17 +6,26 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./components/Screens/Login/Login";
-import Signup from "./components/Screens/Signup/Signup";
-import Player from "./components/Screens/ArtistPage/ArtistPage";
 import Home from "./components/Home/Home";
-import Playlist from "./components/Screens/Playlist/Playlist";
-import Recommendation from "./components/Screens/Recommendation/Recommendation";
-import FaceRecognition from "./components/Screens/FaceRecognition/FaceRecognition";
-
-import "./App.css";
 import SpotifyPlayer from "./components/Home/Media/SpotifyPlayer";
-import ArtistPage from "./components/Screens/ArtistPage/ArtistPage";
-import CategoryPage from "./components/Screens/CategoryPage/CategoryPage";
+import "./App.css";
+
+const Signup = React.lazy(() => import("./components/Screens/Signup/Signup"));
+const Playlist = React.lazy(() =>
+  import("./components/Screens/Playlist/Playlist")
+);
+const ArtistPage = React.lazy(() =>
+  import("./components/Screens/ArtistPage/ArtistPage")
+);
+const CategoryPage = React.lazy(() =>
+  import("./components/Screens/CategoryPage/CategoryPage")
+);
+const Recommendation = React.lazy(() =>
+  import("./components/Screens/Recommendation/Recommendation")
+);
+const FaceRecognition = React.lazy(() =>
+  import("./components/Screens/FaceRecognition/FaceRecognition")
+);
 
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
@@ -28,7 +37,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  //Managing the state of the components
+  // Managing the state of the components
   const [token, setToken] = useState("");
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
@@ -118,7 +127,20 @@ const App = () => {
       <div className="Home">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={
+              <Suspense
+                fallback={
+                  <h1>
+                    <div>Loading...</div>
+                  </h1>
+                }
+              >
+                <Signup />
+              </Suspense>
+            }
+          />
           <Route
             path="/home"
             element={
@@ -131,12 +153,20 @@ const App = () => {
             path="/recommendation"
             element={
               <ProtectedRoute>
-                <Recommendation
-                  token={token}
-                  userLocation={userLocation}
-                  setUserLocation={setUserLocation}
-                  weather={weather}
-                />
+                <Suspense
+                  fallback={
+                    <h1>
+                      <div>Loading...</div>
+                    </h1>
+                  }
+                >
+                  <Recommendation
+                    token={token}
+                    userLocation={userLocation}
+                    setUserLocation={setUserLocation}
+                    weather={weather}
+                  />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -144,15 +174,15 @@ const App = () => {
             path="/face_mood"
             element={
               <ProtectedRoute>
-                <FaceRecognition token={token} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/home/player"
-            element={
-              <ProtectedRoute>
-                <Player token={token} />
+                <Suspense
+                  fallback={
+                    <h1>
+                      <div>Loading...</div>
+                    </h1>
+                  }
+                >
+                  <FaceRecognition token={token} />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -160,10 +190,18 @@ const App = () => {
             path="/category/:categoryId"
             element={
               <ProtectedRoute>
-                <CategoryPage
-                  token={token}
-                  setCurrentTrackUri={setCurrentTrackUri}
-                />
+                <Suspense
+                  fallback={
+                    <h1>
+                      <div>Loading...</div>
+                    </h1>
+                  }
+                >
+                  <CategoryPage
+                    token={token}
+                    setCurrentTrackUri={setCurrentTrackUri}
+                  />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -171,10 +209,18 @@ const App = () => {
             path="/playlist/:playlistId"
             element={
               <ProtectedRoute>
-                <Playlist
-                  token={token}
-                  setCurrentTrackUri={setCurrentTrackUri}
-                />
+                <Suspense
+                  fallback={
+                    <h1>
+                      <div>Loading...</div>
+                    </h1>
+                  }
+                >
+                  <Playlist
+                    token={token}
+                    setCurrentTrackUri={setCurrentTrackUri}
+                  />
+                </Suspense>
               </ProtectedRoute>
             }
           />
@@ -182,10 +228,18 @@ const App = () => {
             path="/artist/:artistId"
             element={
               <ProtectedRoute>
-                <ArtistPage
-                  token={token}
-                  setCurrentTrackUri={setCurrentTrackUri}
-                />
+                <Suspense
+                  fallback={
+                    <h1>
+                      <div>Loading...</div>
+                    </h1>
+                  }
+                >
+                  <ArtistPage
+                    token={token}
+                    setCurrentTrackUri={setCurrentTrackUri}
+                  />
+                </Suspense>
               </ProtectedRoute>
             }
           />
