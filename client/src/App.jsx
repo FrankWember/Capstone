@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -41,7 +41,6 @@ const App = () => {
   const [token, setToken] = useState("");
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     const extractTokensFromURL = () => {
