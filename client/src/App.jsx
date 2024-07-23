@@ -41,6 +41,7 @@ const App = () => {
   const [token, setToken] = useState("");
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [showPlayer, setShowPlayer] = useState(false);
 
   useEffect(() => {
     const extractTokensFromURL = () => {
@@ -121,6 +122,16 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleTrackChange = (uri) => {
+    setCurrentTrackUri(uri);
+    setShowPlayer(true);
+  };
+
+  const handleClosePlayer = () => {
+    setShowPlayer(false);
+    setCurrentTrackUri(null);
+  };
+
   return (
     <Router>
       <div className="Home">
@@ -144,7 +155,7 @@ const App = () => {
             path="/home"
             element={
               <ProtectedRoute>
-                <Home token={token} setCurrentTrackUri={setCurrentTrackUri} />
+                <Home token={token} setCurrentTrackUri={handleTrackChange} />
               </ProtectedRoute>
             }
           />
@@ -197,7 +208,7 @@ const App = () => {
                 >
                   <CategoryPage
                     token={token}
-                    setCurrentTrackUri={setCurrentTrackUri}
+                    setCurrentTrackUri={handleTrackChange}
                   />
                 </Suspense>
               </ProtectedRoute>
@@ -216,7 +227,7 @@ const App = () => {
                 >
                   <Playlist
                     token={token}
-                    setCurrentTrackUri={setCurrentTrackUri}
+                    setCurrentTrackUri={handleTrackChange}
                   />
                 </Suspense>
               </ProtectedRoute>
@@ -235,15 +246,19 @@ const App = () => {
                 >
                   <ArtistPage
                     token={token}
-                    setCurrentTrackUri={setCurrentTrackUri}
+                    setCurrentTrackUri={handleTrackChange}
                   />
                 </Suspense>
               </ProtectedRoute>
             }
           />
         </Routes>
-        {token && currentTrackUri && (
-          <SpotifyPlayer token={token} trackUri={currentTrackUri} />
+        {showPlayer && token && currentTrackUri && (
+          <SpotifyPlayer
+            token={token}
+            trackUri={currentTrackUri}
+            onClose={handleClosePlayer}
+          />
         )}
       </div>
     </Router>
