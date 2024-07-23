@@ -5,7 +5,7 @@ import SideBar from "../SideBar/SideBar";
 import SpotifyCard from "./Media/SpotifyCard";
 import CategoryCard from "./Media/CategoryCard";
 import { useNavigate } from "react-router-dom";
-import SpotifyPlayer from "./Media/SpotifyPlayer";
+import Pagination from "./Media/Pagination";
 
 const MediaContainer = ({ token, setCurrentTrackUri }) => {
   // State to store various data
@@ -20,6 +20,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [moodRecommendedTracks, setMoodRecommendedTracks] = useState([]);
   const [placeBasedCategories, setPlaceBasedCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [sectionIndex, setSectionIndex] = useState(4);
   const navigate = useNavigate();
 
   // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many requests" with Spotify
@@ -194,191 +196,183 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     setCurrentTrackUri(trackUri);
   };
 
-  // Render error message if there is an error
+  const handlePrevSection = () => {
+    if (sectionIndex > 3) {
+      setSectionIndex(sectionIndex - 1);
+    }
+  };
+
+  const handleNextSection = () => {
+    if (sectionIndex < sections.length) {
+      setSectionIndex(sectionIndex + 1);
+    }
+  };
+
   if (error) {
     return <div className="error-message">Error: {error}</div>;
   }
+
+  const sections = [
+    {
+      title: "Your Top 5 Tracks",
+      data: topTracks,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="track"
+          onClick={() => handlePlayTrack(item.uri)}
+        />
+      ),
+    },
+    {
+      title: "Recommended Based on Your Mood",
+      data: moodRecommendedTracks,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="track"
+          onClick={() => handlePlayTrack(item.uri)}
+        />
+      ),
+    },
+    {
+      title: "Place Based Categories",
+      data: placeBasedCategories,
+      renderItem: (item) => (
+        <div key={item.id} className="category-section">
+          <h3>{item.name}</h3>
+          <div className="gridItem">
+            {item.playlists.map((playlist) => (
+              <SpotifyCard
+                key={playlist.id}
+                item={playlist}
+                token={token}
+                type="playlist"
+                onClick={() => navigate(`/playlist/${playlist.id}`)}
+              />
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Categories",
+      data: categories,
+      renderItem: (item) => (
+        <CategoryCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="category"
+          onClick={() => navigate(`/category/${item.id}`)}
+        />
+      ),
+    },
+    {
+      title: "Your Top Artists",
+      data: followedArtists,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="artist"
+          onClick={() => navigate(`/artist/${item.id}`)}
+        />
+      ),
+    },
+    {
+      title: "Your Favorite Audiobooks",
+      data: savedAudiobooks,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="audiobook"
+          onClick={() => handlePlayTrack(item.uri)}
+        />
+      ),
+    },
+    {
+      title: "Recommended Tracks",
+      data: recommendedTracks,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="track"
+          onClick={() => handlePlayTrack(item.uri)}
+        />
+      ),
+    },
+    {
+      title: "Recently Played Tracks",
+      data: recentlyPlayedTracks,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.track.id}
+          item={item.track}
+          token={token}
+          type="track"
+          onClick={() => handlePlayTrack(item.track.uri)}
+        />
+      ),
+    },
+    {
+      title: "Your Saved Playlists",
+      data: savedPlaylist,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="playlist"
+          onClick={() => navigate(`/playlist/${item.id}`)}
+        />
+      ),
+    },
+    {
+      title: "Featured Playlists",
+      data: featuredPlaylists,
+      renderItem: (item) => (
+        <SpotifyCard
+          key={item.id}
+          item={item}
+          token={token}
+          type="playlist"
+          onClick={() => navigate(`/playlist/${item.id}`)}
+        />
+      ),
+    },
+  ];
 
   return (
     <div className="app-container">
       <SideBar />
       <div className="media-container">
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Your Top 5 Tracks
-          </h3>
-          <div className="gridItem">
-            {topTracks.map((track) => (
-              <SpotifyCard
-                key={track.id}
-                item={track}
-                token={token}
-                type="track"
-                onClick={() => handlePlayTrack(track.uri)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Recommended Based on Your Mood
-          </h3>
-          <div className="gridItem">
-            {moodRecommendedTracks.map((track) => (
-              <SpotifyCard
-                key={track.id}
-                item={track}
-                token={token}
-                type="track"
-                onClick={() => handlePlayTrack(track.uri)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="section">
-          <h2 className="section-title">
-            <span className="icon">🎵</span>
-            Place Based Categories
-          </h2>
-          {placeBasedCategories.map((category) => (
-            <div key={category.id} className="category-section">
-              <h3>{category.name}</h3>
-              <div className="gridItem">
-                {category.playlists.map((playlist) => (
-                  <SpotifyCard
-                    key={playlist.id}
-                    item={playlist}
-                    token={token}
-                    type="playlist"
-                    onClick={() => navigate(`/playlist/${playlist.id}`)}
-                  />
-                ))}
-              </div>
+        {sections.slice(0, sectionIndex).map((section, index) => (
+          <div key={index} className="section">
+            <h3 className="section-title">
+              <span className="icon">🎵</span>
+              {section.title}
+            </h3>
+            <div className="gridItem">
+              {section.data.map((item) => section.renderItem(item))}
             </div>
-          ))}
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Categories
-          </h3>
-          <div className="gridItem">
-            {categories.map((category) => (
-              <CategoryCard
-                key={category.id}
-                item={category}
-                token={token}
-                type="category"
-                onClick={() => navigate(`/category/${category.id}`)}
-              />
-            ))}
           </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Your Top Artists
-          </h3>
-          <div className="gridItem">
-            {followedArtists.map((artist) => (
-              <SpotifyCard
-                key={artist.id}
-                item={artist}
-                token={token}
-                type="artist"
-                onClick={() => navigate(`/artist/${artist.id}`)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">📚</span>
-            Your Favorite Audiobooks
-          </h3>
-          <div className="gridItem">
-            {savedAudiobooks.map((audiobook) => (
-              <SpotifyCard
-                key={audiobook.id}
-                item={audiobook}
-                token={token}
-                type="audiobook"
-                onClick={() => handlePlayTrack(audiobook.uri)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Recommended Tracks
-          </h3>
-          <div className="gridItem">
-            {recommendedTracks.map((track) => (
-              <SpotifyCard
-                key={track.id}
-                item={track}
-                token={token}
-                type="track"
-                onClick={() => handlePlayTrack(track.uri)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Recently Played Tracks
-          </h3>
-          <div className="gridItem">
-            {recentlyPlayedTracks.map((track) => (
-              <SpotifyCard
-                key={track.track.id}
-                item={track.track}
-                token={token}
-                type="track"
-                onClick={() => handlePlayTrack(track.track.uri)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Your Saved Playlists
-          </h3>
-          <div className="gridItem">
-            {savedPlaylist.map((playlist) => (
-              <SpotifyCard
-                key={playlist.id}
-                item={playlist}
-                token={token}
-                type="playlist"
-                onClick={() => navigate(`/playlist/${playlist.id}`)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="section">
-          <h3 className="section-title">
-            <span className="icon">🎵</span>
-            Featured Playlists
-          </h3>
-          <div className="gridItem">
-            {featuredPlaylists.map((playlist) => (
-              <SpotifyCard
-                key={playlist.id}
-                item={playlist}
-                token={token}
-                type="playlist"
-                onClick={() => navigate(`/playlist/${playlist.id}`)}
-              />
-            ))}
-          </div>
-        </div>
+        ))}
+        <Pagination
+          currentSection={sectionIndex}
+          totalSections={sections.length}
+          onPrev={handlePrevSection}
+          onNext={handleNextSection}
+        />
       </div>
     </div>
   );

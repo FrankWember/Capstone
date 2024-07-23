@@ -1,6 +1,7 @@
 .category-card {
   position: relative;
   min-width: 330px;
+  max-width: 330px;
   margin: 20px;
   background-color: #282c34;
   border-radius: 10px;
