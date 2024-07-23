@@ -126,3 +126,98 @@
 .spotify-card-image-audiobook {
   border-radius: 15px;
 }
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .spotify-card {
+    min-width: 35%;
+    max-width: 35%;
+    margin: 15px;
+  }
+
+  .spotify-card-title {
+    font-size: 22px;
+  }
+
+  .spotify-card-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 992px) {
+  .spotify-card {
+    min-width: 45%;
+    max-width: 45%;
+    margin: 10px auto;
+  }
+
+  .spotify-card-title {
+    font-size: 20px;
+  }
+
+  .spotify-card-text {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .spotify-card {
+    min-width: 40%;
+    max-width: 40%;
+    margin: 10px auto;
+  }
+
+  .spotify-card-image-wrapper {
+    height: 200px;
+  }
+
+  .spotify-card-play-button,
+  .spotify-card-play-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .spotify-card-title {
+    font-size: 18px;
+  }
+
+  .spotify-card-text {
+    font-size: 16px;
+  }
+
+  .spotify-card-image-wrapper-artist {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .spotify-card {
+    min-width: 80%;
+    max-width: 80%;
+    margin: 5px auto;
+  }
+
+  .spotify-card-image-wrapper {
+    height: 180px;
+  }
+
+  .spotify-card-play-button,
+  .spotify-card-play-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .spotify-card-title {
+    font-size: 16px;
+  }
+
+  .spotify-card-text {
+    font-size: 14px;
+  }
+
+  .spotify-card-image-wrapper-artist {
+    width: 180px;
+    height: 180px;
+  }
+}
