@@ -182,3 +182,36 @@
 .sidebar-playlists .sidebar-link:hover {
   background-color: #333842;
 }
+
+@media (max-width: 1200px) {
+  .sidebar {
+    min-width: 100px;
+    padding: 10px;
+  }
+
+  .sidebar-search input,
+  .sidebar-logo .sidebar-text,
+  .sidebar-text,
+  .playlist-text,
+  .sidebar-dropdown-link {
+    display: none;
+  }
+
+  .sidebar-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 0;
+    justify-content: space-evenly;
+  }
+
+  .sidebar-playlist-cover {
+    width: 50px;
+    height: 50px;
+  }
+
+  .sidebar-playlists {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
