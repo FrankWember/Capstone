@@ -7,9 +7,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  width: calc(100% - 250px);
   height: 100vh;
-  background-color: rgb(12, 96, 152);
+  background-color: #22272d;
+  flex: 1;
+  border-radius: 20px;
 }
 
 .controls {
@@ -19,35 +23,37 @@
 .start-button,
 .stop-button {
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 30px;
   font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 15px;
   cursor: pointer;
 }
 
 .start-button {
-  background-color: #38a169;
+  background-color: #077e3f;
   color: white;
 }
 
 .start-button:hover {
-  background-color: #2f855a;
+  background-color: #01a855;
 }
 
 .stop-button {
   margin-left: 10px;
-  background-color: #e53e3e;
+  background-color: #d96b6b;
   color: white;
 }
 
 .stop-button:hover {
-  background-color: #c53030;
+  background-color: #ca1414;
 }
 
 .video-container {
+  width: 75%;
+  height: 75%;
   position: relative;
-  border: 2px solid red;
+  border: 2px solid rgb(97, 84, 84);
 }
 
 video {

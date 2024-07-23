@@ -1,6 +1,20 @@
 .app-container {
   display: flex;
   height: 100vh;
+  flex-direction: row;
+}
+
+.sidebar {
+  min-width: 250px; /* Set a fixed width for the sidebar */
+  max-width: 250px;
+  background-color: #22272d;
+  color: white;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto", sans-serif;
+  transition: all 0.3s ease;
+  margin-right: 5px;
+  border-radius: 30px;
 }
 
 .media-container {
@@ -13,6 +27,7 @@
   margin-top: 2px;
   margin-right: 2px;
   margin-bottom: 10px;
+  flex: 1; /* Make the media container take up remaining space */
 }
 
 .media-container::-webkit-scrollbar {
@@ -58,10 +73,11 @@
   text-align: center;
   margin: 20px;
 }
+
 .player {
   position: fixed;
   bottom: 0;
-  width: 100%;
+  width: calc(100% - 250px); /* Adjust the width to account for the sidebar */
   background-color: #282828;
   color: #fff;
   padding: 10px;
@@ -85,4 +101,104 @@
 
 .player button:hover {
   background-color: #1ed760;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .sidebar {
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .player {
+    width: calc(100% - 200px); /* Adjust player width */
+  }
+
+  .media-container {
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+
+  .section-title .icon {
+    font-size: 18px;
+  }
+
+  .gridItem {
+    padding: 5px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    min-width: 90px;
+    max-width: 90px;
+  }
+
+  .player {
+    width: calc(100% - 100px);
+  }
+
+  .media-container {
+    padding: 15px;
+    margin: 5px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .section-title .icon {
+    font-size: 15px;
+  }
+
+  .gridItem {
+    gap: 10px;
+    padding: 5px;
+  }
+
+  .player button {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    min-width: 50px;
+    max-width: 50px;
+  }
+
+  .player {
+    width: calc(100% - 50px);
+  }
+
+  .media-container {
+    padding: 10px;
+    margin: 2px;
+  }
+
+  .section-title {
+    font-size: 12px;
+  }
+
+  .section-title .icon {
+    font-size: 16px;
+  }
+
+  .gridItem {
+    gap: 5px;
+    padding: 5px;
+  }
+
+  .player h3 {
+    font-size: 12px;
+  }
+
+  .player button {
+    padding: 6px 12px;
+  }
 }
