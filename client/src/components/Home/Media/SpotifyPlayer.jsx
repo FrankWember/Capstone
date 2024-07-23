@@ -7,10 +7,11 @@ import {
   RewindIcon,
   VolumeUpIcon,
   PlusIcon,
+  XIcon,
 } from "@heroicons/react/solid";
 import "./SpotifyPlayer.css";
 
-const SpotifyPlayer = ({ token, trackUri }) => {
+const SpotifyPlayer = ({ token, trackUri, onClose }) => {
   const [player, setPlayer] = useState(null);
   const [isPaused, setIsPaused] = useState(true);
   const [deviceId, setDeviceId] = useState(null);
@@ -97,6 +98,9 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
+      }
+      if (player) {
+        player.disconnect();
       }
     };
   }, [token, intervalId]);
@@ -209,6 +213,14 @@ const SpotifyPlayer = ({ token, trackUri }) => {
     setShowPlaylists(false);
   };
 
+  const handleProgressChange = (e) => {
+    const newPosition = e.target.value;
+    setProgress(newPosition);
+    if (player) {
+      player.seek(newPosition);
+    }
+  };
+
   const formatTime = (milliseconds) => {
     const minutes = Math.floor(milliseconds / 60000);
     const seconds = ((milliseconds % 60000) / 1000).toFixed(0);
@@ -297,7 +309,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
             min="0"
             max={duration}
             value={progress}
-            onChange={(e) => setProgress(e.target.value)}
+            onChange={handleProgressChange}
             className="progress-bar"
           />
           <span>{formatTime(duration - progress)}</span>
@@ -314,6 +326,9 @@ const SpotifyPlayer = ({ token, trackUri }) => {
           className="volume-bar"
         />
       </div>
+      <button onClick={onClose} className="spotify-player-close-button">
+        <XIcon className="spotify-player-icon" />
+      </button>
     </div>
   );
 };
@@ -321,6 +336,7 @@ const SpotifyPlayer = ({ token, trackUri }) => {
 SpotifyPlayer.propTypes = {
   token: PropTypes.string.isRequired,
   trackUri: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default SpotifyPlayer;
