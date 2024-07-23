@@ -75,3 +75,67 @@
   top: 120px;
   color: rgb(42, 255, 113);
 }
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .category-card {
+    min-width: 45%;
+    max-width: 45%;
+    margin: 15px;
+  }
+
+  .category-card-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .category-card {
+    min-width: 48%;
+    max-width: 48%;
+    margin: 10px auto;
+  }
+
+  .category-card-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-card {
+    min-width: 50%;
+    max-width: 50%;
+    margin: 10px auto;
+  }
+
+  .category-card-image-wrapper {
+    height: 200px;
+  }
+
+  .category-card-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-card {
+    min-width: 100%;
+    max-width: 100%;
+    margin: 5px auto;
+  }
+
+  .category-card-image-wrapper {
+    height: 180px;
+  }
+
+  .category-card-title {
+    font-size: 16px;
+  }
+
+  .category-card-play-icon {
+    width: 60px;
+    height: 60px;
+    left: calc(50% - 30px);
+    top: calc(50% - 30px);
+  }
+}
