@@ -3,38 +3,40 @@
 }
 
 .recommendation-container {
-  margin-left: 450px; /* Adjust the margin to match the sidebar width */
   padding: 20px;
-  width: calc(100% - 450px); /* Full width minus the sidebar width */
+  width: calc(100% - 250px);
   overflow-y: auto;
   height: 100vh;
   font-family: "Roboto", sans-serif;
   transition: background-color 0.5s ease;
+  flex: 1;
+  border-radius: 20px;
+  background-color: #22272d;
 }
 
 .get-location-button {
   margin-bottom: 20px;
-  padding: 12px 24px; /* Increased padding for a more substantial button */
-  background-color: #1db954; /* Spotify green color */
+  padding: 12px 24px;
+  background-color: #1db954;
   color: white;
   border: none;
-  border-radius: 100px; /* Rounded button */
+  border-radius: 100px;
   cursor: pointer;
-  font-size: 20px; /* Larger font size */
+  font-size: 20px;
   font-weight: bold;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for a 3D effect */
-  transition: background-color 0.5s ease, transform 0.7s ease; /* Smooth transition for background and transform */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.5s ease, transform 0.7s ease;
   font-family: "Lucida Sans", Geneva, Verdana, sans-serif, cursive;
 }
 
 .get-location-button:hover {
   background-color: #1ed760;
-  transform: scale(1.07); /* Slightly enlarge the button on hover */
+  transform: scale(1.07);
 }
 
 .get-location-button:active {
-  background-color: #1aa34a; /* Darker shade for active state */
-  transform: scale(1); /* Reset scale on active state */
+  background-color: #1aa34a;
+  transform: scale(1);
 }
 
 .content {
@@ -76,17 +78,17 @@
 
 .weather-info h3,
 .address-info h3 {
-  font-weight: bolder; /* Bolder weight for the title */
+  font-weight: bolder;
 }
 
 .weather-info p,
 .address-info p {
-  font-weight: 400; /* Normal weight for the text */
+  font-weight: 400;
 }
 
 .weather-info img {
-  width: 50px; /* Adjust width as needed */
-  height: 50px; /* Adjust height as needed */
+  width: 50px;
+  height: 50px;
   display: block;
-  margin: 10px auto; /* Center the image */
+  margin: 10px auto;
 }

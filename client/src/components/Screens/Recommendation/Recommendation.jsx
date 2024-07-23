@@ -26,7 +26,7 @@ const Recommendation = ({ onLocationUpdate }) => {
   const [address, setAddress] = useState("");
   const [weather, setWeather] = useState(null);
   const [placeTypes, setPlaceTypes] = useState([]);
-  const [bgColor, setBgColor] = useState("#f5f5f5");
+  const [bgColor, setBgColor] = useState("#27303f");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
