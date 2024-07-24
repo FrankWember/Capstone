@@ -314,7 +314,6 @@ const getTemperatureCriteria = (temperature) => {
 
 
   // Mapping of popular place types gotten form the placeApi documentation to music categories using keywords
-// Mapping of popular place types to one-word Spotify music categories
 const placeTypeToMusicCategory = {
   // Sports
   "fitness_center": "0JQ5DAqbMKFAXlCG6QvYQ4", // Workout
