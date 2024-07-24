@@ -10,7 +10,7 @@ const Pagination = ({ currentSection, totalSections, onPrev, onNext }) => {
       <span>
         Section {currentSection + 1} of {totalSections}
       </span>
-      <button onClick={onNext} disabled={currentSection === totalSections}>
+      <button onClick={onNext} disabled={currentSection === totalSections - 1}>
         Next
       </button>
     </div>

@@ -4,24 +4,16 @@
   flex-direction: row;
 }
 
-.sidebar {
-  min-width: 250px; /* Set a fixed width for the sidebar */
-  max-width: 250px;
-  background-color: #22272d;
-  color: white;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  font-family: "Roboto", sans-serif;
-  transition: all 0.3s ease;
-  margin-right: 5px;
-  border-radius: 30px;
-}
-
 .media-container {
   padding: 30px;
-  background-color: #27303b;
+  background-image: radial-gradient(
+    circle,
+    rgb(20, 26, 53) 0%,
+    rgb(18, 17, 26) 50%,
+    rgb(20, 18, 26) 100%
+  );
   color: #ffffff;
-  font-family: "Roboto", sans-serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   overflow-y: auto;
   border-radius: 20px;
   margin-top: 2px;
@@ -53,7 +45,13 @@
 
 .gridItem {
   border-radius: 50px;
-  background-color: #22272d;
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(25, 25, 25) 0%,
+    rgb(11, 11, 15) 50%,
+    rgb(19, 19, 19) 100%
+  );
+
   display: flex;
   flex-wrap: nowrap;
   overflow-x: scroll;
