@@ -2,8 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import "./CategoryCard.css";
+import SkeletonSpotifyCard from "./SportifySkeleton";
 
-const CategoryCard = ({ item, onClick }) => {
+const CategoryCard = ({ item, onClick, isLoading }) => {
   const navigate = useNavigate();
 
   // Handle click event
@@ -19,6 +20,11 @@ const CategoryCard = ({ item, onClick }) => {
 
   // Get the name to display
   const name = item.name;
+
+  // Show skeleton card while loading
+  if (isLoading) {
+    return <SkeletonSpotifyCard />;
+  }
 
   return (
     <div className="category-card" onClick={handleClick}>
@@ -36,6 +42,8 @@ const CategoryCard = ({ item, onClick }) => {
 
 CategoryCard.propTypes = {
   item: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default CategoryCard;

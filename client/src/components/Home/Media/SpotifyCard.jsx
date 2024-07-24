@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { PlayIcon } from "@heroicons/react/solid";
 import "./SpotifyCard.css";
+import SkeletonSpotifyCard from "./SportifySkeleton";
 
-const SpotifyCard = ({ item, type, onClick }) => {
+const SpotifyCard = ({ item, type, onClick, isLoading }) => {
   // Handle click event
   const handleClick = () => {
     if (onClick) {
@@ -21,6 +22,10 @@ const SpotifyCard = ({ item, type, onClick }) => {
   const artists = item.artists
     ? item.artists.map((artist) => artist.name).join(", ")
     : item.album?.artists.map((artist) => artist.name).join(", ");
+
+  if (isLoading) {
+    return <SkeletonSpotifyCard type={type} />;
+  }
 
   return (
     <div className={`spotify-card spotify-card-${type}`} onClick={handleClick}>
@@ -50,6 +55,7 @@ SpotifyCard.propTypes = {
   item: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
   onClick: PropTypes.func,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default SpotifyCard;
