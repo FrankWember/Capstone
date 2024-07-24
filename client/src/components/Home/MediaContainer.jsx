@@ -8,23 +8,30 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "./Media/Pagination";
 
 const MediaContainer = ({ token, setCurrentTrackUri }) => {
-  // State to store various data
-  const [topTracks, setTopTracks] = useState([]);
-  const [recommendedTracks, setRecommendedTracks] = useState([]);
-  const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState([]);
-  const [savedPlaylist, setSavedPlaylist] = useState([]);
-  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
-  const [followedArtists, setFollowedArtists] = useState([]);
-  const [savedAudiobooks, setSavedAudiobooks] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [moodRecommendedTracks, setMoodRecommendedTracks] = useState([]);
-  const [placeBasedCategories, setPlaceBasedCategories] = useState([]);
+  const [data, setData] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [sectionIndex, setSectionIndex] = useState(4);
+  const [sectionIndex, setSectionIndex] = useState(2); // Start with the first 3 sections
+  const [fetchedSections, setFetchedSections] = useState([
+    "topTracks",
+    "moodRecommendedTracks",
+    "placeBasedCategories",
+  ]);
   const navigate = useNavigate();
 
-  // Function to fetch data from the Spotify API with retry mechanism for the 429 error "Too many requests" with Spotify
+  const sections = [
+    "topTracks",
+    "moodRecommendedTracks",
+    "placeBasedCategories",
+    "categories",
+    "followedArtists",
+    "savedAudiobooks",
+    "recommendedTracks",
+    "recentlyPlayedTracks",
+    "savedPlaylist",
+    "featuredPlaylists",
+  ];
+
   const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
     try {
       const res = await fetch(`https://api.spotify.com/v1/${endpoint}`, {
@@ -52,170 +59,127 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     }
   };
 
-  // Function to get the user's top tracks
-  const getTopTracks = async () => {
-    const data = await fetchWebApi("me/top/tracks?limit=5");
-    console.log(data.items);
-    if (data) {
-      setTopTracks(data.items);
-      return data.items;
+  const fetchData = async (section) => {
+    setLoading(true);
+    setError(null);
+    let fetchedData;
+
+    switch (section) {
+      case "topTracks":
+        fetchedData = await fetchWebApi("me/top/tracks?limit=5");
+        break;
+      case "moodRecommendedTracks":
+        const userId = localStorage.getItem("userId");
+        const url = `http://localhost:3000/recommend-tracks?user_id=${userId}`;
+        const response = await axios.get(url);
+        const tracksData = await Promise.all(
+          response.data.map(async (track) => {
+            const trackDetails = await fetchWebApi(`tracks/${track.spotifyId}`);
+            return trackDetails;
+          })
+        );
+        fetchedData = { items: tracksData };
+        break;
+      case "placeBasedCategories":
+        const userId2 = localStorage.getItem("userId");
+        const response2 = await axios.get(
+          `http://localhost:3000/music-categories/${userId2}`
+        );
+        const categoryIds = response2.data.categories;
+        const categoriesData = await Promise.all(
+          categoryIds.map(async (categoryId) => {
+            const categoryData = await fetchWebApi(
+              `browse/categories/${categoryId}`
+            );
+            const categoryPlaylists = await fetchWebApi(
+              `browse/categories/${categoryId}/playlists?limit=5`
+            );
+            return {
+              ...categoryData,
+              playlists: categoryPlaylists.playlists.items,
+            };
+          })
+        );
+        fetchedData = { items: categoriesData };
+        break;
+      case "categories":
+        fetchedData = await fetchWebApi("browse/categories?limit=20");
+        fetchedData = fetchedData.categories; // Adjusting data structure for categories
+        break;
+      case "followedArtists":
+        fetchedData = await fetchWebApi("me/following?type=artist");
+        break;
+      case "savedAudiobooks":
+        fetchedData = await fetchWebApi("me/audiobooks");
+        break;
+      case "recommendedTracks":
+        const topTracks = await fetchWebApi("me/top/tracks?limit=5");
+        const seedTrackIds = topTracks.items.map((track) => track.id).join(",");
+        fetchedData = await fetchWebApi(
+          `recommendations?seed_tracks=${seedTrackIds}&limit=5`
+        );
+        break;
+      case "recentlyPlayedTracks":
+        fetchedData = await fetchWebApi("me/player/recently-played?limit=25");
+        break;
+      case "savedPlaylist":
+        fetchedData = await fetchWebApi("me/playlists");
+        break;
+      case "featuredPlaylists":
+        fetchedData = await fetchWebApi("browse/featured-playlists");
+        console.log(fetchData);
+        break;
+      default:
+        fetchedData = null;
     }
-    return [];
+
+    setData((prevData) => ({
+      ...prevData,
+      [section]:
+        fetchedData.items ||
+        fetchedData.tracks ||
+        fetchedData.artists?.items ||
+        fetchedData,
+    }));
+    setLoading(false);
   };
 
-  // Function to get track recommendations based on seed tracks
-  const getRecommendations = async (seedTracks) => {
-    const seedTrackIds = seedTracks.map((track) => track.id).join(",");
-    const data = await fetchWebApi(
-      `recommendations?seed_tracks=${seedTrackIds}&limit=5`
-    );
-    if (data) setRecommendedTracks(data.tracks);
-  };
-
-  // Function to get recommended tracks based on mood
-  const getMoodRecommendedTracks = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      console.log(userId);
-      const url = `http://localhost:3000/recommend-tracks?user_id=${userId}`;
-      const response = await axios.get(url);
-
-      const tracksData = await Promise.all(
-        response.data.map(async (track) => {
-          const trackDetails = await fetchWebApi(`tracks/${track.spotifyId}`);
-          return trackDetails;
-        })
-      );
-
-      console.log("Detailed tracks response:", tracksData);
-      setMoodRecommendedTracks(tracksData);
-    } catch (error) {
-      console.error("Failed to fetch mood recommended tracks:", error);
-      setError("Failed to fetch mood recommended tracks.");
-    }
-  };
-
-  // Function to get the user's recently played tracks
-  const getRecentlyPlayedTracks = async () => {
-    const data = await fetchWebApi("me/player/recently-played?limit=25");
-    if (data) setRecentlyPlayedTracks(data.items);
-  };
-
-  // Function to get the user's followed artists
-  const getFollowedArtists = async () => {
-    const data = await fetchWebApi("me/following?type=artist");
-    if (data) setFollowedArtists(data.artists.items);
-  };
-
-  // Function to get the user's saved audiobooks
-  const getSavedAudiobooks = async () => {
-    const data = await fetchWebApi("me/audiobooks");
-    if (data) setSavedAudiobooks(data.items);
-  };
-
-  // Function to get the user's saved playlists
-  const getSavedPlaylist = async () => {
-    const data = await fetchWebApi("me/playlists");
-    if (data) setSavedPlaylist(data.items);
-  };
-
-  // Function to get featured playlists
-  const getFeaturedPlaylists = async () => {
-    const data = await fetchWebApi("browse/featured-playlists");
-    if (data) setFeaturedPlaylists(data.playlists.items);
-  };
-
-  // Function to get categories
-  const getCategories = async () => {
-    const data = await fetchWebApi("browse/categories?limit=20");
-    if (data) setCategories(data.categories.items);
-    console.log(data);
-  };
-
-  // Function to get the place-based music categories and fetch their details from Spotify
-  const getPlaceBasedCategories = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const response = await axios.get(
-        `http://localhost:3000/music-categories/${userId}`
-      );
-
-      const categoryIds = response.data.categories;
-      const categoriesData = await Promise.all(
-        categoryIds.map(async (categoryId) => {
-          const categoryData = await fetchWebApi(
-            `browse/categories/${categoryId}`
-          );
-          const categoryPlaylists = await fetchWebApi(
-            `browse/categories/${categoryId}/playlists?limit=5`
-          );
-          return {
-            ...categoryData,
-            playlists: categoryPlaylists.playlists.items,
-          };
-        })
-      );
-
-      setPlaceBasedCategories(categoriesData);
-    } catch (error) {
-      console.error("Failed to fetch place-based categories:", error);
-      setError("Failed to fetch place-based categories.");
-    }
-  };
-
-  // Fetch data when the component mounts and when the token changes
   useEffect(() => {
-    if (token) {
-      getTopTracks();
-      getMoodRecommendedTracks();
-      getFollowedArtists();
-      getSavedAudiobooks();
-      getSavedPlaylist();
-      getFeaturedPlaylists();
-      getRecentlyPlayedTracks();
-      getCategories();
+    if (token && fetchedSections.length === 3) {
+      fetchedSections.forEach(fetchData);
     }
-  }, [token]);
+  }, [token, fetchedSections]);
 
-  // Fetch recommendations based on top tracks
   useEffect(() => {
-    if (topTracks.length > 0) {
-      getRecommendations(topTracks);
+    if (token && fetchedSections[sectionIndex]) {
+      fetchData(fetchedSections[sectionIndex]);
     }
-  }, [topTracks]);
+  }, [token, sectionIndex, fetchedSections]);
 
-  // Fetch place-based categories when the component mounts
-  useEffect(() => {
-    if (token) {
-      getPlaceBasedCategories();
-    }
-  }, [token]);
-
-  // Handle play track action
   const handlePlayTrack = (trackUri) => {
     setCurrentTrackUri(trackUri);
   };
 
   const handlePrevSection = () => {
-    if (sectionIndex > 3) {
+    if (sectionIndex > 0) {
       setSectionIndex(sectionIndex - 1);
     }
   };
 
   const handleNextSection = () => {
-    if (sectionIndex < sections.length) {
-      setSectionIndex(sectionIndex + 1);
+    if (sectionIndex < sections.length - 1) {
+      const nextSectionIndex = sectionIndex + 1;
+      const nextSection = sections[nextSectionIndex];
+      if (!fetchedSections.includes(nextSection)) {
+        setFetchedSections([...fetchedSections, nextSection]);
+      }
+      setSectionIndex(nextSectionIndex);
     }
   };
 
-  if (error) {
-    return <div className="error-message">Error: {error}</div>;
-  }
-
-  const sections = [
-    {
+  const sectionComponents = {
+    topTracks: {
       title: "Your Top 5 Tracks",
-      data: topTracks,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -226,9 +190,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    moodRecommendedTracks: {
       title: "Recommended Based on Your Mood",
-      data: moodRecommendedTracks,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -239,9 +202,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    placeBasedCategories: {
       title: "Place Based Categories",
-      data: placeBasedCategories,
       renderItem: (item) => (
         <div key={item.id} className="category-section">
           <h3>{item.name}</h3>
@@ -259,9 +221,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         </div>
       ),
     },
-    {
+    categories: {
       title: "Categories",
-      data: categories,
       renderItem: (item) => (
         <CategoryCard
           key={item.id}
@@ -272,9 +233,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    followedArtists: {
       title: "Your Top Artists",
-      data: followedArtists,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -285,9 +245,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    savedAudiobooks: {
       title: "Your Favorite Audiobooks",
-      data: savedAudiobooks,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -298,9 +257,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    recommendedTracks: {
       title: "Recommended Tracks",
-      data: recommendedTracks,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -311,9 +269,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    recentlyPlayedTracks: {
       title: "Recently Played Tracks",
-      data: recentlyPlayedTracks,
       renderItem: (item) => (
         <SpotifyCard
           key={item.track.id}
@@ -324,9 +281,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    savedPlaylist: {
       title: "Your Saved Playlists",
-      data: savedPlaylist,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -337,9 +293,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-    {
+    featuredPlaylists: {
       title: "Featured Playlists",
-      data: featuredPlaylists,
       renderItem: (item) => (
         <SpotifyCard
           key={item.id}
@@ -350,20 +305,35 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         />
       ),
     },
-  ];
+  };
+
+  const currentSection = fetchedSections[sectionIndex];
+  const sectionData = Array.isArray(data[currentSection])
+    ? data[currentSection]
+    : [];
+
+  if (error) {
+    return <div className="error-message">Error: {error}</div>;
+  }
 
   return (
     <div className="app-container">
       <SideBar />
       <div className="media-container">
-        {sections.slice(0, sectionIndex).map((section, index) => (
+        {fetchedSections.slice(0, sectionIndex + 1).map((section, index) => (
           <div key={index} className="section">
             <h3 className="section-title">
               <span className="icon">🎵</span>
-              {section.title}
+              {sectionComponents[section]?.title || "Loading..."}
             </h3>
             <div className="gridItem">
-              {section.data.map((item) => section.renderItem(item))}
+              {loading && sectionIndex === index ? (
+                <div>Loading...</div>
+              ) : (
+                (data[section] || []).map((item) =>
+                  sectionComponents[section].renderItem(item)
+                )
+              )}
             </div>
           </div>
         ))}
