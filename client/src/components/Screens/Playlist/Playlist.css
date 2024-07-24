@@ -1,7 +1,6 @@
 .playlist-page {
   display: flex;
   height: 100vh;
-  margin-left: 440px;
 }
 
 .playlist-container {
