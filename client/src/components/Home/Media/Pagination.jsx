@@ -4,11 +4,11 @@ import "./pagination.css";
 const Pagination = ({ currentSection, totalSections, onPrev, onNext }) => {
   return (
     <div className="pagination-container">
-      <button onClick={onPrev} disabled={currentSection === 3}>
+      <button onClick={onPrev} disabled={currentSection === 2}>
         Previous
       </button>
       <span>
-        Section {currentSection} of {totalSections}
+        Section {currentSection + 1} of {totalSections}
       </span>
       <button onClick={onNext} disabled={currentSection === totalSections}>
         Next
