@@ -29,7 +29,6 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     "recommendedTracks",
     "recentlyPlayedTracks",
     "savedPlaylist",
-    "featuredPlaylists",
   ];
 
   const fetchWebApi = async (endpoint, method = "GET", body, retries = 3) => {
@@ -104,7 +103,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
         break;
       case "categories":
         fetchedData = await fetchWebApi("browse/categories?limit=20");
-        fetchedData = fetchedData.categories; // Adjusting data structure for categories
+        fetchedData = fetchedData.categories;
         break;
       case "followedArtists":
         fetchedData = await fetchWebApi("me/following?type=artist");
@@ -125,14 +124,11 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
       case "savedPlaylist":
         fetchedData = await fetchWebApi("me/playlists");
         break;
-      case "featuredPlaylists":
-        fetchedData = await fetchWebApi("browse/featured-playlists");
-        console.log(fetchData);
-        break;
       default:
         fetchedData = null;
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 700));
     setData((prevData) => ({
       ...prevData,
       [section]:
@@ -180,31 +176,33 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const sectionComponents = {
     topTracks: {
       title: "Your Top 5 Tracks",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="track"
           onClick={() => handlePlayTrack(item.uri)}
+          isLoading={isLoading}
         />
       ),
     },
     moodRecommendedTracks: {
       title: "Recommended Based on Your Mood",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="track"
           onClick={() => handlePlayTrack(item.uri)}
+          isLoading={isLoading}
         />
       ),
     },
     placeBasedCategories: {
       title: "Place Based Categories",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <div key={item.id} className="category-section">
           <h3>{item.name}</h3>
           <div className="gridItem">
@@ -215,6 +213,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
                 token={token}
                 type="playlist"
                 onClick={() => navigate(`/playlist/${playlist.id}`)}
+                isLoading={isLoading}
               />
             ))}
           </div>
@@ -223,85 +222,79 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
     },
     categories: {
       title: "Categories",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <CategoryCard
           key={item.id}
           item={item}
           token={token}
           type="category"
           onClick={() => navigate(`/category/${item.id}`)}
+          isLoading={isLoading}
         />
       ),
     },
     followedArtists: {
       title: "Your Top Artists",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="artist"
           onClick={() => navigate(`/artist/${item.id}`)}
+          isLoading={isLoading}
         />
       ),
     },
     savedAudiobooks: {
       title: "Your Favorite Audiobooks",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="audiobook"
           onClick={() => handlePlayTrack(item.uri)}
+          isLoading={isLoading}
         />
       ),
     },
     recommendedTracks: {
       title: "Recommended Tracks",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="track"
           onClick={() => handlePlayTrack(item.uri)}
+          isLoading={isLoading}
         />
       ),
     },
     recentlyPlayedTracks: {
       title: "Recently Played Tracks",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.track.id}
           item={item.track}
           token={token}
           type="track"
           onClick={() => handlePlayTrack(item.track.uri)}
+          isLoading={isLoading}
         />
       ),
     },
     savedPlaylist: {
       title: "Your Saved Playlists",
-      renderItem: (item) => (
+      renderItem: (item, isLoading) => (
         <SpotifyCard
           key={item.id}
           item={item}
           token={token}
           type="playlist"
           onClick={() => navigate(`/playlist/${item.id}`)}
-        />
-      ),
-    },
-    featuredPlaylists: {
-      title: "Featured Playlists",
-      renderItem: (item) => (
-        <SpotifyCard
-          key={item.id}
-          item={item}
-          token={token}
-          type="playlist"
-          onClick={() => navigate(`/playlist/${item.id}`)}
+          isLoading={isLoading}
         />
       ),
     },
@@ -327,12 +320,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
               {sectionComponents[section]?.title || "Loading..."}
             </h3>
             <div className="gridItem">
-              {loading && sectionIndex === index ? (
-                <div>Loading...</div>
-              ) : (
-                (data[section] || []).map((item) =>
-                  sectionComponents[section].renderItem(item)
-                )
+              {(data[section] || []).map((item) =>
+                sectionComponents[section].renderItem(item, loading)
               )}
             </div>
           </div>
