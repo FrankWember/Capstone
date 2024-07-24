@@ -3,7 +3,12 @@
   min-width: 330px;
   max-width: 330px;
   margin: 20px;
-  background-color: #282c34;
+  background-image: radial-gradient(
+    circle,
+    rgb(30, 30, 30) 0%,
+    rgb(17, 17, 17) 50%,
+    rgb(33, 33, 33) 100%
+  );
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -35,7 +40,8 @@
 
 .category-card-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 30px;
+  font-family: cursive;
   font-weight: bold;
   color: white;
 }

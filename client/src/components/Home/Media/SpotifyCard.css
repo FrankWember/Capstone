@@ -2,7 +2,12 @@
   min-width: 330px;
   max-width: 330px;
   margin: 20px;
-  background-color: #282c34;
+  background-image: radial-gradient(
+    circle,
+    rgb(30, 30, 30) 0%,
+    rgb(17, 17, 17) 50%,
+    rgb(33, 33, 33) 100%
+  );
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -33,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 141, 16, 0.5);
+  background-color: rgba(1, 18, 61, 0.5);
   opacity: 0;
   transition: opacity 0.8s;
 }
@@ -68,7 +73,8 @@
 
 .spotify-card-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 25px;
+  font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
   color: white;
 }
