@@ -70,8 +70,6 @@ app.get("/auth/login", async (req, res) => {
     return res.status(400).json({ error: "user_id is required" });
   }
 
-  // console.log("Login User_id:", user_id);
-
   const scope = [
     "user-read-private",
     "user-read-email",
@@ -111,8 +109,6 @@ app.get("/auth/callback", (req, res) => {
   const code = req.query.code;
   const user_id = req.query.state; // Extracting the user_id from the state parameter
 
-  // console.log("Callback State (user_id):", user_id);
-
   const authOptions = {
     url: SPOTIFY_TOKEN_URL,
     form: {
@@ -149,8 +145,6 @@ app.get("/auth/token", (req, res) => {
   // Extract access_token and refresh_token from query parameters
   const access_token = req.query.access_token || null;
   const refresh_token = req.query.refresh_token || null;
-
-  // console.log(refresh_token);
 
   // Check if both tokens are present
   if (access_token && refresh_token) {
@@ -280,7 +274,7 @@ app.get("/recommend-tracks", async (req, res) => {
   }
 });
 
-app.get('/music-categories/:userId', async (req, res) => {
+app.get("/music-categories/:userId", async (req, res) => {
   const userId = parseInt(req.params.userId, 10);
 
   try {
