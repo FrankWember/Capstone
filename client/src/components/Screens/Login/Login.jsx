@@ -50,7 +50,7 @@ const Login = () => {
       } else if (error.response?.status === 404) {
         setError("User not found. Create a new account"); // Setting error message for user not found
       } else {
-        setError("Invalid Credentials"); // Setting error message for server issues
+        setError("Invalid Credentials");
       }
     }
   };
