@@ -6,7 +6,12 @@
 .playlist-container {
   flex-grow: 1;
   padding: 40px;
-  background-color: #22272d;
+  background-image: radial-gradient(
+    circle,
+    rgb(20, 26, 53) 0%,
+    rgb(18, 17, 26) 50%,
+    rgb(20, 18, 26) 100%
+  );
   color: #ffffff;
   font-family: "Roboto", sans-serif;
   overflow-y: auto;

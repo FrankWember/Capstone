@@ -4,9 +4,14 @@
   align-items: center;
   justify-content: space-between;
   bottom: 0;
-  height: 100px;
+  height: 150px;
   width: 100%;
-  background: #181818;
+  background-image: radial-gradient(
+    circle,
+    rgb(18, 106, 174) 0%,
+    rgb(6, 32, 82) 50%,
+    rgb(12, 55, 90) 100%
+  );
   padding: 20px 40px;
   box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2);
   z-index: 10;
@@ -72,12 +77,13 @@
 }
 
 .spotify-player-controls {
+  position: relative;
+  left: 1000px;
   display: flex;
   align-items: center;
   margin-right: 20px;
   position: relative;
   bottom: 20px;
-  left: 600px;
 }
 
 .spotify-player-button {
@@ -93,8 +99,8 @@
 }
 
 .spotify-player-icon {
-  width: 32px;
-  height: 32px;
+  width: 45px;
+  height: 45px;
 }
 
 .spotify-player-progress {

@@ -11,7 +11,7 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [sectionIndex, setSectionIndex] = useState(2); // Start with the first 3 sections
+  const [sectionIndex, setSectionIndex] = useState(2); // Started with the first 3 sections
   const [fetchedSections, setFetchedSections] = useState([
     "topTracks",
     "moodRecommendedTracks",

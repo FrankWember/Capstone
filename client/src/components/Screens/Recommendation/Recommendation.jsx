@@ -66,7 +66,7 @@ const Recommendation = ({ onLocationUpdate }) => {
     );
     const request = {
       location: new window.google.maps.LatLng(lat, lng),
-      radius: "10",
+      radius: "30",
     };
 
     service.nearbySearch(request, (results, status) => {
@@ -176,7 +176,6 @@ const Recommendation = ({ onLocationUpdate }) => {
         <button
           className="save-recommendation-button"
           onClick={() => saveRecommendation()}
-          style={{ backgroundColor: "blue" }}
           disabled={saving}
         >
           {saving ? "Saving..." : "Save Recommendation"}
