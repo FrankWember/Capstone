@@ -1,43 +1,43 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
+  Routes, // Importing Routes to define our app's routes
+  Route, // Importing Route to specify each route
+  Navigate, // Importing Navigate to handle redirects
 } from "react-router-dom";
 import Login from "./components/Screens/Login/Login";
 import Home from "./components/Home/Home";
 import SpotifyPlayer from "./components/Home/Media/SpotifyPlayer";
-import "./App.css";
+import "./App.css"; // Importing the main CSS file for the app
 
-const Signup = React.lazy(() => import("./components/Screens/Signup/Signup"));
-const Playlist = React.lazy(() =>
-  import("./components/Screens/Playlist/Playlist")
-);
-const ArtistPage = React.lazy(() =>
+// Lazy loading components for better performance
+const Signup = lazy(() => import("./components/Screens/Signup/Signup"));
+const Playlist = lazy(() => import("./components/Screens/Playlist/Playlist"));
+const ArtistPage = lazy(() =>
   import("./components/Screens/ArtistPage/ArtistPage")
 );
-const CategoryPage = React.lazy(() =>
+const CategoryPage = lazy(() =>
   import("./components/Screens/CategoryPage/CategoryPage")
 );
-const Recommendation = React.lazy(() =>
+const Recommendation = lazy(() =>
   import("./components/Screens/Recommendation/Recommendation")
 );
-const FaceRecognition = React.lazy(() =>
+const FaceRecognition = lazy(() =>
   import("./components/Screens/FaceRecognition/FaceRecognition")
 );
 
+// Component to protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
   const userToken = localStorage.getItem("userToken");
   if (!userToken) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" />; // Redirect to login if no token is found
   }
 
   return children;
 };
 
 const App = () => {
-  // Managing the state of the components
+  // State management for tokens, current track, user location, and player visibility
   const [token, setToken] = useState("");
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
@@ -49,6 +49,7 @@ const App = () => {
       const accessToken = urlParams.get("access_token");
       const refreshToken = urlParams.get("refresh_token");
 
+      // Store tokens in local storage and update state
       if (accessToken) {
         localStorage.setItem("spotifyToken", accessToken);
         setToken(accessToken);
@@ -57,6 +58,7 @@ const App = () => {
         localStorage.setItem("spotifyRefreshToken", refreshToken);
       }
 
+      // Remove tokens from the URL
       window.history.replaceState({}, document.title, window.location.pathname);
     };
 
@@ -118,15 +120,17 @@ const App = () => {
       }
     };
     refreshAccessToken();
-    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000);
+    const interval = setInterval(refreshAccessToken, 55 * 60 * 1000); // Refresh token every 55 minutes
     return () => clearInterval(interval);
   }, []);
 
+  // Handler for changing the current track
   const handleTrackChange = (uri) => {
     setCurrentTrackUri(uri);
     setShowPlayer(true);
   };
 
+  // Handler for closing the player
   const handleClosePlayer = () => {
     setShowPlayer(false);
     setCurrentTrackUri(null);
@@ -253,6 +257,7 @@ const App = () => {
             }
           />
         </Routes>
+        {/* Conditional rendering of the SpotifyPlayer component */}
         {showPlayer && token && currentTrackUri && (
           <SpotifyPlayer
             token={token}
