@@ -46,7 +46,9 @@ function SideBar({ theme, setTheme }) {
   };
 
   return (
-    <div className={`sidebar ${theme}`}>
+    <div
+      className={`sidebar ${theme === "light" ? "light-theme" : "dark-theme"}`}
+    >
       <div className="sidebar-logo" onClick={() => navigate("/")}>
         <HomeIcon className="sidebar-icon" />
         <span className="sidebar-text">MoodTune</span>

@@ -1,3 +1,4 @@
+/* Common styles */
 .app-container {
   display: flex;
   height: 100vh;
@@ -6,13 +7,6 @@
 
 .media-container {
   padding: 30px;
-  background-image: radial-gradient(
-    circle,
-    rgb(20, 26, 53) 0%,
-    rgb(18, 17, 26) 50%,
-    rgb(20, 18, 26) 100%
-  );
-  color: #ffffff;
   font-family: Georgia, "Times New Roman", Times, serif;
   overflow-y: auto;
   border-radius: 20px;
@@ -29,7 +23,6 @@
 .section {
   margin-bottom: 50px;
   padding-bottom: 20px; /* Add padding to separate sections */
-  border-bottom: 2px solid #333; /* Add a border to separate sections */
 }
 
 .section-title {
@@ -45,13 +38,6 @@
 
 .gridItem {
   border-radius: 50px;
-  background-image: linear-gradient(
-    to bottom right,
-    rgb(25, 25, 25) 0%,
-    rgb(11, 11, 15) 50%,
-    rgb(19, 19, 19) 100%
-  );
-
   display: flex;
   flex-wrap: nowrap;
   overflow-x: scroll;
@@ -64,8 +50,6 @@
 }
 
 .error-message {
-  background-color: #ff4d4d;
-  color: white;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -76,8 +60,6 @@
   position: fixed;
   bottom: 0;
   width: calc(100% - 250px); /* Adjust the width to account for the sidebar */
-  background-color: #282828;
-  color: #fff;
   padding: 10px;
   display: flex;
   justify-content: space-between;
@@ -89,16 +71,122 @@
 }
 
 .player button {
-  background-color: #1db954;
-  color: #fff;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 50px;
 }
 
-.player button:hover {
-  background-color: #1ed760;
+/* Dark theme styles */
+.dark-theme {
+  --background-color: radial-gradient(
+    circle,
+    rgb(20, 26, 53) 0%,
+    rgb(18, 17, 26) 50%,
+    rgb(20, 18, 26) 100%
+  );
+  --text-color: #ffffff;
+  --section-border-color: #333;
+  --grid-background: linear-gradient(
+    to bottom right,
+    rgb(25, 25, 25) 0%,
+    rgb(11, 11, 15) 50%,
+    rgb(19, 19, 19) 100%
+  );
+  --error-background-color: #ff4d4d;
+  --error-text-color: white;
+  --player-background-color: #282828;
+  --player-text-color: #fff;
+  --player-button-background-color: #1db954;
+  --player-button-hover-background-color: #1ed760;
+}
+
+.dark-theme .media-container {
+  background-image: var(--background-color);
+  color: var(--text-color);
+}
+
+.dark-theme .section {
+  border-bottom: 2px solid var(--section-border-color);
+}
+
+.dark-theme .gridItem {
+  background-image: var(--grid-background);
+}
+
+.dark-theme .error-message {
+  background-color: var(--error-background-color);
+  color: var(--error-text-color);
+}
+
+.dark-theme .player {
+  background-color: var(--player-background-color);
+  color: var(--player-text-color);
+}
+
+.dark-theme .player button {
+  background-color: var(--player-button-background-color);
+  color: var(--player-text-color);
+}
+
+.dark-theme .player button:hover {
+  background-color: var(--player-button-hover-background-color);
+}
+
+/* Light theme styles */
+.light-theme {
+  --background-color: radial-gradient(
+    circle,
+    #8ed2f2 0%,
+    #37aef9 50%,
+    #0094d9 100%
+  );
+  --text-color: #434141;
+  --section-border-color: #a9fbda;
+  --grid-background: linear-gradient(
+    to bottom,
+    #335c75 0%,
+    #264959 50%,
+    #147ca1 100%
+  );
+  --error-background-color: #ffcccc;
+  --error-text-color: #000000;
+  --player-background-color: #f0f0f0;
+  --player-text-color: #000000;
+  --player-button-background-color: #1db954;
+  --player-button-hover-background-color: #1ed760;
+}
+
+.light-theme .media-container {
+  background-image: var(--background-color);
+  color: var(--text-color);
+}
+
+.light-theme .section {
+  border-bottom: 2px solid var(--section-border-color);
+}
+
+.light-theme .gridItem {
+  background-image: var(--grid-background);
+}
+
+.light-theme .error-message {
+  background-color: var(--error-background-color);
+  color: var(--error-text-color);
+}
+
+.light-theme .player {
+  background-color: var(--player-background-color);
+  color: var(--player-text-color);
+}
+
+.light-theme .player button {
+  background-color: var(--player-button-background-color);
+  color: var(--player-text-color);
+}
+
+.light-theme .player button:hover {
+  background-color: var(--player-button-hover-background-color);
 }
 
 /* Responsive design */

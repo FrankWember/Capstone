@@ -310,7 +310,11 @@ const MediaContainer = ({ token, setCurrentTrackUri, theme, toggleTheme }) => {
   }
 
   return (
-    <div className={`app-container ${theme}`}>
+    <div
+      className={`app-container ${
+        theme === "dark" ? "dark-theme" : "light-theme"
+      }`}
+    >
       <SideBar theme={theme} setTheme={toggleTheme} /> {/* Rendering sidebar */}
       <div className="media-container">
         {fetchedSections.slice(0, sectionIndex + 1).map((section, index) => (
