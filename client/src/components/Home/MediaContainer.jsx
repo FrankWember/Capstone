@@ -7,7 +7,7 @@ import CategoryCard from "./Media/CategoryCard";
 import { useNavigate } from "react-router-dom";
 import Pagination from "./Media/Pagination";
 
-const MediaContainer = ({ token, setCurrentTrackUri }) => {
+const MediaContainer = ({ token, setCurrentTrackUri, theme, toggleTheme }) => {
   const [data, setData] = useState({}); // Initializing state for data
   const [error, setError] = useState(null); // Initializing state for error handling
   const [loading, setLoading] = useState(false); // Initializing state for loading status
@@ -310,8 +310,8 @@ const MediaContainer = ({ token, setCurrentTrackUri }) => {
   }
 
   return (
-    <div className="app-container">
-      <SideBar /> {/* Rendering sidebar */}
+    <div className={`app-container ${theme}`}>
+      <SideBar theme={theme} setTheme={toggleTheme} /> {/* Rendering sidebar */}
       <div className="media-container">
         {fetchedSections.slice(0, sectionIndex + 1).map((section, index) => (
           <div key={index} className="section">
