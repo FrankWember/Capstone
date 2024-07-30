@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HomeIcon, SearchIcon, UserCircleIcon } from "@heroicons/react/solid";
+import {
+  HomeIcon,
+  SearchIcon,
+  UserCircleIcon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/solid";
 import "./SideBar.css";
 
-function SideBar() {
-  const [search, setSearch] = useState("");
+function SideBar({ theme, setTheme }) {
   const [playlists, setPlaylists] = useState([]);
   const navigate = useNavigate();
 
@@ -27,7 +32,6 @@ function SideBar() {
         }
 
         const data = await response.json();
-        console.log(data);
         setPlaylists(data.items);
       } catch (error) {
         console.error("Error fetching playlists:", error);
@@ -37,32 +41,23 @@ function SideBar() {
     fetchPlaylists();
   }, []);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    console.log("Searching for:", search);
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${theme}`}>
       <div className="sidebar-logo" onClick={() => navigate("/")}>
         <HomeIcon className="sidebar-icon" />
         <span className="sidebar-text">MoodTune</span>
       </div>
-      <form className="sidebar-search" onSubmit={handleSearchSubmit}>
-        <input
-          type="search"
-          placeholder="Search"
-          value={search}
-          onChange={handleSearchChange}
-        />
-        <button type="submit">
-          <SearchIcon className="sidebar-icon" />
-        </button>
-      </form>
+      <button className="theme-toggle-button" onClick={toggleTheme}>
+        {theme === "light" ? (
+          <MoonIcon className="sidebar-icon" />
+        ) : (
+          <SunIcon className="sidebar-icon" />
+        )}
+      </button>
       <hr />
       <ul className="sidebar-nav">
         <li onClick={() => navigate("/home")}>

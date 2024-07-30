@@ -162,6 +162,8 @@ const Recommendation = ({ onLocationUpdate }) => {
   return (
     <div className="d-flex">
       <SideBar />
+      {/*<div className={`app-container ${theme}`}>
+      <SideBar theme={theme} setTheme={toggleTheme} />  Rendering sidebar */}
       <div
         className="recommendation-container"
         style={{ backgroundColor: bgColor }}

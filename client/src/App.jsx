@@ -37,11 +37,12 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  // State management for tokens, current track, user location, and player visibility
+  // State management for tokens, current track, user location, player visibility, and theme
   const [token, setToken] = useState("");
   const [currentTrackUri, setCurrentTrackUri] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [theme, setTheme] = useState("light"); // State for theme
 
   useEffect(() => {
     const extractTokensFromURL = () => {
@@ -136,6 +137,11 @@ const App = () => {
     setCurrentTrackUri(null);
   };
 
+  // Handler for toggling the theme
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   return (
     <Router>
       <div className="Home">
@@ -159,7 +165,12 @@ const App = () => {
             path="/home"
             element={
               <ProtectedRoute>
-                <Home token={token} setCurrentTrackUri={handleTrackChange} />
+                <Home
+                  token={token}
+                  setCurrentTrackUri={handleTrackChange}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                />
               </ProtectedRoute>
             }
           />
@@ -178,6 +189,7 @@ const App = () => {
                     token={token}
                     userLocation={userLocation}
                     setUserLocation={setUserLocation}
+                    theme={theme}
                   />
                 </Suspense>
               </ProtectedRoute>
@@ -194,7 +206,7 @@ const App = () => {
                     </h1>
                   }
                 >
-                  <FaceRecognition token={token} />
+                  <FaceRecognition token={token} theme={theme} />
                 </Suspense>
               </ProtectedRoute>
             }
@@ -213,6 +225,7 @@ const App = () => {
                   <CategoryPage
                     token={token}
                     setCurrentTrackUri={handleTrackChange}
+                    theme={theme}
                   />
                 </Suspense>
               </ProtectedRoute>
@@ -232,6 +245,7 @@ const App = () => {
                   <Playlist
                     token={token}
                     setCurrentTrackUri={handleTrackChange}
+                    theme={theme}
                   />
                 </Suspense>
               </ProtectedRoute>
@@ -251,6 +265,7 @@ const App = () => {
                   <ArtistPage
                     token={token}
                     setCurrentTrackUri={handleTrackChange}
+                    theme={theme}
                   />
                 </Suspense>
               </ProtectedRoute>

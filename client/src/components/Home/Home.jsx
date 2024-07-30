@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import MediaContainer from "./MediaContainer";
 import "./Home.css";
-const Home = ({ token, setCurrentTrackUri }) => {
+
+const Home = ({ token, setCurrentTrackUri, theme, toggleTheme }) => {
   return (
-    <div className="main-contianer">
-      <MediaContainer token={token} setCurrentTrackUri={setCurrentTrackUri} />
+    <div className={`main-container ${theme}`}>
+      <MediaContainer
+        token={token}
+        setCurrentTrackUri={setCurrentTrackUri}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
     </div>
   );
 };
