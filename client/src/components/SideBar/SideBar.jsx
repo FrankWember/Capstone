@@ -104,7 +104,7 @@ function SideBar({ theme, setTheme }) {
         ))}
       </ul>
       <hr />
-      <div className="sidebar-user" onClick={() => navigate("/profile")}>
+      <div className="sidebar-user" onClick={() => navigate("/")}>
         <UserCircleIcon className="sidebar-icon" />
         <strong>Username</strong>
         <div className="sidebar-dropdown">

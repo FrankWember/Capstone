@@ -124,6 +124,9 @@
 }
 
 .sidebar-dropdown-link {
+  font-size: 26px;
+  color: white;
+  font-weight: bold;
   color: inherit;
   text-decoration: none;
   margin-bottom: 8px;
@@ -132,7 +135,7 @@
 }
 
 .sidebar-dropdown-link:hover {
-  color: #1ed760;
+  color: #a2ffc3;
 }
 
 .sidebar hr {

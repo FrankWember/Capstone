@@ -11,11 +11,14 @@ const MediaContainer = ({ token, setCurrentTrackUri, theme, toggleTheme }) => {
   const [data, setData] = useState({}); // Initializing state for data
   const [error, setError] = useState(null); // Initializing state for error handling
   const [loading, setLoading] = useState(false); // Initializing state for loading status
-  const [sectionIndex, setSectionIndex] = useState(2); // Setting the starting section index
+  const [sectionIndex, setSectionIndex] = useState(5); // Setting the starting section index
   const [fetchedSections, setFetchedSections] = useState([
     "topTracks",
     "moodRecommendedTracks",
     "placeBasedCategories",
+    "categories",
+    "followedArtists",
+    "savedAudiobooks",
   ]); // Initializing fetched sections state
   const navigate = useNavigate(); // Initializing navigation hook
 
@@ -141,7 +144,7 @@ const MediaContainer = ({ token, setCurrentTrackUri, theme, toggleTheme }) => {
   };
 
   useEffect(() => {
-    if (token && fetchedSections.length === 3) {
+    if (token && fetchedSections.length === 6) {
       fetchedSections.forEach(fetchData); // Fetching initial sections data
     }
   }, [token, fetchedSections]);
