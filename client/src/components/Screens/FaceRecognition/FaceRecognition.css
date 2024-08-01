@@ -10,13 +10,8 @@
   padding: 20px;
   overflow-y: auto;
   width: calc(100% - 250px);
+
   height: 100vh;
-  background-image: radial-gradient(
-    circle,
-    rgb(20, 26, 53) 0%,
-    rgb(18, 17, 26) 50%,
-    rgb(20, 18, 26) 100%
-  );
   flex: 1;
   border-radius: 20px;
 }
@@ -100,4 +95,26 @@ video {
   background-color: #38a169;
   color: white;
   border-radius: 5px;
+}
+
+/* Dark theme styles */
+.dark-theme .main-content {
+  background-image: radial-gradient(
+    circle,
+    rgb(20, 26, 53) 0%,
+    rgb(18, 17, 26) 50%,
+    rgb(20, 18, 26) 100%
+  );
+  color: white;
+}
+
+/* Light theme styles */
+.light-theme .main-content {
+  background-image: radial-gradient(
+    circle,
+    #8ed2f2 0%,
+    #37aef9 50%,
+    #0094d9 100%
+  );
+  color: black;
 }
