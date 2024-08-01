@@ -206,7 +206,11 @@ const App = () => {
                     </h1>
                   }
                 >
-                  <FaceRecognition token={token} theme={theme} />
+                  <FaceRecognition
+                    token={token}
+                    theme={theme}
+                    toggleTheme={toggleTheme}
+                  />
                 </Suspense>
               </ProtectedRoute>
             }

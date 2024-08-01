@@ -4,7 +4,7 @@ import axios from "axios";
 import "./FaceRecognition.css";
 import SideBar from "../../SideBar/SideBar";
 
-const FaceRecognition = () => {
+const FaceRecognition = ({ theme, toggleTheme }) => {
   const videoRef = useRef();
   const canvasRef = useRef();
   const [isModelLoaded, setIsModelLoaded] = useState(false);
@@ -164,8 +164,12 @@ const FaceRecognition = () => {
   };
 
   return (
-    <div className="face-recognition-container">
-      <SideBar />
+    <div
+      className={`face-recognition-container ${
+        theme === "dark" ? "dark-theme" : "light-theme"
+      }`}
+    >
+      <SideBar theme={theme} setTheme={toggleTheme} />
       <div className="main-content">
         <div className="controls">
           <button
