@@ -1,4 +1,4 @@
-### Project Plan
+### **Project Plan:**
 
 ## Public doc:
 https://drive.google.com/file/d/1w7VltW_dO5tYX7LWFmUQ7b6wDlP8Tuvy/view?usp=sharing
